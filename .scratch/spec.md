@@ -13,12 +13,23 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 - Name: "Unlock Counter". Package: `com.alexamy.unlockcounter`.
 - Kotlin, plain Canvas drawing, no Compose. `minSdk 26`.
 - One unlock = one `ACTION_USER_PRESENT` broadcast. Screen-on without unlock does not count.
-- The wallpaper engine registers the `ACTION_USER_PRESENT` receiver at runtime. No separate background service.
+- The wallpaper service registers the `ACTION_USER_PRESENT` receiver at runtime. No separate background service.
 - Count and its date live in SharedPreferences. The count resets at local midnight.
 - Count starts at 0 when the wallpaper is first set. No history is available from Android.
-- Look: solid dark gray background, large count centered on the screen, no label. Same image on the home screen. The lock screen clock is not used. Font and size follow the reference image (ticket 05).
 - Launcher screen: one activity that opens the system live wallpaper picker for this wallpaper.
-- Out of scope: history, stats, settings, widgets.
+
+## Version 1
+
+- Solid dark gray background, no label, only the number.
+- Number in the bottom half (under the lock clock), centered horizontally.
+- Font: tall, ultra-condensed, thin, close to Google's Unlock Clock experiment; bundled under an open license.
+- Size: a three-digit count spans the screen width; fewer digits use the same size.
+
+## Version 2
+
+- History: count of every past day, listed on the launcher screen.
+- Background image from the system photo picker, center-crop like system wallpapers.
+- User picks number color, font and size.
 
 ## Toolchain
 
@@ -30,11 +41,7 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 
 Samsung A71, Android 13, One UI 5.1, over `adb`.
 
-## Risk
+## Tickets
 
-One UI may not show third-party live wallpapers on the lock screen. Stage 1 checks this on the device. Fallback: a persistent notification with the count (foreground service), visible only when lock screen notifications are on.
-
-## Stages
-
-1. Spike: toolchain, project, minimal live wallpaper drawing a fixed number. Verify on the A71 lock screen.
-2. Real app: unlock counting, midnight reset, final look, launcher screen.
+- v1: 03 look, 04 launcher screen, 05 font and size.
+- v2: 06 history, 07 wallpaper image and text style.

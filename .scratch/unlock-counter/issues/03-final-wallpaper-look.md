@@ -2,12 +2,13 @@
 
 # 03: Final wallpaper look
 
-**What to build:** Solid dark gray background and the count centered on the screen, as in the reference image. No label, only the number. Same image on home and lock screens. The lock screen clock is not used, so the number does not need to avoid it.
+**What to build:** Solid dark gray background. The count sits in the bottom half of the screen, under the lock screen clock, centered horizontally. No label, only the number. Same image on home and lock screens.
 
 **Blocked by:** 02 (Count today's unlocks)
 
 **Status:** ready-for-agent
 
 - [ ] Background is solid dark gray
-- [ ] Number is centered horizontally and vertically
+- [ ] Number is centered horizontally and placed in the bottom half
+- [ ] Number does not overlap the One UI lock clock on the A71 (user confirms)
 - [ ] No label is drawn

@@ -2,12 +2,13 @@
 
 # 05: Number font and size
 
-**What to build:** The count uses a tall, ultra-condensed, thin sans-serif font, and the number fills most of the screen height, as in the reference image (a narrow "25" about half the screen tall). The font is bundled in the app under an open license.
+**What to build:** The count uses a tall, ultra-condensed, thin sans-serif font close to the reference image (Google's Unlock Clock experiment). The text size is fixed so that a three-digit number spans the full screen width (minus a small side margin); one- and two-digit numbers use the same size and stay centered. The number stays in the bottom half. The font is bundled under an open license; candidates to compare on the A71: Six Caps, Antonio Thin, Big Shoulders Display Thin, Oswald ExtraLight.
 
 **Blocked by:** 03 (Final wallpaper look)
 
 **Status:** ready-for-agent
 
-- [ ] Font is tall, ultra-condensed, thin; license allows bundling (e.g. SIL OFL)
-- [ ] Number height is about half the screen height
-- [ ] 1-, 2- and 3-digit counts fit the screen width on the A71
+- [ ] User picks the font after seeing the candidates on the A71
+- [ ] Font license allows bundling (e.g. SIL OFL)
+- [ ] A three-digit count spans the screen width; 1 and 2 digits use the same size, centered
+- [ ] Number fits in the bottom half on the A71
