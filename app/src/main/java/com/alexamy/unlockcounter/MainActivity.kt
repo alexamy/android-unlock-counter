@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
@@ -32,6 +33,14 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (Build.VERSION.SDK_INT >= 35) {
+            // Android 15 forces edge-to-edge for targetSdk 35: keep content out of the system bars.
+            findViewById<View>(R.id.root).setOnApplyWindowInsetsListener { view, insets ->
+                val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
+                view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+                insets
+            }
+        }
         renderer = WallpaperRenderer(this) { preview.invalidate() }
         preview = findViewById(R.id.settings_preview)
         preview.renderer = renderer
