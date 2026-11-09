@@ -9,7 +9,7 @@
 - the font from the four bundled fonts of ticket 05 plus the system default;
 - the size with a slider from 50% to 100% of the default (100% = three digits span the screen width).
 
-The wallpaper redraws with the new settings.
+The wallpaper redraws with the new settings. Anything the user has not picked falls back to the v1 look: dark gray `#424242` background, white number, Six Caps, 100% size.
 
 **Blocked by:** 05 (Number font and size)
 
@@ -19,4 +19,5 @@ The wallpaper redraws with the new settings.
 - [ ] Picked image fills the screen with center-crop and no stretching
 - [ ] Image survives a reboot and removal of the original from the gallery
 - [ ] Without a picked image the dark gray background stays
+- [ ] Without picked settings the wallpaper looks the same as v1 (Six Caps, white, 100%)
 - [ ] Color, font and size changes show on the wallpaper
