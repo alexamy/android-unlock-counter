@@ -16,7 +16,7 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 - The wallpaper service registers the `ACTION_USER_PRESENT` receiver at runtime. No separate background service.
 - Count and its date live in SharedPreferences. The count resets at local midnight.
 - Count starts at 0 when the wallpaper is first set. No history is available from Android.
-- Launcher screen: one activity that opens the system live wallpaper picker for this wallpaper.
+- v1 launcher: the app icon opens the system live wallpaper picker for this wallpaper.
 
 ## Version 1
 
@@ -27,9 +27,12 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 
 ## Version 2
 
-- History: count of every past day, listed on the launcher screen.
-- Background image from the system photo picker, center-crop like system wallpapers.
-- User picks number color, font and size.
+- History: count of every past day. The app icon opens the history page (days newest first, missing days shown as missing) with a "Set wallpaper" button.
+- Wallpaper settings screen, reached from "Settings" in the system wallpaper picker:
+  - background image from the system photo picker, center-crop, no pan or zoom;
+  - number color from Hue, Saturation and Brightness sliders with a preview swatch, no library;
+  - font from the four bundled fonts plus the system default;
+  - size slider from 50% to 100% of the default.
 
 ## Toolchain
 

@@ -2,13 +2,14 @@
 
 # 06: History
 
-**What to build:** The app keeps the unlock count of every past day. The launcher screen shows the list of past days with their counts, newest first. All days are kept.
+**What to build:** The app keeps the unlock count of every past day. Tapping the app icon opens the history page: a list of past days with their counts, newest first, and a "Set wallpaper" button that opens the system picker with this wallpaper preselected. All days are kept.
 
 **Blocked by:** 04 (Launcher screen)
 
 **Status:** ready-for-agent
 
 - [ ] At midnight the finished day's count is saved to history
-- [ ] Days with the phone off or the wallpaper not running show as missing, not as 0
-- [ ] Launcher screen lists past days with counts, newest first
+- [ ] Days with the phone off all day or another wallpaper set show as missing, not as 0
+- [ ] App icon opens the history page; days listed newest first
+- [ ] "Set wallpaper" button opens the picker preview of this wallpaper
 - [ ] Unit test covers the day rollover into history

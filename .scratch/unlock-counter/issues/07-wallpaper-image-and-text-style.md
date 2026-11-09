@@ -2,13 +2,21 @@
 
 # 07: Wallpaper image and text style
 
-**What to build:** On the launcher screen the user picks a background image with the system photo picker. The app keeps a copy and fits it to the screen the way system wallpapers do: center-crop, scaled to fill. The user also picks the number's color, font (from the bundled fonts) and size. The wallpaper redraws with the new settings.
+**What to build:** The wallpaper gets its own settings screen, reached from the "Settings" entry of the system live wallpaper picker. There the user picks:
 
-**Blocked by:** 04 (Launcher screen), 05 (Number font and size)
+- a background image with the system photo picker; the app keeps a copy and fits it center-crop, scaled to fill, no pan or zoom;
+- the number color with a picker built from Hue, Saturation and Brightness sliders and a live preview swatch (no library);
+- the font from the four bundled fonts of ticket 05 plus the system default;
+- the size with a slider from 50% to 100% of the default (100% = three digits span the screen width).
+
+The wallpaper redraws with the new settings.
+
+**Blocked by:** 05 (Number font and size)
 
 **Status:** ready-for-agent
 
+- [ ] "Settings" in the system wallpaper picker opens the settings screen
 - [ ] Picked image fills the screen with center-crop and no stretching
 - [ ] Image survives a reboot and removal of the original from the gallery
-- [ ] User can change number color, font and size; the wallpaper shows the change
 - [ ] Without a picked image the dark gray background stays
+- [ ] Color, font and size changes show on the wallpaper
