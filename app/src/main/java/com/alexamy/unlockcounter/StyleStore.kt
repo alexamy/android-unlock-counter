@@ -9,8 +9,6 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import java.io.File
-import kotlin.math.max
-import kotlin.math.min
 
 class StyleStore(private val context: Context) {
     private val prefs = context.getSharedPreferences("style", Context.MODE_PRIVATE)
@@ -57,20 +55,28 @@ class StyleStore(private val context: Context) {
         get() = prefs.getFloat(IMAGE_X, 0.5f)
         set(value) = prefs.edit().putFloat(IMAGE_X, value.coerceIn(0f, 1f)).apply()
 
-    fun loadImage(): Bitmap? = if (imageFile.exists()) BitmapFactory.decodeFile(imageFile.path) else null
+    /** Null when there is no image or it cannot be decoded (also on out-of-memory), so the wallpaper never crashes on it. */
+    fun loadImage(): Bitmap? = if (imageFile.exists()) runCatching { BitmapFactory.decodeFile(imageFile.path) }.getOrNull() else null
 
     /** Copies the picked image, scaled down to about [screenW] x [screenH], so the original can be deleted. */
-    fun saveImage(uri: Uri, screenW: Int, screenH: Int) {
+    fun saveImage(uri: Uri, screenW: Int, screenH: Int) = synchronized(FILE_LOCK) {
         val bitmap = if (Build.VERSION.SDK_INT >= 28) {
             ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri)) { decoder, info, _ ->
                 val (w, h) = info.size.width to info.size.height
-                val scale = min(1f, max(min(screenW, screenH).toFloat() / min(w, h), max(screenW, screenH).toFloat() / max(w, h)))
-                decoder.setTargetSize((w * scale).toInt(), (h * scale).toInt())
+                val scale = decodeScale(w, h, screenW, screenH)
+                decoder.setTargetSize((w * scale).toInt().coerceAtLeast(1), (h * scale).toInt().coerceAtLeast(1))
                 decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
             }
         } else {
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            context.contentResolver.openInputStream(uri).use { BitmapFactory.decodeStream(it, null, bounds) }
+            val scale = decodeScale(bounds.outWidth, bounds.outHeight, screenW, screenH)
+            var sample = 1
+            while (sample * 2 * scale <= 1f) sample *= 2
             // shortcut: ignores EXIF rotation on Android 8.x, use ExifInterface if a user there reports it.
-            context.contentResolver.openInputStream(uri).use { BitmapFactory.decodeStream(it) }
+            context.contentResolver.openInputStream(uri).use {
+                BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
+            }
         } ?: error("Cannot decode $uri")
         val tmp = File(context.filesDir, "background.tmp")
         tmp.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it) }
@@ -94,13 +100,15 @@ class StyleStore(private val context: Context) {
         prefs.edit().clear().apply()
     }
 
-    fun removeImage() {
+    fun removeImage() = synchronized(FILE_LOCK) {
         imageFile.delete()
         prefs.edit().remove(IMAGE).apply()
     }
 
     private companion object {
         const val IMAGE = "image"
+        // Image saves run on background threads; one at a time, across all StyleStore instances.
+        val FILE_LOCK = Any()
         const val MIN_SIZE = 0.15f
         const val MIN_OPACITY = 0.1f
         private const val COLOR = "color"

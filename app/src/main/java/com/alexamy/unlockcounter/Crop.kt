@@ -14,3 +14,14 @@ fun cropToFill(srcW: Int, srcH: Int, dstW: Int, dstH: Int, x: Float = 0.5f): Int
         val top = (srcH - h) / 2
         intArrayOf(0, top, srcW, top + h)
     }
+
+/**
+ * Scale (at most 1) for decoding a picked image: big enough to cover the screen,
+ * but the long side stays within twice the screen's long side so panoramas do not exhaust memory.
+ */
+fun decodeScale(srcW: Int, srcH: Int, screenW: Int, screenH: Int): Float {
+    val screenLong = maxOf(screenW, screenH).toFloat()
+    val srcLong = maxOf(srcW, srcH).toFloat()
+    val cover = maxOf(minOf(screenW, screenH) / minOf(srcW, srcH).toFloat(), screenLong / srcLong)
+    return minOf(1f, cover, 2 * screenLong / srcLong)
+}
