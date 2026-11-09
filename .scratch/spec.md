@@ -21,7 +21,7 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 ## Version 1
 
 - Solid dark gray background, no label, only the number.
-- Number in the bottom half (under the lock clock), centered horizontally.
+- Number centered horizontally and vertically; its height is at most half the screen.
 - Font: Six Caps (SIL OFL), bundled. Antonio, Big Shoulders Display and Oswald are bundled too for ticket 07.
 - Size: "888" fits the screen width or the bottom-half height, whichever is smaller; fewer digits use the same size.
 

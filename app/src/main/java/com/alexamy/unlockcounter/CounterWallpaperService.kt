@@ -88,7 +88,7 @@ class CounterWallpaperService : WallpaperService() {
                 val fitHeight = canvas.height / 2f * (1 - 2 * MARGIN) / bounds.height()
                 paint.textSize = 100f * minOf(fitWidth, fitHeight)
                 paint.getTextBounds(WIDEST, 0, WIDEST.length, bounds)
-                val baseline = canvas.height * 0.75f - bounds.exactCenterY()
+                val baseline = canvas.height / 2f - bounds.exactCenterY()
                 canvas.drawText(count.toString(), canvas.width / 2f, baseline, paint)
             } finally {
                 holder.unlockCanvasAndPost(canvas)
