@@ -46,6 +46,7 @@ class MainActivity : Activity() {
         findViewById<View>(R.id.clear_log).setOnClickListener {
             confirm(R.string.clear_log_confirm) {
                 CounterStore(this).clearLog()
+                showLogSize()
                 toast(R.string.log_cleared)
             }
         }
@@ -71,7 +72,12 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         showHistory()
+        showLogSize()
         preview.invalidate()
+    }
+
+    private fun showLogSize() {
+        findViewById<TextView>(R.id.export_subtitle).text = getString(R.string.export_subtitle, CounterStore(this).logEntries())
     }
 
     private fun showHistory() {

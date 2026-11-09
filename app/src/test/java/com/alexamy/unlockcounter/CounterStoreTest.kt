@@ -78,6 +78,7 @@ class CounterStoreTest {
         store.addUnlock()
         val out = ByteArrayOutputStream().also(store::writeLog)
         assertEquals("2026-11-09T10:00+01:00\n2026-11-09T10:05+01:00\n", out.toString())
+        assertEquals(2, store.logEntries())
         store.clearLog()
         assertEquals("", ByteArrayOutputStream().also(store::writeLog).toString())
         assertEquals(2, store.todayCount())

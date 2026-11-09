@@ -1,6 +1,7 @@
 package com.alexamy.unlockcounter
 
 import android.content.Context
+import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -39,6 +40,8 @@ class CounterStore(
 
     fun writeLog(out: OutputStream) = storage.writeLog(out)
 
+    fun logEntries(): Int = ByteArrayOutputStream().also(::writeLog).toByteArray().count { it == NEWLINE }
+
     fun clearLog() = storage.clearLog()
 
     private data class DayCount(val day: LocalDate, val count: Int)
@@ -59,5 +62,6 @@ class CounterStore(
         const val DAY = "day"
         const val COUNT = "count"
         const val HISTORY = "history:"
+        const val NEWLINE = '\n'.code.toByte()
     }
 }
