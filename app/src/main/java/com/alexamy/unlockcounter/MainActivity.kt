@@ -25,6 +25,7 @@ import kotlin.math.roundToInt
 class MainActivity : Activity() {
     private val dateFormat = DateTimeFormatter.ofPattern("EEE, d MMM yyyy")
     private val shortDate = DateTimeFormatter.ofPattern("d MMM")
+    private val store by lazy { CounterStore(this) }
     private lateinit var renderer: WallpaperRenderer
     private lateinit var preview: WallpaperPreview
     private lateinit var tabs: List<View>
@@ -54,7 +55,7 @@ class MainActivity : Activity() {
         findViewById<View>(R.id.export_log).setOnClickListener { startActivityForResult(exportLogIntent(), EXPORT_LOG) }
         findViewById<View>(R.id.clear_log).setOnClickListener {
             confirm(R.string.clear_log_confirm) {
-                CounterStore(this).clearLog()
+                store.clearLog()
                 showLogSize()
                 toast(R.string.log_cleared)
             }
@@ -86,20 +87,16 @@ class MainActivity : Activity() {
     }
 
     private fun showLogSize() {
-        findViewById<TextView>(R.id.export_subtitle).text = getString(R.string.export_subtitle, CounterStore(this).logEntries())
+        findViewById<TextView>(R.id.export_subtitle).text = getString(R.string.export_subtitle, store.logEntries())
     }
 
     private fun showHistory() {
-        val store = CounterStore(this)
-        val todayCount = store.todayCount()
         val rows = store.historyRows()
-        val today = LocalDate.now()
-        val counts = rows.toMap()
-        findViewById<TextView>(R.id.today_count).text = todayCount.toString()
-        findViewById<TextView>(R.id.average).text =
-            rows.take(BAR_DAYS).mapNotNull { it.second }.takeIf { it.isNotEmpty() }?.average()?.roundToInt()?.toString() ?: "—"
-        findViewById<BarChart>(R.id.bars).values = (BAR_DAYS - 1 downTo 1).map { counts[today.minusDays(it.toLong())] } + todayCount
-        findViewById<TextView>(R.id.bars_start).text = today.minusDays(BAR_DAYS - 1L).format(shortDate)
+        val window = store.lastDays(BAR_DAYS)
+        findViewById<TextView>(R.id.today_count).text = window.last().second.toString()
+        findViewById<TextView>(R.id.average).text = store.dailyAverage(BAR_DAYS)?.roundToInt()?.toString() ?: "—"
+        findViewById<BarChart>(R.id.bars).values = window.map { it.second }
+        findViewById<TextView>(R.id.bars_start).text = window.first().first.format(shortDate)
         findViewById<ListView>(R.id.history).adapter = object : ArrayAdapter<Pair<LocalDate, Int?>>(this, 0, rows) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val row = convertView ?: layoutInflater.inflate(R.layout.row_history, parent, false)
@@ -133,7 +130,7 @@ class MainActivity : Activity() {
             }
             EXPORT_LOG -> {
                 runCatching {
-                    contentResolver.openOutputStream(uri).use { CounterStore(this).writeLog(checkNotNull(it)) }
+                    contentResolver.openOutputStream(uri).use { store.writeLog(checkNotNull(it)) }
                 }.fold({ toast(R.string.log_exported) }, { toast(R.string.export_failed) })
             }
         }

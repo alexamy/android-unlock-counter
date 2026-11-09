@@ -17,6 +17,7 @@ interface CounterStorage {
 
     fun appendLog(text: String)
     fun writeLog(out: OutputStream)
+    fun logLines(): Int
     fun clearLog()
 }
 
@@ -52,6 +53,9 @@ class PrefsCounterStorage(context: Context) : CounterStorage {
     override fun writeLog(out: OutputStream) {
         if (log.exists()) log.inputStream().use { it.copyTo(out) }
     }
+
+    override fun logLines(): Int =
+        if (!log.exists()) 0 else log.inputStream().buffered().use { input -> generateSequence { input.read().takeIf { it >= 0 } }.count { it == '\n'.code } }
 
     override fun clearLog() {
         log.delete()

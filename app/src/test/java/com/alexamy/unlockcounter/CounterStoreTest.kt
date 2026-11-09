@@ -19,6 +19,7 @@ class CounterStoreTest {
         }
         override fun appendLog(text: String) { log.append(text) }
         override fun writeLog(out: OutputStream) = out.write(log.toString().toByteArray())
+        override fun logLines() = log.count { it == '\n' }
         override fun clearLog() = log.setLength(0)
     }
 
@@ -127,5 +128,29 @@ class CounterStoreTest {
         assertEquals(5, store.todayCount())
         nextDay(30)
         assertEquals(2, store.todayCount())
+    }
+
+    @Test
+    fun lastDaysEndsWithTodayOldestFirst() {
+        store.addUnlock()
+        nextDay(2)
+        repeat(3) { store.addUnlock() }
+        assertEquals(listOf(day to 1, day.plusDays(1) to null, day.plusDays(2) to 3), store.lastDays(3))
+    }
+
+    @Test
+    fun dailyAverageSkipsTodayAndMissingDays() {
+        repeat(2) { store.addUnlock() }
+        nextDay(2)
+        repeat(6) { store.addUnlock() }
+        nextDay()
+        repeat(100) { store.addUnlock() }
+        assertEquals(4.0, store.dailyAverage(14)!!, 0.001)
+    }
+
+    @Test
+    fun dailyAverageIsNullWithoutFinishedDays() {
+        store.addUnlock()
+        assertEquals(null, store.dailyAverage(14))
     }
 }

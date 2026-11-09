@@ -1,7 +1,6 @@
 package com.alexamy.unlockcounter
 
 import android.content.Context
-import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -29,10 +28,7 @@ class CounterStore(
     /** Past days from yesterday back to the oldest record, newest first; null count = no data that day. */
     fun historyRows(): List<Pair<LocalDate, Int?>> {
         val today = rollover(now().toLocalDate()).day
-        val records = storage.all()
-            .filterKeys { it.startsWith(HISTORY) }
-            .map { (key, value) -> LocalDate.parse(key.removePrefix(HISTORY)) to value.toInt() }
-            .toMap()
+        val records = history()
         val oldest = records.keys.minOrNull() ?: return emptyList()
         return generateSequence(today.minusDays(1)) { it.minusDays(1) }
             .takeWhile { it >= oldest }
@@ -40,11 +36,30 @@ class CounterStore(
             .toList()
     }
 
+    /** The last [days] days ending today, oldest first; today is the current count, null = no data that day. */
+    fun lastDays(days: Int): List<Pair<LocalDate, Int?>> {
+        val today = rollover(now().toLocalDate())
+        val records = history()
+        return (days - 1 downTo 0).map { back ->
+            val day = today.day.minusDays(back.toLong())
+            day to if (back == 0) today.count else records[day]
+        }
+    }
+
+    /** Average over the finished days with data among the last [days] days; null when there are none. */
+    fun dailyAverage(days: Int): Double? =
+        lastDays(days).dropLast(1).mapNotNull { it.second }.takeIf { it.isNotEmpty() }?.average()
+
     fun writeLog(out: OutputStream) = storage.writeLog(out)
 
-    fun logEntries(): Int = ByteArrayOutputStream().also(::writeLog).toByteArray().count { it == NEWLINE }
+    fun logEntries(): Int = storage.logLines()
 
     fun clearLog() = storage.clearLog()
+
+    private fun history(): Map<LocalDate, Int> = storage.all()
+        .filterKeys { it.startsWith(HISTORY) }
+        .map { (key, value) -> LocalDate.parse(key.removePrefix(HISTORY)) to value.toInt() }
+        .toMap()
 
     private data class DayCount(val day: LocalDate, val count: Int)
 
@@ -65,7 +80,6 @@ class CounterStore(
         const val DAY = "day"
         const val COUNT = "count"
         const val HISTORY = "history:"
-        const val NEWLINE = '\n'.code.toByte()
         val MIN_DAY: LocalDate = LocalDate.of(2020, 1, 1)
     }
 }
