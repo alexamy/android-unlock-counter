@@ -7,7 +7,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="280dp"
+        android:layout_height="308dp"
         android:layout_marginHorizontal="20dp"
         android:background="@drawable/bg_card">
 
