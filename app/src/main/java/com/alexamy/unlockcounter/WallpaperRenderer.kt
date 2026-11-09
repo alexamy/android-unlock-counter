@@ -9,18 +9,23 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import kotlin.math.roundToInt
 
-/** Draws the wallpaper; shared by the live wallpaper and the settings preview. */
-class WallpaperRenderer(private val context: Context) {
+/**
+ * Draws the wallpaper; shared by the live wallpaper and the settings preview.
+ * Calls [onChange] after every style change, with the image already reloaded. Call [close] when done.
+ */
+class WallpaperRenderer(private val context: Context, onChange: () -> Unit) {
     val style = StyleStore(context)
     private val typefaces = mutableMapOf<NumberFont, Typeface>()
     private var background: Bitmap? = style.loadImage()
+    private val unwatch = style.watch { imageChanged ->
+        if (imageChanged) background = style.loadImage()
+        onChange()
+    }
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val imagePaint = Paint(Paint.FILTER_BITMAP_FLAG)
     private val bounds = Rect()
 
-    fun reloadImage() {
-        background = style.loadImage()
-    }
+    fun close() = unwatch()
 
     fun draw(canvas: Canvas, width: Int, height: Int, count: Int) {
         canvas.drawColor(BACKGROUND)

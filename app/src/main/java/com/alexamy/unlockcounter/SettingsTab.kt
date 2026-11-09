@@ -41,8 +41,8 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
         listOf(hue, saturation, brightness).forEach { it.setOnSeekBarChangeListener(onColor) }
 
         val opacity = view<SeekBar>(R.id.opacity)
-        opacity.progress = ((style.opacity - StyleStore.MIN_OPACITY) * 100).roundToInt()
-        opacity.setOnSeekBarChangeListener(onUserChange { style.opacity = StyleStore.MIN_OPACITY + opacity.progress / 100f })
+        opacity.progress = (style.opacityLevel * 100).roundToInt()
+        opacity.setOnSeekBarChangeListener(onUserChange { style.opacityLevel = opacity.progress / 100f })
 
         val fonts = view<RadioGroup>(R.id.fonts)
         NumberFont.entries.forEach { font ->
@@ -67,8 +67,8 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
         markPosition(positions)
 
         val size = view<SeekBar>(R.id.size)
-        size.progress = ((style.size - StyleStore.MIN_SIZE) * 100).roundToInt()
-        size.setOnSeekBarChangeListener(onUserChange { style.size = StyleStore.MIN_SIZE + size.progress / 100f })
+        size.progress = (style.sizeLevel * 100).roundToInt()
+        size.setOnSeekBarChangeListener(onUserChange { style.sizeLevel = size.progress / 100f })
     }
 
     private fun <T : View> view(id: Int): T = activity.findViewById(id)

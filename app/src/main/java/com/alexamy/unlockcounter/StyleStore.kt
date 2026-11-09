@@ -1,6 +1,7 @@
 package com.alexamy.unlockcounter
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -12,7 +13,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class StyleStore(private val context: Context) {
-    val prefs = context.getSharedPreferences("style", Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences("style", Context.MODE_PRIVATE)
     private val imageFile = File(context.filesDir, "background.jpg")
 
     var color: Int
@@ -23,6 +24,13 @@ class StyleStore(private val context: Context) {
         get() = prefs.getFloat(OPACITY, 1f)
         set(value) = prefs.edit().putFloat(OPACITY, value.coerceIn(MIN_OPACITY, 1f)).apply()
 
+    /** Slider level 0..1 for [opacity]. */
+    var opacityLevel: Float
+        get() = (opacity - MIN_OPACITY) / (1 - MIN_OPACITY)
+        set(value) {
+            opacity = MIN_OPACITY + value.coerceIn(0f, 1f) * (1 - MIN_OPACITY)
+        }
+
     var font: NumberFont
         get() = NumberFont.entries.find { it.name == prefs.getString(FONT, null) } ?: NumberFont.SIX_CAPS
         set(value) = prefs.edit().putString(FONT, value.name).apply()
@@ -31,6 +39,13 @@ class StyleStore(private val context: Context) {
     var size: Float
         get() = prefs.getFloat(SIZE, 1f)
         set(value) = prefs.edit().putFloat(SIZE, value.coerceIn(MIN_SIZE, 1f)).apply()
+
+    /** Slider level 0..1 for [size]. */
+    var sizeLevel: Float
+        get() = (size - MIN_SIZE) / (1 - MIN_SIZE)
+        set(value) {
+            size = MIN_SIZE + value.coerceIn(0f, 1f) * (1 - MIN_SIZE)
+        }
 
     /** 0..8, row by row from top-left; 4 = center. */
     var position: Int
@@ -63,6 +78,16 @@ class StyleStore(private val context: Context) {
         prefs.edit().putLong(IMAGE, System.currentTimeMillis()).apply()
     }
 
+    /**
+     * Calls [onChange] after every settings change, with true when the image changed.
+     * Returns the function that stops watching; keep it, the listener lives as long as it does.
+     */
+    fun watch(onChange: (imageChanged: Boolean) -> Unit): () -> Unit {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key -> onChange(key == null || key == IMAGE) }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        return { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
+    }
+
     /** Back to the default look: no image, default color, opacity, font, size, position. */
     fun reset() {
         removeImage()
@@ -74,7 +99,7 @@ class StyleStore(private val context: Context) {
         prefs.edit().remove(IMAGE).apply()
     }
 
-    companion object {
+    private companion object {
         const val IMAGE = "image"
         const val MIN_SIZE = 0.15f
         const val MIN_OPACITY = 0.1f

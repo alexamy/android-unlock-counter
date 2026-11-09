@@ -127,7 +127,7 @@
                 android:id="@+id/opacity"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:max="90" />
+                android:max="100" />
 
             <TextView
                 style="@android:style/TextAppearance.DeviceDefault.Medium"
@@ -140,7 +140,7 @@
                 android:id="@+id/size"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:max="85" />
+                android:max="100" />
 
             <TextView
                 style="@android:style/TextAppearance.DeviceDefault.Medium"

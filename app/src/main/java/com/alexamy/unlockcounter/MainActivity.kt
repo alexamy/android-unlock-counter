@@ -6,7 +6,6 @@ import android.app.WallpaperManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -24,19 +23,12 @@ class MainActivity : Activity() {
     private lateinit var tabs: List<View>
     private lateinit var tabButtons: List<View>
 
-    // Kept in a field: SharedPreferences holds listeners weakly.
-    private val styleListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == null || key == StyleStore.IMAGE) renderer.reloadImage()
-        preview.invalidate()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        renderer = WallpaperRenderer(this)
+        renderer = WallpaperRenderer(this) { preview.invalidate() }
         preview = findViewById(R.id.settings_preview)
         preview.renderer = renderer
-        renderer.style.prefs.registerOnSharedPreferenceChangeListener(styleListener)
 
         tabs = listOf(R.id.tab_history, R.id.tab_settings, R.id.tab_system).map { findViewById(it) }
         tabButtons = listOf(R.id.show_history, R.id.show_settings, R.id.show_system).map { findViewById(it) }
@@ -81,7 +73,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
-        renderer.style.prefs.unregisterOnSharedPreferenceChangeListener(styleListener)
+        renderer.close()
         super.onDestroy()
     }
 
