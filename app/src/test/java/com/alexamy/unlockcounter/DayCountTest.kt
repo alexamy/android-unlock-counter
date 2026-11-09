@@ -18,4 +18,10 @@ class DayCountTest {
 
     @Test
     fun firstUnlockOfNewDayIsOne() = assertEquals(DayCount(day.plusDays(1), 1), DayCount(day, 5).plusUnlock(day.plusDays(1)))
+
+    @Test
+    fun finishedDayGoesToHistoryOnNewDay() {
+        assertEquals(DayCount(day, 5), DayCount(day, 5).finishedBefore(day.plusDays(1)))
+        assertEquals(null, DayCount(day, 5).finishedBefore(day))
+    }
 }

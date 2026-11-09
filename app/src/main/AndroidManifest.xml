@@ -7,9 +7,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Unlock Counter">
         <activity
-            android:name=".SetWallpaperActivity"
+            android:name=".HistoryActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:label="Unlock Counter"
+            android:theme="@android:style/Theme.DeviceDefault">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
