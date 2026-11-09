@@ -67,7 +67,7 @@ class MainActivity : Activity() {
         showTab(startTab(intent))
     }
 
-    private fun startTab(intent: Intent) = intent.getIntExtra(EXTRA_TAB, HISTORY)
+    private fun startTab(intent: Intent) = intent.getIntExtra(EXTRA_TAB, HISTORY).coerceIn(HISTORY, SYSTEM)
 
     override fun onResume() {
         super.onResume()

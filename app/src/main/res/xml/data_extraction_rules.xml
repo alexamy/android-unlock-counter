@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12 and newer. Unlock times stay on the device; counts, history, settings and the image are backed up. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="unlocks.log" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="unlocks.log" />
+    </device-transfer>
+</data-extraction-rules>
