@@ -2,6 +2,8 @@
 
 # Unlock Counter
 
+**This app is fully coded by Claude (Anthropic's AI model) in Claude Code.**
+
 Android live wallpaper that shows how many times you unlocked the phone today. Set it for the home and lock screens. The count resets at midnight.
 
 Android has no lock screen widgets since version 5, so the counter is a live wallpaper: the number is drawn on the wallpaper itself.
