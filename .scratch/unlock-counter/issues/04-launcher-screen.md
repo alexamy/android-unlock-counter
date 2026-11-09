@@ -6,7 +6,7 @@
 
 **Blocked by:** 01 (Spike: live wallpaper on the A71 lock screen)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] App icon is in the launcher
-- [ ] Tap opens the picker preview of this wallpaper on the A71
+- [x] App icon is in the launcher
+- [x] Tap opens the picker preview of this wallpaper on the A71
