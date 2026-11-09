@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="20dp"
             android:paddingVertical="14dp">
 
             <TextView android:id="@+id/chip_image" style="@style/Chip" android:text="@string/section_image" />
@@ -91,7 +91,8 @@
                         android:layout_weight="1"
                         android:background="@drawable/bg_button"
                         android:contentDescription="@string/remove_image"
-                        android:src="@drawable/ic_delete" />
+                        android:src="@drawable/ic_delete"
+                        android:tint="@color/danger" />
                 </LinearLayout>
 
                 <TextView style="@style/SliderLabel" android:text="@string/image_x" />
