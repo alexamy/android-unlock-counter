@@ -8,6 +8,12 @@ enum class NumberFont(val label: String, private val file: String?, private val 
     ANTONIO("Antonio", "Antonio.ttf", 100),
     BIG_SHOULDERS("Big Shoulders", "BigShouldersDisplay.ttf", 100),
     OSWALD("Oswald", "Oswald.ttf", 200),
+    SOFIA_SANS("Sofia Sans", "SofiaSansExtraCondensed.ttf", 300),
+    SAIRA("Saira", "SairaExtraCondensed-Light.ttf", null),
+    LEAGUE_GOTHIC("League Gothic", "LeagueGothic.ttf", null),
+    BEBAS_NEUE("Bebas Neue", "BebasNeue.ttf", null),
+    PATHWAY_GOTHIC("Pathway Gothic", "PathwayGothicOne.ttf", null),
+    TEKO("Teko", "Teko.ttf", 300),
     SYSTEM("System default", null, null);
 
     fun load(assets: AssetManager): Typeface = file?.let { path ->

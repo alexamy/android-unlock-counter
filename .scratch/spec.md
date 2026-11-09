@@ -34,7 +34,7 @@ Dark theme. A large "Unlock Counter" title and a segmented control with three ta
   - Color: Hue (rainbow track), Saturation, Brightness with a swatch, and opacity from 10% to 100%;
   - Size: 15% to 100% of the default;
   - Position: one of 9 places in a 3×3 grid, 5% from the edges, default center;
-  - Font: Six Caps, Antonio, Big Shoulders Display, Oswald (bundled) or the system default.
+  - Font: Six Caps, Antonio, Big Shoulders Display, Oswald, Sofia Sans Extra Condensed, Saira Extra Condensed, League Gothic, Bebas Neue, Pathway Gothic One, Teko (bundled) or the system default.
 - System: grouped rows. Export log via "Save as" (shows the number of entries), clear log (unlock times only), reset settings (default look, removes the photo); the last two ask for confirmation. A "Keep it running" card with the Samsung battery steps.
 
 ## Toolchain

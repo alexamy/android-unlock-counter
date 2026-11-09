@@ -15,4 +15,4 @@ The app shows the same steps in System → Keep it running.
 
 ## License
 
-The code is under the MIT license (`LICENSE`). The bundled fonts (Six Caps, Antonio, Big Shoulders Display, Oswald) are under the SIL Open Font License 1.1; each license text is next to its font in `app/src/main/assets/fonts/`.
+The code is under the MIT license (`LICENSE`). The bundled fonts (Six Caps, Antonio, Big Shoulders Display, Oswald, Sofia Sans Extra Condensed, Saira Extra Condensed, League Gothic, Bebas Neue, Pathway Gothic One, Teko) are under the SIL Open Font License 1.1; each license text is next to its font in `app/src/main/assets/fonts/`.
