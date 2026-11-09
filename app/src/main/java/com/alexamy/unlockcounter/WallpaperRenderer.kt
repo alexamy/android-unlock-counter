@@ -24,7 +24,7 @@ class WallpaperRenderer(private val context: Context) {
     fun draw(canvas: Canvas, width: Int, height: Int, count: Int) {
         canvas.drawColor(BACKGROUND)
         background?.let {
-            val (l, t, r, b) = centerCrop(it.width, it.height, width, height)
+            val (l, t, r, b) = cropToFill(it.width, it.height, width, height, style.imageX)
             canvas.drawBitmap(it, Rect(l, t, r, b), Rect(0, 0, width, height), imagePaint)
         }
         paint.color = style.color

@@ -43,6 +43,10 @@ class StyleSettingsActivity : Activity() {
         findViewById<View>(R.id.pick_image).setOnClickListener { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
         findViewById<View>(R.id.remove_image).setOnClickListener { style.removeImage() }
 
+        val imageX = findViewById<SeekBar>(R.id.image_x)
+        imageX.progress = (style.imageX * 100).roundToInt()
+        imageX.setOnSeekBarChangeListener(onUserChange { style.imageX = imageX.progress / 100f })
+
         val preview = findViewById<View>(R.id.color_preview)
         val hue = findViewById<SeekBar>(R.id.hue)
         val saturation = findViewById<SeekBar>(R.id.saturation)

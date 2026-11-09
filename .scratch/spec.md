@@ -29,7 +29,7 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 
 - History: count of every past day. The app icon opens the history page (days newest first, missing days shown as missing) with a "Set wallpaper" button.
 - Wallpaper settings screen, reached from "Settings" in the system wallpaper picker:
-  - background image from the system photo picker, center-crop, no pan or zoom;
+  - background image from the system photo picker, cropped to fill; a slider moves the crop of a wide image horizontally; no zoom;
   - number color from Hue, Saturation and Brightness sliders with a preview swatch, no library;
   - font from the four bundled fonts plus the system default;
   - size slider from 15% to 100% of the default;

@@ -33,6 +33,11 @@ class StyleStore(private val context: Context) {
         get() = prefs.getInt(POSITION, 4)
         set(value) = prefs.edit().putInt(POSITION, value.coerceIn(0, 8)).apply()
 
+    /** Horizontal crop of a wide image: 0 = left edge, 1 = right edge. */
+    var imageX: Float
+        get() = prefs.getFloat(IMAGE_X, 0.5f)
+        set(value) = prefs.edit().putFloat(IMAGE_X, value.coerceIn(0f, 1f)).apply()
+
     fun loadImage(): Bitmap? = if (imageFile.exists()) BitmapFactory.decodeFile(imageFile.path) else null
 
     /** Copies the picked image, scaled down to about [screenW] x [screenH], so the original can be deleted. */
@@ -66,5 +71,6 @@ class StyleStore(private val context: Context) {
         private const val FONT = "font"
         private const val SIZE = "size"
         private const val POSITION = "position"
+        private const val IMAGE_X = "imageX"
     }
 }

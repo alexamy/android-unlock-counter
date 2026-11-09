@@ -6,6 +6,7 @@
     <string name="background_image">Background image</string>
     <string name="pick_image">Pick image</string>
     <string name="remove_image">Remove image</string>
+    <string name="image_x">Horizontal position</string>
     <string name="image_failed">Could not load this image.</string>
     <string name="number_color">Number color</string>
     <string name="hue">Hue</string>
