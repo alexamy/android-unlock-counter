@@ -4,6 +4,43 @@
 
 Android live wallpaper that shows how many times you unlocked the phone today. Set it for the home and lock screens. The count resets at midnight.
 
+Android has no lock screen widgets since version 5, so the counter is a live wallpaper: the number is drawn on the wallpaper itself.
+
+## Features
+
+- **Wallpaper:** today's unlock count, drawn over a dark gray background or your own photo.
+- **History tab:** today's count, the daily average, a 14-day bar chart, and every past day.
+- **Settings tab:** a live preview, then the photo and its horizontal crop, the number color (hue, saturation, brightness, opacity), size, one of 9 positions, and 10 bundled fonts plus the system font.
+- **System tab:** export the log of unlock times, clear it, reset the settings.
+
+## How counting works
+
+- One unlock is one `ACTION_USER_PRESENT` broadcast. Turning the screen on without unlocking does not count.
+- The wallpaper service counts unlocks while it runs. The first unlock after a reboot comes before the wallpaper starts; a `BOOT_COMPLETED` receiver counts it.
+- A finished day moves to history at the first unlock or screen read of the next day. If the clock or time zone moves back, history is never overwritten.
+- Each unlock time goes to `unlocks.log` in app storage, one ISO date-time with UTC offset per line.
+
+## Data and privacy
+
+- Everything stays on the phone. The app has no network access.
+- Android backup copies the counts, history, settings and photo to a new phone. The unlock-time log is excluded from backup.
+- The picked photo is re-encoded as JPEG, so its EXIF data (including GPS) is not kept.
+
+## Build and install
+
+Requirements: JDK 17, Android SDK with platform 35, and a phone with USB debugging on.
+
+```sh
+./gradlew assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+Then open the app, go to Settings, tap "Set wallpaper", and pick "Home and lock screens".
+
+`./gradlew testDebugUnitTest` runs the unit tests. `./gradlew assembleRelease` gives an unsigned, minified APK; sign it with your own key.
+
+Minimum Android version: 8.0 (API 26). Target: Android 15 (API 35).
+
 ## Guide
 
 ### Keep the counter running on Samsung (One UI)
@@ -11,7 +48,7 @@ Android live wallpaper that shows how many times you unlocked the phone today. S
 The app shows the same steps in System → Keep it running.
 
 1. Open Settings → Apps → Unlock Counter → Battery and pick "Unrestricted".
-2. Open Settings → Battery → Background usage limits. Keep the app out of "Sleeping apps" and "Deep sleeping apps", and add it to "Never sleeping apps".
+2. Open Settings → Battery → Background usage limits. Keep the app out of "Sleeping apps" and "Deep sleeping apps". If the app does not appear in the "Never sleeping apps" list, it is already exempt.
 
 ## License
 
