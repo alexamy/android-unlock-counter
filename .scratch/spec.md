@@ -29,7 +29,7 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 Dark theme. A large "Unlock Counter" title and a segmented control with three tabs (tap only). The app icon opens History; "Settings" in the system wallpaper picker opens Settings.
 
 - History: today's count in Six Caps, the daily average of the finished days among the last 14 (days without data skipped), a 14-day bar chart (today highlighted, days without data dashed), then every past day, newest first; days without data shown as "—".
-- Settings: a wallpaper preview card with "Set wallpaper", then section chips; one section shows at a time:
+- Settings: a wallpaper preview card, "Set wallpaper" under it, then section chips; one section shows at a time:
   - Image: pick or remove a photo from the system photo picker, cropped to fill; a slider moves the crop of a wide image horizontally; no zoom;
   - Color: Hue (rainbow track), Saturation, Brightness with a swatch, and opacity from 10% to 100%;
   - Size: 15% to 100% of the default;

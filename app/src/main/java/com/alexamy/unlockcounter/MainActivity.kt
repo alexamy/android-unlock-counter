@@ -6,7 +6,6 @@ import android.app.WallpaperManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Intent
-import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -29,7 +28,8 @@ class MainActivity : Activity() {
     private lateinit var renderer: WallpaperRenderer
     private lateinit var preview: WallpaperPreview
     private lateinit var tabs: List<View>
-    private lateinit var tabButtons: List<TextView>
+    private lateinit var tabButtons: List<View>
+    private lateinit var settingsTab: SettingsTab
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +42,10 @@ class MainActivity : Activity() {
                 insets
             }
         }
-        renderer = WallpaperRenderer(this) { preview.invalidate() }
+        renderer = WallpaperRenderer(this) {
+            preview.invalidate()
+            settingsTab.updateImageControls()
+        }
         preview = findViewById(R.id.settings_preview)
         preview.renderer = renderer
 
@@ -51,7 +54,7 @@ class MainActivity : Activity() {
         tabButtons.forEachIndexed { index, button -> button.setOnClickListener { showTab(index) } }
         findViewById<TextView>(R.id.today_count).typeface = NumberFont.SIX_CAPS.load(assets)
         findViewById<View>(R.id.set_wallpaper).setOnClickListener { openWallpaperPicker() }
-        SettingsTab(this, renderer.style) { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
+        settingsTab = SettingsTab(this, renderer.style) { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
         findViewById<View>(R.id.export_log).setOnClickListener { startActivityForResult(exportLogIntent(), EXPORT_LOG) }
         findViewById<View>(R.id.clear_log).setOnClickListener {
             confirm(R.string.clear_log_confirm) {
@@ -95,8 +98,15 @@ class MainActivity : Activity() {
         val window = store.lastDays(BAR_DAYS)
         findViewById<TextView>(R.id.today_count).text = window.last().second.toString()
         findViewById<TextView>(R.id.average).text = store.dailyAverage(BAR_DAYS)?.roundToInt()?.toString() ?: "—"
-        findViewById<BarChart>(R.id.bars).values = window.map { it.second }
+        findViewById<BarChart>(R.id.bars).apply {
+            values = window.map { it.second }
+            contentDescription = getString(R.string.chart_description, window.mapIndexed { i, (_, count) ->
+                if (i == window.lastIndex) getString(R.string.today_value, count) else count?.toString() ?: getString(R.string.no_data)
+            }.joinToString())
+        }
         findViewById<TextView>(R.id.bars_start).text = window.first().first.format(shortDate)
+        findViewById<View>(R.id.history_empty).visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.history).visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
         findViewById<ListView>(R.id.history).adapter = object : ArrayAdapter<Pair<LocalDate, Int?>>(this, 0, rows) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val row = convertView ?: layoutInflater.inflate(R.layout.row_history, parent, false)
@@ -153,13 +163,7 @@ class MainActivity : Activity() {
 
     private fun showTab(index: Int) {
         tabs.forEachIndexed { i, tab -> tab.visibility = if (i == index) View.VISIBLE else View.GONE }
-        tabButtons.forEachIndexed { i, button ->
-            val selected = i == index
-            button.isSelected = selected
-            button.setBackgroundResource(if (selected) R.drawable.bg_segment_selected else 0)
-            button.setTextColor(getColor(if (selected) R.color.background else R.color.text_muted))
-            button.typeface = if (selected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-        }
+        tabButtons.forEachIndexed { i, button -> button.isSelected = i == index }
     }
 
     private fun openWallpaperPicker() {

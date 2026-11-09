@@ -20,7 +20,7 @@ class BarChart(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private val empty = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = density
-        color = context.getColor(R.color.surface_high)
+        color = context.getColor(R.color.bar_past)
         pathEffect = DashPathEffect(floatArrayOf(4 * density, 4 * density), 0f)
     }
 
@@ -36,7 +36,7 @@ class BarChart(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 canvas.drawRoundRect(left, 0f, left + w, height.toFloat(), radius, radius, empty)
             } else {
                 val h = maxOf(2 * density, height * value.toFloat() / max)
-                bar.color = context.getColor(if (i == values.lastIndex) R.color.accent else R.color.surface_high)
+                bar.color = context.getColor(if (i == values.lastIndex) R.color.accent else R.color.bar_past)
                 canvas.drawRoundRect(left, height - h, left + w, height.toFloat(), radius, radius, bar)
             }
         }

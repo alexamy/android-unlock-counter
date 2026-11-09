@@ -55,6 +55,8 @@ class StyleStore(private val context: Context) {
         get() = prefs.getFloat(IMAGE_X, 0.5f)
         set(value) = prefs.edit().putFloat(IMAGE_X, value.coerceIn(0f, 1f)).apply()
 
+    fun hasImage() = imageFile.exists()
+
     /** Null when there is no image or it cannot be decoded (also on out-of-memory), so the wallpaper never crashes on it. */
     fun loadImage(): Bitmap? = if (imageFile.exists()) runCatching { BitmapFactory.decodeFile(imageFile.path) }.getOrNull() else null
 

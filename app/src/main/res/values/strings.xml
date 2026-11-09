@@ -37,4 +37,20 @@
     <string name="font_sample">%1$s  123</string>
     <string name="size">Size</string>
     <string name="position">Position</string>
+    <string name="history_empty">History starts tomorrow. Each finished day shows up here.</string>
+    <string name="chart_description">Unlocks in the last 14 days, oldest first: %s</string>
+    <string name="no_data">no data</string>
+    <string name="today_value">today %d</string>
+    <string name="preview_description">Wallpaper preview</string>
+    <string-array name="positions">
+        <item>Top left</item>
+        <item>Top</item>
+        <item>Top right</item>
+        <item>Left</item>
+        <item>Center</item>
+        <item>Right</item>
+        <item>Bottom left</item>
+        <item>Bottom</item>
+        <item>Bottom right</item>
+    </string-array>
 </resources>

@@ -9,4 +9,6 @@
     <color name="accent">#8AB4F8</color>
     <color name="on_accent">#0B1A33</color>
     <color name="danger">#FF8A80</color>
+    <!-- 3.1:1 on surface: past bars must stay visible as graphics. -->
+    <color name="bar_past">#6B6B6B</color>
 </resources>

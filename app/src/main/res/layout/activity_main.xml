@@ -24,17 +24,17 @@
         android:orientation="horizontal"
         android:padding="4dp">
 
-        <TextView
+        <Button
             android:id="@+id/show_history"
             style="@style/Segment"
             android:text="@string/tab_history" />
 
-        <TextView
+        <Button
             android:id="@+id/show_settings"
             style="@style/Segment"
             android:text="@string/tab_settings" />
 
-        <TextView
+        <Button
             android:id="@+id/show_system"
             style="@style/Segment"
             android:text="@string/tab_system" />

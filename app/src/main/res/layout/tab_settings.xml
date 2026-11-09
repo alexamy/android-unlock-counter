@@ -2,11 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:accessibilityPaneTitle="@string/tab_settings"
     android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="340dp"
+        android:layout_height="280dp"
         android:layout_marginHorizontal="20dp"
         android:background="@drawable/bg_card">
 
@@ -15,22 +16,18 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:layout_marginVertical="12dp" />
-
-        <Button
-            android:id="@+id/set_wallpaper"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="12dp"
-            android:background="@drawable/bg_pill_accent"
-            android:paddingHorizontal="18dp"
-            android:stateListAnimator="@null"
-            android:text="@string/set_wallpaper"
-            android:textAllCaps="false"
-            android:textColor="@color/on_accent"
-            android:textStyle="bold" />
+            android:layout_marginVertical="12dp"
+            android:contentDescription="@string/preview_description" />
     </FrameLayout>
+
+    <Button
+        android:id="@+id/set_wallpaper"
+        style="@style/PillButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/set_wallpaper" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -42,13 +39,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingHorizontal="20dp"
-            android:paddingVertical="14dp">
+            android:paddingVertical="8dp">
 
-            <TextView android:id="@+id/chip_image" style="@style/Chip" android:text="@string/section_image" />
-            <TextView android:id="@+id/chip_color" style="@style/Chip" android:text="@string/section_color" />
-            <TextView android:id="@+id/chip_size" style="@style/Chip" android:text="@string/size" />
-            <TextView android:id="@+id/chip_position" style="@style/Chip" android:text="@string/position" />
-            <TextView android:id="@+id/chip_font" style="@style/Chip" android:text="@string/font" />
+            <Button android:id="@+id/chip_image" style="@style/Chip" android:text="@string/section_image" />
+            <Button android:id="@+id/chip_color" style="@style/Chip" android:text="@string/section_color" />
+            <Button android:id="@+id/chip_size" style="@style/Chip" android:text="@string/size" />
+            <Button android:id="@+id/chip_position" style="@style/Chip" android:text="@string/position" />
+            <Button android:id="@+id/chip_font" style="@style/Chip" android:text="@string/font" />
         </LinearLayout>
     </HorizontalScrollView>
 
@@ -95,7 +92,7 @@
                         android:tint="@color/danger" />
                 </LinearLayout>
 
-                <TextView style="@style/SliderLabel" android:text="@string/image_x" />
+                <TextView style="@style/SliderLabel" android:labelFor="@id/image_x" android:text="@string/image_x" />
                 <SeekBar android:id="@+id/image_x" style="@style/Slider" android:max="100" />
             </LinearLayout>
 
@@ -110,13 +107,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp" />
 
-                <TextView style="@style/SliderLabel" android:text="@string/hue" />
+                <TextView style="@style/SliderLabel" android:labelFor="@id/hue" android:text="@string/hue" />
                 <SeekBar android:id="@+id/hue" style="@style/Slider" android:max="360" />
-                <TextView style="@style/SliderLabel" android:text="@string/saturation" />
+                <TextView style="@style/SliderLabel" android:labelFor="@id/saturation" android:text="@string/saturation" />
                 <SeekBar android:id="@+id/saturation" style="@style/Slider" android:max="100" />
-                <TextView style="@style/SliderLabel" android:text="@string/brightness" />
+                <TextView style="@style/SliderLabel" android:labelFor="@id/brightness" android:text="@string/brightness" />
                 <SeekBar android:id="@+id/brightness" style="@style/Slider" android:max="100" />
-                <TextView style="@style/SliderLabel" android:text="@string/opacity" />
+                <TextView style="@style/SliderLabel" android:labelFor="@id/opacity" android:text="@string/opacity" />
                 <SeekBar android:id="@+id/opacity" style="@style/Slider" android:max="100" />
             </LinearLayout>
 
@@ -126,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView style="@style/SliderLabel" android:text="@string/size" />
+                <TextView style="@style/SliderLabel" android:labelFor="@id/size" android:text="@string/size" />
                 <SeekBar android:id="@+id/size" style="@style/Slider" android:max="100" />
             </LinearLayout>
 
@@ -137,10 +134,11 @@
                 android:layout_gravity="center_horizontal"
                 android:columnCount="3" />
 
-            <RadioGroup
+            <GridLayout
                 android:id="@+id/fonts"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:columnCount="2" />
         </FrameLayout>
     </ScrollView>
 </LinearLayout>
