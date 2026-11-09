@@ -24,7 +24,7 @@ class WallpaperPreview(context: Context, attrs: AttributeSet?) : View(context, a
         }
     }
 
-    override fun onDraw(canvas: Canvas) = renderer.draw(canvas, width, height, store.today().count)
+    override fun onDraw(canvas: Canvas) = renderer.draw(canvas, width, height, store.todayCount())
 
     @Suppress("DEPRECATION")
     private fun screenSize(): Pair<Int, Int> {

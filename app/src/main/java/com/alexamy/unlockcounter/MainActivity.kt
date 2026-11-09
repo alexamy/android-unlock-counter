@@ -72,9 +72,8 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         val store = CounterStore(this)
-        val today = store.today()
-        val rows = listOf(getString(R.string.today_row, today.count)) +
-            historyRows(store.history(), today.day).map { (day, count) ->
+        val rows = listOf(getString(R.string.today_row, store.todayCount())) +
+            store.historyRows().map { (day, count) ->
                 "${day.format(dateFormat)}    ${count ?: "—"}"
             }
         findViewById<ListView>(R.id.history).adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, rows)
@@ -99,12 +98,8 @@ class MainActivity : Activity() {
                 }
             }
             EXPORT_LOG -> {
-                val log = CounterStore(this).unlockLog
                 runCatching {
-                    contentResolver.openOutputStream(uri).use { out ->
-                        checkNotNull(out)
-                        if (log.exists()) log.inputStream().use { it.copyTo(out) }
-                    }
+                    contentResolver.openOutputStream(uri).use { CounterStore(this).writeLog(checkNotNull(it)) }
                 }.fold({ toast(R.string.log_exported) }, { toast(R.string.export_failed) })
             }
         }

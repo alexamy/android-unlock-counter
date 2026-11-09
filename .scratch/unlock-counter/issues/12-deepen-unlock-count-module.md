@@ -6,9 +6,9 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] MainActivity and the wallpaper service use only the module interface; no caller reads the log file or builds history rows
-- [ ] Day count and history-row logic are internal to the module
-- [ ] Tests go through the module interface with the in-memory adapter: rollover, history gaps, log lines, clear log
-- [ ] Count, history and log saved before the change still load on the A71
+- [x] MainActivity and the wallpaper service use only the module interface; no caller reads the log file or builds history rows
+- [x] Day count and history-row logic are internal to the module
+- [x] Tests go through the module interface with the in-memory adapter: rollover, history gaps, log lines, clear log
+- [x] Count, history and log saved before the change still load on the A71

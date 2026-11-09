@@ -62,7 +62,7 @@ class CounterWallpaperService : WallpaperService() {
             val holder = surfaceHolder
             val canvas = holder.lockCanvas() ?: return
             try {
-                renderer.draw(canvas, canvas.width, canvas.height, store.today().count)
+                renderer.draw(canvas, canvas.width, canvas.height, store.todayCount())
             } finally {
                 holder.unlockCanvasAndPost(canvas)
             }
