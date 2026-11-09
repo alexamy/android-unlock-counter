@@ -1,10 +1,15 @@
 package com.alexamy.unlockcounter
 
 import android.content.Context
+import java.io.File
 import java.time.LocalDate
+import java.time.OffsetDateTime
 
 class CounterStore(context: Context) {
     private val prefs = context.getSharedPreferences("counter", Context.MODE_PRIVATE)
+
+    /** One line per unlock: local date-time with UTC offset, oldest first. */
+    private val unlockLog = File(context.filesDir, "unlocks.log")
 
     fun today(now: LocalDate = LocalDate.now()): DayCount {
         val stored = load(now)
@@ -15,7 +20,10 @@ class CounterStore(context: Context) {
         return stored.on(now)
     }
 
-    fun addUnlock(now: LocalDate = LocalDate.now()) = save(today(now).plusUnlock(now))
+    fun addUnlock(now: LocalDate = LocalDate.now()) {
+        save(today(now).plusUnlock(now))
+        unlockLog.appendText("${OffsetDateTime.now()}\n")
+    }
 
     fun history(): Map<LocalDate, Int> = prefs.all
         .filterKeys { it.startsWith(HISTORY) }
