@@ -3,7 +3,9 @@
 
     <uses-feature android:name="android.software.live_wallpaper" android:required="true" />
 
-    <application android:label="Unlock Counter">
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="Unlock Counter">
         <activity
             android:name=".SetWallpaperActivity"
             android:exported="true"
