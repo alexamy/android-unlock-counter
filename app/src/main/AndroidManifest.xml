@@ -16,6 +16,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".StyleSettingsActivity"
+            android:exported="true"
+            android:label="@string/wallpaper_settings"
+            android:theme="@android:style/Theme.DeviceDefault" />
+
         <service
             android:name=".CounterWallpaperService"
             android:exported="true"

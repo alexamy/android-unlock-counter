@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            style="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/background_image" />
+
+        <Button
+            android:id="@+id/pick_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pick_image" />
+
+        <Button
+            android:id="@+id/remove_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_image" />
+
+        <TextView
+            style="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/number_color" />
+
+        <View
+            android:id="@+id/color_preview"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginVertical="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hue" />
+
+        <SeekBar
+            android:id="@+id/hue"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:max="360" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/saturation" />
+
+        <SeekBar
+            android:id="@+id/saturation"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:max="100" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/brightness" />
+
+        <SeekBar
+            android:id="@+id/brightness"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:max="100" />
+
+        <TextView
+            style="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/font" />
+
+        <RadioGroup
+            android:id="@+id/fonts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/size" />
+
+        <SeekBar
+            android:id="@+id/size"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:max="50" />
+    </LinearLayout>
+</ScrollView>
