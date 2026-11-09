@@ -28,17 +28,29 @@
                 android:layout_height="wrap_content"
                 android:text="@string/background_image" />
 
-            <Button
-                android:id="@+id/pick_image"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/pick_image" />
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/remove_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/remove_image" />
+                <ImageButton
+                    android:id="@+id/pick_image"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/pick_image"
+                    android:src="@drawable/ic_image" />
+
+                <ImageButton
+                    android:id="@+id/remove_image"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/remove_image"
+                    android:src="@drawable/ic_delete" />
+            </LinearLayout>
 
             <TextView
                 style="@android:style/TextAppearance.DeviceDefault.Medium"

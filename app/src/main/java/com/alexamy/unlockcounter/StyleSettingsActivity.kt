@@ -40,8 +40,8 @@ class StyleSettingsActivity : Activity() {
         style = preview.renderer.style
         style.prefs.registerOnSharedPreferenceChangeListener(styleListener)
 
-        findViewById<Button>(R.id.pick_image).setOnClickListener { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
-        findViewById<Button>(R.id.remove_image).setOnClickListener { style.removeImage() }
+        findViewById<View>(R.id.pick_image).setOnClickListener { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
+        findViewById<View>(R.id.remove_image).setOnClickListener { style.removeImage() }
 
         val preview = findViewById<View>(R.id.color_preview)
         val hue = findViewById<SeekBar>(R.id.hue)
