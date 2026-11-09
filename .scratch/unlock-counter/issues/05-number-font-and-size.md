@@ -6,9 +6,9 @@
 
 **Blocked by:** 03 (Final wallpaper look)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] User picks the font after seeing the candidates on the A71
-- [ ] Font license allows bundling (e.g. SIL OFL)
-- [ ] A three-digit count spans the screen width; 1 and 2 digits use the same size, centered
-- [ ] Number fits in the bottom half on the A71
+- [x] User picks the font after seeing the candidates on the A71: Six Caps
+- [x] Font license allows bundling (e.g. SIL OFL)
+- [x] Size fits "888" to the screen width or the bottom-half height, whichever is smaller (Six Caps hits the height first); 1 and 2 digits use the same size, centered
+- [x] Number fits in the bottom half on the A71
