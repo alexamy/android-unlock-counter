@@ -7,7 +7,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Unlock Counter">
         <activity
-            android:name=".HistoryActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="Unlock Counter"
             android:theme="@android:style/Theme.DeviceDefault">
@@ -17,10 +17,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".StyleSettingsActivity"
+            android:name=".SettingsEntryActivity"
             android:exported="true"
-            android:label="@string/wallpaper_settings"
-            android:theme="@android:style/Theme.DeviceDefault" />
+            android:theme="@android:style/Theme.NoDisplay" />
 
         <service
             android:name=".CounterWallpaperService"

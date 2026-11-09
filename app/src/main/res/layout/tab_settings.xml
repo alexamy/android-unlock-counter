@@ -5,9 +5,9 @@
     android:orientation="vertical">
 
     <com.alexamy.unlockcounter.WallpaperPreview
-        android:id="@+id/preview"
+        android:id="@+id/settings_preview"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginVertical="8dp" />
 

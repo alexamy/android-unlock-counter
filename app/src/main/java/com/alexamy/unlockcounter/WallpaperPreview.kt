@@ -8,15 +8,20 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 
-/** Scaled-down wallpaper with the screen's aspect ratio, PREVIEW_HEIGHT of the screen tall. */
+/** Scaled-down wallpaper: the largest box with the screen's aspect ratio that fits the given space. */
 class WallpaperPreview(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    val renderer = WallpaperRenderer(context)
+    lateinit var renderer: WallpaperRenderer
     private val store = CounterStore(context)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val (screenW, screenH) = screenSize()
-        val h = (screenH * PREVIEW_HEIGHT).toInt()
-        setMeasuredDimension(h * screenW / screenH, h)
+        val maxW = MeasureSpec.getSize(widthMeasureSpec)
+        val maxH = MeasureSpec.getSize(heightMeasureSpec)
+        if (maxW.toLong() * screenH < maxH.toLong() * screenW) {
+            setMeasuredDimension(maxW, (maxW.toLong() * screenH / screenW).toInt())
+        } else {
+            setMeasuredDimension((maxH.toLong() * screenW / screenH).toInt(), maxH)
+        }
     }
 
     override fun onDraw(canvas: Canvas) = renderer.draw(canvas, width, height, store.today().count)
@@ -30,9 +35,5 @@ class WallpaperPreview(context: Context, attrs: AttributeSet?) : View(context, a
         }
         val metrics = DisplayMetrics().also { windows.defaultDisplay.getRealMetrics(it) }
         return metrics.widthPixels to metrics.heightPixels
-    }
-
-    private companion object {
-        const val PREVIEW_HEIGHT = 0.35f
     }
 }

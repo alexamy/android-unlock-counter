@@ -5,15 +5,17 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <com.alexamy.unlockcounter.WallpaperPreview
+        android:id="@+id/big_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1" />
+
     <Button
         android:id="@+id/set_wallpaper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/set_wallpaper" />
-
-    <ListView
-        android:id="@+id/history"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
 </LinearLayout>
