@@ -6,10 +6,10 @@
 
 **Blocked by:** 01 (Spike: live wallpaper on the A71 lock screen)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Each unlock on the A71 adds one to the shown count
-- [ ] Screen-on without unlock does not change the count
-- [ ] Count stays the same after a reboot on the same day
-- [ ] Count shows 0 on the first draw after local midnight
-- [ ] Small unit test covers the date-reset logic
+- [x] Each unlock on the A71 adds one to the shown count
+- [x] Screen-on without unlock does not change the count
+- [x] Count stays the same after a reboot on the same day
+- [x] Count shows 0 on the first draw after local midnight
+- [x] Small unit test covers the date-reset logic
