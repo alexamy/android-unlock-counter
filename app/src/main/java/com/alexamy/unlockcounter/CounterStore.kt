@@ -21,8 +21,17 @@ class CounterStore(
     fun addUnlock() {
         val time = now()
         val current = rollover(time.toLocalDate())
-        storage.write(dayChanges(current.copy(count = current.count + 1)))
+        storage.write(dayChanges(current.copy(count = current.count + 1)) + (LAST to time.toString()))
         storage.appendLog("$time\n")
+    }
+
+    /**
+     * Counts the first unlock after a boot, which happens before the wallpaper is running,
+     * unless an unlock since [boot] is already recorded.
+     */
+    fun addUnlockIfNoneSince(boot: OffsetDateTime) {
+        val last = storage[LAST]?.let(OffsetDateTime::parse)
+        if (last == null || last.isBefore(boot)) addUnlock()
     }
 
     /** Past days from yesterday back to the oldest record, newest first; null count = no data that day. */
@@ -80,6 +89,7 @@ class CounterStore(
         const val DAY = "day"
         const val COUNT = "count"
         const val HISTORY = "history:"
+        const val LAST = "last"
         val MIN_DAY: LocalDate = LocalDate.of(2020, 1, 1)
     }
 }

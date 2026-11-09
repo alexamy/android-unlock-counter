@@ -153,4 +153,23 @@ class CounterStoreTest {
         store.addUnlock()
         assertEquals(null, store.dailyAverage(14))
     }
+
+    @Test
+    fun firstUnlockAfterBootCountsWhenMissed() {
+        store.addUnlock()
+        val boot = time.plusHours(1)
+        time = boot.plusSeconds(30)
+        store.addUnlockIfNoneSince(boot)
+        assertEquals(2, store.todayCount())
+    }
+
+    @Test
+    fun firstUnlockAfterBootNotCountedTwice() {
+        val boot = time
+        time = boot.plusSeconds(10)
+        store.addUnlock()
+        time = boot.plusSeconds(30)
+        store.addUnlockIfNoneSince(boot)
+        assertEquals(1, store.todayCount())
+    }
 }
