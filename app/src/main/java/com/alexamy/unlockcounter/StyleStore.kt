@@ -57,8 +57,17 @@ class StyleStore(private val context: Context) {
 
     fun hasImage() = imageFile.exists()
 
-    /** Null when there is no image or it cannot be decoded (also on out-of-memory), so the wallpaper never crashes on it. */
-    fun loadImage(): Bitmap? = if (imageFile.exists()) runCatching { BitmapFactory.decodeFile(imageFile.path) }.getOrNull() else null
+    /**
+     * Null when there is no image or it cannot be decoded (also on out-of-memory), so the wallpaper never crashes on it.
+     * One decoded copy per process: the wallpaper and the app preview share it.
+     */
+    fun loadImage(): Bitmap? = synchronized(FILE_LOCK) {
+        val version = prefs.getLong(IMAGE, 0)
+        cached?.takeIf { it.first == version }?.let { return it.second }
+        val bitmap = if (imageFile.exists()) runCatching { BitmapFactory.decodeFile(imageFile.path) }.getOrNull() else null
+        cached = version to bitmap
+        bitmap
+    }
 
     /** Copies the picked image, scaled down to about [screenW] x [screenH], so the original can be deleted. */
     fun saveImage(uri: Uri, screenW: Int, screenH: Int) = synchronized(FILE_LOCK) {
@@ -91,7 +100,7 @@ class StyleStore(private val context: Context) {
      * Returns the function that stops watching; keep it, the listener lives as long as it does.
      */
     fun watch(onChange: (imageChanged: Boolean) -> Unit): () -> Unit {
-        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key -> onChange(key == null || key == IMAGE) }
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key -> onChange(key == null || key == IMAGE || key == RESET) }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         return { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
     }
@@ -99,7 +108,8 @@ class StyleStore(private val context: Context) {
     /** Back to the default look: no image, default color, opacity, font, size, position. */
     fun reset() {
         removeImage()
-        prefs.edit().clear().apply()
+        // Before Android 11 clear() notifies no listener; the RESET key makes every watcher redraw.
+        prefs.edit().clear().putLong(RESET, System.currentTimeMillis()).apply()
     }
 
     fun removeImage() = synchronized(FILE_LOCK) {
@@ -111,6 +121,8 @@ class StyleStore(private val context: Context) {
         const val IMAGE = "image"
         // Image saves run on background threads; one at a time, across all StyleStore instances.
         val FILE_LOCK = Any()
+        const val RESET = "reset"
+        private var cached: Pair<Long, Bitmap?>? = null
         const val MIN_SIZE = 0.15f
         const val MIN_OPACITY = 0.1f
         private const val COLOR = "color"

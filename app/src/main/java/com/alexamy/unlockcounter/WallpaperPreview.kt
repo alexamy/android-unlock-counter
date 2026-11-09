@@ -11,7 +11,11 @@ import android.view.WindowManager
 /** Scaled-down wallpaper: the largest box with the screen's aspect ratio that fits the given space. */
 class WallpaperPreview(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     lateinit var renderer: WallpaperRenderer
-    private val store = CounterStore(context)
+    var count = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val (screenW, screenH) = screenSize()
@@ -24,7 +28,7 @@ class WallpaperPreview(context: Context, attrs: AttributeSet?) : View(context, a
         }
     }
 
-    override fun onDraw(canvas: Canvas) = renderer.draw(canvas, width, height, store.todayCount())
+    override fun onDraw(canvas: Canvas) = renderer.draw(canvas, width, height, count)
 
     @Suppress("DEPRECATION")
     private fun screenSize(): Pair<Int, Int> {

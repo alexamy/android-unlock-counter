@@ -20,6 +20,14 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
         .map { view<View>(it) }
     private val removeImage = view<View>(R.id.remove_image)
     private val imageX = view<SeekBar>(R.id.image_x)
+    private val swatch = view<View>(R.id.color_preview)
+    private val hue = view<SeekBar>(R.id.hue)
+    private val saturation = view<SeekBar>(R.id.saturation)
+    private val brightness = view<SeekBar>(R.id.brightness)
+    private val opacity = view<SeekBar>(R.id.opacity)
+    private val size = view<SeekBar>(R.id.size)
+    private val fonts = view<GridLayout>(R.id.fonts)
+    private val positions = view<GridLayout>(R.id.positions)
 
     init {
         chips.forEachIndexed { index, chip -> chip.setOnClickListener { showSection(index) } }
@@ -27,20 +35,8 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
 
         view<View>(R.id.pick_image).setOnClickListener { pickImage() }
         removeImage.setOnClickListener { style.removeImage() }
-        updateImageControls()
-
-        imageX.progress = (style.imageX * 100).roundToInt()
         imageX.setOnSeekBarChangeListener(onUserChange { style.imageX = imageX.progress / 100f })
 
-        val swatch = view<View>(R.id.color_preview)
-        val hue = view<SeekBar>(R.id.hue)
-        val saturation = view<SeekBar>(R.id.saturation)
-        val brightness = view<SeekBar>(R.id.brightness)
-        Color.colorToHSV(style.color, hsv)
-        hue.progress = hsv[0].roundToInt()
-        saturation.progress = (hsv[1] * 100).roundToInt()
-        brightness.progress = (hsv[2] * 100).roundToInt()
-        swatch.setBackgroundColor(style.color)
         val onColor = onUserChange {
             hsv[0] = hue.progress.toFloat()
             hsv[1] = saturation.progress / 100f
@@ -53,12 +49,9 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
             cornerRadius = activity.resources.displayMetrics.density * 4
             setSize(0, (activity.resources.displayMetrics.density * 8).toInt())
         }
-
-        val opacity = view<SeekBar>(R.id.opacity)
-        opacity.progress = (style.opacityLevel * 100).roundToInt()
         opacity.setOnSeekBarChangeListener(onUserChange { style.opacityLevel = opacity.progress / 100f })
+        size.setOnSeekBarChangeListener(onUserChange { style.sizeLevel = size.progress / 100f })
 
-        val fonts = view<GridLayout>(R.id.fonts)
         NumberFont.entries.forEach { font ->
             fonts.addView(Button(activity, null, 0, R.style.Chip).apply {
                 text = activity.getString(R.string.font_sample, font.label)
@@ -70,25 +63,29 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
                 setMargins(0, 0, gap, 0)
             })
         }
-        markSelected(fonts, style.font.ordinal)
-
-        val positions = view<GridLayout>(R.id.positions)
         activity.resources.getStringArray(R.array.positions).forEachIndexed { index, name ->
             positions.addView(Button(activity, null, 0, R.style.Spot).apply {
                 contentDescription = name
                 setOnClickListener { style.position = index; markSelected(positions, index) }
             }, GridLayout.LayoutParams().apply { setMargins(gap, gap, gap, gap) })
         }
-        markSelected(positions, style.position)
 
-        val size = view<SeekBar>(R.id.size)
-        size.progress = (style.sizeLevel * 100).roundToInt()
-        size.setOnSeekBarChangeListener(onUserChange { style.sizeLevel = size.progress / 100f })
+        refresh()
     }
 
-    private fun showSection(index: Int) {
-        sections.forEachIndexed { i, section -> section.visibility = if (i == index) View.VISIBLE else View.GONE }
-        chips.forEachIndexed { i, chip -> chip.isSelected = i == index }
+    /** Shows the stored values in every control, e.g. after a reset. */
+    fun refresh() {
+        imageX.progress = (style.imageX * 100).roundToInt()
+        Color.colorToHSV(style.color, hsv)
+        hue.progress = hsv[0].roundToInt()
+        saturation.progress = (hsv[1] * 100).roundToInt()
+        brightness.progress = (hsv[2] * 100).roundToInt()
+        swatch.setBackgroundColor(style.color)
+        opacity.progress = (style.opacityLevel * 100).roundToInt()
+        size.progress = (style.sizeLevel * 100).roundToInt()
+        markSelected(fonts, style.font.ordinal)
+        markSelected(positions, style.position)
+        updateImageControls()
     }
 
     /** Remove and horizontal position only make sense with a picked image. */
@@ -98,6 +95,11 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
             it.isEnabled = hasImage
             it.alpha = if (hasImage) 1f else 0.4f
         }
+    }
+
+    private fun showSection(index: Int) {
+        sections.forEachIndexed { i, section -> section.visibility = if (i == index) View.VISIBLE else View.GONE }
+        chips.forEachIndexed { i, chip -> chip.isSelected = i == index }
     }
 
     private fun <T : View> view(id: Int): T = activity.findViewById(id)

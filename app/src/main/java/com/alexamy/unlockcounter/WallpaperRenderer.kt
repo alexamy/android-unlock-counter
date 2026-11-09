@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
  * Calls [onChange] after every style change, with the image already reloaded. Call [close] when done.
  */
 class WallpaperRenderer(private val context: Context, onChange: () -> Unit) {
-    val style = StyleStore(context)
+    private val style = StyleStore(context)
     private val typefaces = mutableMapOf<NumberFont, Typeface>()
     private var background: Bitmap? = style.loadImage()
     private val unwatch = style.watch { imageChanged ->
