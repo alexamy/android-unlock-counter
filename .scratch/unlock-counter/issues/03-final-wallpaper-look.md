@@ -2,11 +2,12 @@
 
 # 03: Final wallpaper look
 
-**What to build:** Solid dark background, large count placed below the vertical middle so the One UI lock clock does not cover it, small "unlocks today" label under the number. Same image on home and lock screens.
+**What to build:** Solid dark gray background and the count centered on the screen, as in the reference image. No label, only the number. Same image on home and lock screens. The lock screen clock is not used, so the number does not need to avoid it.
 
 **Blocked by:** 02 (Count today's unlocks)
 
 **Status:** ready-for-agent
 
-- [ ] Number and label are clear of the One UI lock clock on the A71 (user confirms)
-- [ ] Number and label scale with screen size, not fixed pixels
+- [ ] Background is solid dark gray
+- [ ] Number is centered horizontally and vertically
+- [ ] No label is drawn

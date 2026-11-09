@@ -16,7 +16,7 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 - The wallpaper engine registers the `ACTION_USER_PRESENT` receiver at runtime. No separate background service.
 - Count and its date live in SharedPreferences. The count resets at local midnight.
 - Count starts at 0 when the wallpaper is first set. No history is available from Android.
-- Look: solid dark background, large number placed below the vertical middle (clear of the One UI lock clock), small "unlocks today" label under it. Same image on the home screen.
+- Look: solid dark gray background, large count centered on the screen, no label. Same image on the home screen. The lock screen clock is not used. Font and size follow the reference image (ticket 05).
 - Launcher screen: one activity that opens the system live wallpaper picker for this wallpaper.
 - Out of scope: history, stats, settings, widgets.
 
