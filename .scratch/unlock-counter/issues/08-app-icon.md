@@ -6,8 +6,8 @@
 
 **Blocked by:** 05 (Number font and size)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Icon shows in the A71 app drawer and home screen (user confirms)
-- [ ] Icon is vector, no bitmap per density
-- [ ] Icon keeps its look in round and squircle masks
+- [x] Icon shows in the A71 app drawer and home screen (user confirms)
+- [x] Icon is vector, no bitmap per density
+- [x] Icon keeps its look in round and squircle masks
