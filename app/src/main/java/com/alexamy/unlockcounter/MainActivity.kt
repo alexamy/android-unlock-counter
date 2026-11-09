@@ -11,15 +11,19 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.concurrent.thread
+import kotlin.math.roundToInt
 
 class MainActivity : Activity() {
     private val dateFormat = DateTimeFormatter.ofPattern("EEE, d MMM yyyy")
+    private val shortDate = DateTimeFormatter.ofPattern("d MMM")
     private lateinit var renderer: WallpaperRenderer
     private lateinit var preview: WallpaperPreview
     private lateinit var tabs: List<View>
@@ -35,6 +39,7 @@ class MainActivity : Activity() {
         tabs = listOf(R.id.tab_history, R.id.tab_settings, R.id.tab_system).map { findViewById(it) }
         tabButtons = listOf(R.id.show_history, R.id.show_settings, R.id.show_system).map { findViewById(it) }
         tabButtons.forEachIndexed { index, button -> button.setOnClickListener { showTab(index) } }
+        findViewById<TextView>(R.id.today_count).typeface = NumberFont.SIX_CAPS.load(assets)
         findViewById<View>(R.id.set_wallpaper).setOnClickListener { openWallpaperPicker() }
         SettingsTab(this, renderer.style) { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
         findViewById<View>(R.id.export_log).setOnClickListener { startActivityForResult(exportLogIntent(), EXPORT_LOG) }
@@ -65,13 +70,33 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        val store = CounterStore(this)
-        val rows = listOf(getString(R.string.today_row, store.todayCount())) +
-            store.historyRows().map { (day, count) ->
-                "${day.format(dateFormat)}    ${count ?: "—"}"
-            }
-        findViewById<ListView>(R.id.history).adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, rows)
+        showHistory()
         preview.invalidate()
+    }
+
+    private fun showHistory() {
+        val store = CounterStore(this)
+        val todayCount = store.todayCount()
+        val rows = store.historyRows()
+        val today = LocalDate.now()
+        val counts = rows.toMap()
+        findViewById<TextView>(R.id.today_count).text = todayCount.toString()
+        findViewById<TextView>(R.id.average).text =
+            rows.take(BAR_DAYS).mapNotNull { it.second }.takeIf { it.isNotEmpty() }?.average()?.roundToInt()?.toString() ?: "—"
+        findViewById<BarChart>(R.id.bars).values = (BAR_DAYS - 1 downTo 1).map { counts[today.minusDays(it.toLong())] } + todayCount
+        findViewById<TextView>(R.id.bars_start).text = today.minusDays(BAR_DAYS - 1L).format(shortDate)
+        findViewById<ListView>(R.id.history).adapter = object : ArrayAdapter<Pair<LocalDate, Int?>>(this, 0, rows) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val row = convertView ?: layoutInflater.inflate(R.layout.row_history, parent, false)
+                val (day, count) = rows[position]
+                row.findViewById<TextView>(R.id.day).text = day.format(dateFormat)
+                row.findViewById<TextView>(R.id.count).apply {
+                    text = count?.toString() ?: "—"
+                    setTextColor(getColor(if (count == null) R.color.text_muted else R.color.text))
+                }
+                return row
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -143,6 +168,7 @@ class MainActivity : Activity() {
 
     companion object {
         const val EXTRA_TAB = "tab"
+        private const val BAR_DAYS = 14
         const val HISTORY = 0
         const val SETTINGS = 1
         const val SYSTEM = 2
