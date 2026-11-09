@@ -11,32 +11,32 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 ## Decisions
 
 - Name: "Unlock Counter". Package: `com.alexamy.unlockcounter`.
-- Kotlin, plain Canvas drawing, no Compose. `minSdk 26`.
+- Kotlin, plain Canvas drawing, no Compose, no AndroidX. `minSdk 26`.
 - One unlock = one `ACTION_USER_PRESENT` broadcast. Screen-on without unlock does not count.
 - The wallpaper service registers the `ACTION_USER_PRESENT` receiver at runtime. No separate background service.
 - Count and its date live in SharedPreferences. The count resets at local midnight.
-- Each unlock time is appended to `unlocks.log` in app storage: one ISO date-time with UTC offset per line. Not shown in the UI yet.
+- Each unlock time is appended to `unlocks.log` in app storage: one ISO date-time with UTC offset per line. Not shown in the UI.
 - Count starts at 0 when the wallpaper is first set. No history is available from Android.
-- v1 launcher: the app icon opens the system live wallpaper picker for this wallpaper.
 
-## Version 1
+## Default look
 
-- Solid dark gray background, no label, only the number.
-- Number centered horizontally and vertically; its height is at most half the screen.
-- Font: Six Caps (SIL OFL), bundled. Antonio, Big Shoulders Display and Oswald are bundled too for ticket 07.
-- Size: "888" fits the screen width or the bottom-half height, whichever is smaller; fewer digits use the same size.
+- Solid dark gray `#424242` background, no label, only the number.
+- White number, Six Caps (SIL OFL, bundled), centered horizontally and vertically.
+- Size: "888" fits the screen width or half the screen height, whichever is smaller; fewer digits use the same size.
 
-## Version 2
+## App screen
 
-- History: count of every past day. The app icon opens the history page (days newest first, missing days shown as missing) with a "Set wallpaper" button.
-- Wallpaper settings screen, reached from "Settings" in the system wallpaper picker:
+One screen with a bottom tab bar (tap only). The app icon opens History; "Settings" in the system wallpaper picker opens Settings.
+
+- History: today's count, then every past day, newest first; days without data shown as missing.
+- Settings: a wallpaper preview fixed at the top, the "Set wallpaper" button under it, then:
   - background image from the system photo picker, cropped to fill; a slider moves the crop of a wide image horizontally; no zoom;
-  - number color from Hue, Saturation and Brightness sliders with a preview swatch, no library;
-  - font from the four bundled fonts plus the system default;
-  - number opacity slider from 10% to 100%;
-  - size slider from 15% to 100% of the default;
-  - number position: one of 9 places in a 3×3 grid, 5% from the edges, default center;
-  - preview box of the wallpaper fixed at the top of the settings page.
+  - number color from Hue, Saturation and Brightness sliders with a swatch, no library;
+  - number opacity from 10% to 100%;
+  - size from 15% to 100% of the default;
+  - position: one of 9 places in a 3×3 grid, 5% from the edges, default center;
+  - font: Six Caps, Antonio, Big Shoulders Display, Oswald (bundled) or the system default.
+- System: export log via "Save as", clear log (unlock times only), reset settings; the last two ask for confirmation.
 
 ## Toolchain
 
@@ -47,9 +47,3 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 ## Test device
 
 Samsung A71, Android 13, One UI 5.1, over `adb`.
-
-## Tickets
-
-- v1: 03 look, 04 launcher screen, 05 font and size, 08 app icon.
-- v2: 06 history, 07 wallpaper image and text style, 09 number position, 10 settings preview, 11 tabs.
-- System tab (no ticket): export log via "Save as", clear log (unlock times only), reset settings; the last two ask for confirmation.

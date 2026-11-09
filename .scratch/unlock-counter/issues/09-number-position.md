@@ -2,7 +2,7 @@
 
 # 09: Number position
 
-**What to build:** On the wallpaper settings page the user picks where the number sits: one of 9 places in a 3×3 grid (top / center / bottom × left / center / right), from a 3×3 grid of buttons. The number keeps the 5% margin from the screen edges. Default is center, the v1 look.
+**What to build:** On the wallpaper settings page the user picks where the number sits: one of 9 places in a 3×3 grid (top / center / bottom × left / center / right), from a 3×3 grid of buttons. The number keeps the 5% margin from the screen edges. Default is center.
 
 **Blocked by:** 07 (Wallpaper image and text style)
 

@@ -2,7 +2,7 @@
 
 # 04: Launcher screen
 
-**What to build:** Tapping the app icon opens the system live wallpaper picker with the Unlock Counter wallpaper preselected, so the user can set it in one step. In v2, ticket 06 changes the icon to open the history page.
+**What to build:** Tapping the app icon opens the system live wallpaper picker with the Unlock Counter wallpaper preselected, so the user can set it in one step. Ticket 06 later changes the icon to open the history page.
 
 **Blocked by:** 01 (Spike: live wallpaper on the A71 lock screen)
 

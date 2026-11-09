@@ -63,7 +63,7 @@ class StyleStore(private val context: Context) {
         prefs.edit().putLong(IMAGE, System.currentTimeMillis()).apply()
     }
 
-    /** Back to the v1 look: no image, default color, opacity, font, size, position. */
+    /** Back to the default look: no image, default color, opacity, font, size, position. */
     fun reset() {
         removeImage()
         prefs.edit().clear().apply()
