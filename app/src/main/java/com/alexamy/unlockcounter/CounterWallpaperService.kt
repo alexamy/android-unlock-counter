@@ -34,6 +34,10 @@ class CounterWallpaperService : WallpaperService() {
 
     override fun onCreateEngine(): Engine = CounterEngine()
 
+    private companion object {
+        val BACKGROUND = Color.rgb(0x42, 0x42, 0x42)
+    }
+
     private fun load(): DayCount {
         val day = prefs.getString("day", null)?.let(LocalDate::parse) ?: LocalDate.now()
         return DayCount(day, prefs.getInt("count", 0))
@@ -70,9 +74,11 @@ class CounterWallpaperService : WallpaperService() {
             val canvas = holder.lockCanvas() ?: return
             try {
                 val count = load().on(LocalDate.now()).count
-                canvas.drawColor(Color.BLACK)
+                canvas.drawColor(BACKGROUND)
                 paint.textSize = canvas.width * 0.4f
-                canvas.drawText(count.toString(), canvas.width / 2f, canvas.height * 0.6f, paint)
+                // Center the glyphs vertically in the bottom half, under the lock clock.
+                val baseline = canvas.height * 0.75f - (paint.ascent() + paint.descent()) / 2
+                canvas.drawText(count.toString(), canvas.width / 2f, baseline, paint)
             } finally {
                 holder.unlockCanvasAndPost(canvas)
             }
