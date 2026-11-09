@@ -53,10 +53,11 @@ class CounterWallpaperService : WallpaperService() {
         val BACKGROUND = Color.rgb(0x42, 0x42, 0x42)
         const val WIDEST = "888"
         const val MARGIN = 0.05f
+        val ALIGNS = arrayOf(Paint.Align.LEFT, Paint.Align.CENTER, Paint.Align.RIGHT)
     }
 
     inner class CounterEngine : Engine() {
-        private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { textAlign = Paint.Align.CENTER }
+        private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         private val imagePaint = Paint(Paint.FILTER_BITMAP_FLAG)
         private val bounds = Rect()
 
@@ -95,8 +96,20 @@ class CounterWallpaperService : WallpaperService() {
                 val fitHeight = canvas.height / 2f * (1 - 2 * MARGIN) / bounds.height()
                 paint.textSize = 100f * minOf(fitWidth, fitHeight) * style.size
                 paint.getTextBounds(WIDEST, 0, WIDEST.length, bounds)
-                val baseline = canvas.height / 2f - bounds.exactCenterY()
-                canvas.drawText(count.toString(), canvas.width / 2f, baseline, paint)
+                val column = style.position % 3
+                val row = style.position / 3
+                paint.textAlign = ALIGNS[column]
+                val x = when (column) {
+                    0 -> canvas.width * MARGIN
+                    1 -> canvas.width / 2f
+                    else -> canvas.width * (1 - MARGIN)
+                }
+                val baseline = when (row) {
+                    0 -> canvas.height * MARGIN - bounds.top
+                    1 -> canvas.height / 2f - bounds.exactCenterY()
+                    else -> canvas.height * (1 - MARGIN) - bounds.bottom
+                }
+                canvas.drawText(count.toString(), x, baseline, paint)
             } finally {
                 holder.unlockCanvasAndPost(canvas)
             }

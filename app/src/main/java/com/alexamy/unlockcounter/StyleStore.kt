@@ -28,6 +28,11 @@ class StyleStore(private val context: Context) {
         get() = prefs.getFloat(SIZE, 1f)
         set(value) = prefs.edit().putFloat(SIZE, value.coerceIn(MIN_SIZE, 1f)).apply()
 
+    /** 0..8, row by row from top-left; 4 = center. */
+    var position: Int
+        get() = prefs.getInt(POSITION, 4)
+        set(value) = prefs.edit().putInt(POSITION, value.coerceIn(0, 8)).apply()
+
     fun loadImage(): Bitmap? = if (imageFile.exists()) BitmapFactory.decodeFile(imageFile.path) else null
 
     /** Copies the picked image, scaled down to about [screenW] x [screenH], so the original can be deleted. */
@@ -60,5 +65,6 @@ class StyleStore(private val context: Context) {
         private const val COLOR = "color"
         private const val FONT = "font"
         private const val SIZE = "size"
+        private const val POSITION = "position"
     }
 }

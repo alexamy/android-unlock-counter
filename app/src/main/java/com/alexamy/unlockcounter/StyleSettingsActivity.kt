@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Button
+import android.widget.GridLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.SeekBar
@@ -58,6 +59,15 @@ class StyleSettingsActivity : Activity() {
         }
         fonts.setOnCheckedChangeListener { group, id -> style.font = group.findViewById<View>(id).tag as NumberFont }
 
+        val positions = findViewById<GridLayout>(R.id.positions)
+        POSITION_ARROWS.forEachIndexed { index, arrow ->
+            positions.addView(Button(this).apply {
+                text = arrow
+                setOnClickListener { style.position = index; markPosition(positions) }
+            })
+        }
+        markPosition(positions)
+
         val size = findViewById<SeekBar>(R.id.size)
         size.progress = ((style.size - StyleStore.MIN_SIZE) * 100).roundToInt()
         size.setOnSeekBarChangeListener(onUserChange { style.size = StyleStore.MIN_SIZE + size.progress / 100f })
@@ -75,6 +85,10 @@ class StyleSettingsActivity : Activity() {
         }
     }
 
+    private fun markPosition(grid: GridLayout) {
+        for (i in 0 until grid.childCount) grid.getChildAt(i).alpha = if (i == style.position) 1f else 0.4f
+    }
+
     private fun pickImageIntent() =
         if (Build.VERSION.SDK_INT >= 33) Intent(MediaStore.ACTION_PICK_IMAGES)
         else Intent(Intent.ACTION_GET_CONTENT).setType("image/*")
@@ -90,5 +104,6 @@ class StyleSettingsActivity : Activity() {
 
     private companion object {
         const val PICK_IMAGE = 1
+        val POSITION_ARROWS = listOf("↖", "↑", "↗", "←", "•", "→", "↙", "↓", "↘")
     }
 }
