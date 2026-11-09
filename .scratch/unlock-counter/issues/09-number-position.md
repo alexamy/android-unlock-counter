@@ -6,9 +6,9 @@
 
 **Blocked by:** 07 (Wallpaper image and text style)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] 3×3 button grid on the settings page, current place marked
-- [ ] Each of the 9 places shows on the wallpaper, 5% from the edges
-- [ ] Number does not jump when the digit count changes
-- [ ] Without a pick the number is centered
+- [x] 3×3 button grid on the settings page, current place marked
+- [x] Each of the 9 places shows on the wallpaper, 5% from the edges
+- [x] Number does not jump when the digit count changes
+- [x] Without a pick the number is centered
