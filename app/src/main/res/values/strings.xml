@@ -16,12 +16,12 @@
     <string name="log_exported">Log exported.</string>
     <string name="export_failed">Could not export the log.</string>
     <string name="log_cleared">Log cleared.</string>
-    <string name="background_image">Background image</string>
+    <string name="section_image">Image</string>
+    <string name="section_color">Color</string>
     <string name="pick_image">Pick image</string>
     <string name="remove_image">Remove image</string>
     <string name="image_x">Horizontal position</string>
     <string name="image_failed">Could not load this image.</string>
-    <string name="number_color">Number color</string>
     <string name="hue">Hue</string>
     <string name="saturation">Saturation</string>
     <string name="brightness">Brightness</string>

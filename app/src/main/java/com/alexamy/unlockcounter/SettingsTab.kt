@@ -2,19 +2,30 @@ package com.alexamy.unlockcounter
 
 import android.app.Activity
 import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.widget.Button
 import android.widget.GridLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.SeekBar
+import android.widget.TextView
 import kotlin.math.roundToInt
 
 /** Binds the style controls of the Settings tab to [style]. */
 class SettingsTab(private val activity: Activity, private val style: StyleStore, pickImage: () -> Unit) {
     private val hsv = FloatArray(3)
 
+    private val sections = listOf(R.id.section_image, R.id.section_color, R.id.section_size, R.id.positions, R.id.fonts)
+        .map { view<View>(it) }
+    private val chips = listOf(R.id.chip_image, R.id.chip_color, R.id.chip_size, R.id.chip_position, R.id.chip_font)
+        .map { view<TextView>(it) }
+
     init {
+        chips.forEachIndexed { index, chip -> chip.setOnClickListener { showSection(index) } }
+        showSection(0)
+
         view<View>(R.id.pick_image).setOnClickListener { pickImage() }
         view<View>(R.id.remove_image).setOnClickListener { style.removeImage() }
 
@@ -39,6 +50,10 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
             swatch.setBackgroundColor(style.color)
         }
         listOf(hue, saturation, brightness).forEach { it.setOnSeekBarChangeListener(onColor) }
+        hue.progressDrawable = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, HUES).apply {
+            cornerRadius = activity.resources.displayMetrics.density * 4
+            setSize(0, (activity.resources.displayMetrics.density * 8).toInt())
+        }
 
         val opacity = view<SeekBar>(R.id.opacity)
         opacity.progress = (style.opacityLevel * 100).roundToInt()
@@ -71,6 +86,16 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
         size.setOnSeekBarChangeListener(onUserChange { style.sizeLevel = size.progress / 100f })
     }
 
+    private fun showSection(index: Int) {
+        sections.forEachIndexed { i, section -> section.visibility = if (i == index) View.VISIBLE else View.GONE }
+        chips.forEachIndexed { i, chip ->
+            val selected = i == index
+            chip.setBackgroundResource(if (selected) R.drawable.bg_chip_selected else R.drawable.bg_chip)
+            chip.setTextColor(activity.getColor(if (selected) R.color.background else R.color.text))
+            chip.typeface = if (selected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        }
+    }
+
     private fun <T : View> view(id: Int): T = activity.findViewById(id)
 
     private fun markPosition(grid: GridLayout) {
@@ -87,6 +112,7 @@ class SettingsTab(private val activity: Activity, private val style: StyleStore,
     }
 
     private companion object {
+        val HUES = (0..6).map { Color.HSVToColor(floatArrayOf(it * 60f, 1f, 1f)) }.toIntArray()
         val POSITION_ARROWS = listOf("↖", "↑", "↗", "←", "•", "→", "↙", "↓", "↘")
     }
 }
