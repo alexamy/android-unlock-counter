@@ -4,6 +4,15 @@
     <uses-feature android:name="android.software.live_wallpaper" android:required="true" />
 
     <application android:label="Unlock Counter">
+        <activity
+            android:name=".SetWallpaperActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <service
             android:name=".CounterWallpaperService"
             android:exported="true"

@@ -6,9 +6,9 @@
 
 **Blocked by:** 02 (Count today's unlocks)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Background is solid dark gray
-- [ ] Number is centered horizontally and placed in the bottom half
-- [ ] Number does not overlap the One UI lock clock on the A71 (user confirms)
-- [ ] No label is drawn
+- [x] Background is solid dark gray
+- [x] Number is centered horizontally and placed in the bottom half
+- [x] Number does not overlap the One UI lock clock on the A71 (user confirms)
+- [x] No label is drawn
