@@ -1,6 +1,7 @@
 package com.alexamy.unlockcounter
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.WallpaperManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
@@ -37,11 +38,26 @@ class MainActivity : Activity() {
         preview.renderer = renderer
         renderer.style.prefs.registerOnSharedPreferenceChangeListener(styleListener)
 
-        tabs = listOf(R.id.tab_history, R.id.tab_settings).map { findViewById(it) }
-        tabButtons = listOf(R.id.show_history, R.id.show_settings).map { findViewById(it) }
+        tabs = listOf(R.id.tab_history, R.id.tab_settings, R.id.tab_system).map { findViewById(it) }
+        tabButtons = listOf(R.id.show_history, R.id.show_settings, R.id.show_system).map { findViewById(it) }
         tabButtons.forEachIndexed { index, button -> button.setOnClickListener { showTab(index) } }
         findViewById<View>(R.id.set_wallpaper).setOnClickListener { openWallpaperPicker() }
         SettingsTab(this, renderer.style) { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
+        findViewById<View>(R.id.export_log).setOnClickListener { startActivityForResult(exportLogIntent(), EXPORT_LOG) }
+        findViewById<View>(R.id.clear_log).setOnClickListener {
+            confirm(R.string.clear_log_confirm) {
+                CounterStore(this).clearLog()
+                toast(R.string.log_cleared)
+            }
+        }
+        findViewById<View>(R.id.reset_settings).setOnClickListener {
+            confirm(R.string.reset_settings_confirm) {
+                renderer.style.reset()
+                // Rebuild so the Settings controls show the default values.
+                intent.putExtra(EXTRA_TAB, SYSTEM)
+                recreate()
+            }
+        }
 
         showTab(startTab(intent))
     }
@@ -73,14 +89,41 @@ class MainActivity : Activity() {
     @Deprecated("Framework Activity has no ActivityResult API without AndroidX")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val uri = data?.data
-        if (requestCode != PICK_IMAGE || resultCode != RESULT_OK || uri == null) return
-        val metrics = resources.displayMetrics
-        thread {
-            runCatching { renderer.style.saveImage(uri, metrics.widthPixels, metrics.heightPixels) }.onFailure {
-                runOnUiThread { Toast.makeText(this, R.string.image_failed, Toast.LENGTH_LONG).show() }
+        if (resultCode != RESULT_OK || uri == null) return
+        when (requestCode) {
+            PICK_IMAGE -> {
+                val metrics = resources.displayMetrics
+                thread {
+                    runCatching { renderer.style.saveImage(uri, metrics.widthPixels, metrics.heightPixels) }
+                        .onFailure { runOnUiThread { toast(R.string.image_failed) } }
+                }
+            }
+            EXPORT_LOG -> {
+                val log = CounterStore(this).unlockLog
+                runCatching {
+                    contentResolver.openOutputStream(uri).use { out ->
+                        checkNotNull(out)
+                        if (log.exists()) log.inputStream().use { it.copyTo(out) }
+                    }
+                }.fold({ toast(R.string.log_exported) }, { toast(R.string.export_failed) })
             }
         }
     }
+
+    private fun confirm(message: Int, action: () -> Unit) {
+        AlertDialog.Builder(this)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok) { _, _ -> action() }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun toast(message: Int) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+
+    private fun exportLogIntent() = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        .addCategory(Intent.CATEGORY_OPENABLE)
+        .setType("text/plain")
+        .putExtra(Intent.EXTRA_TITLE, "unlocks.log")
 
     private fun showTab(index: Int) {
         tabs.forEachIndexed { i, tab -> tab.visibility = if (i == index) View.VISIBLE else View.GONE }
@@ -107,6 +150,8 @@ class MainActivity : Activity() {
         const val EXTRA_TAB = "tab"
         const val HISTORY = 0
         const val SETTINGS = 1
+        const val SYSTEM = 2
         private const val PICK_IMAGE = 1
+        private const val EXPORT_LOG = 2
     }
 }

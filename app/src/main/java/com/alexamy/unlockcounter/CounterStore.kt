@@ -9,7 +9,7 @@ class CounterStore(context: Context) {
     private val prefs = context.getSharedPreferences("counter", Context.MODE_PRIVATE)
 
     /** One line per unlock: local date-time with UTC offset, oldest first. */
-    private val unlockLog = File(context.filesDir, "unlocks.log")
+    val unlockLog = File(context.filesDir, "unlocks.log")
 
     fun today(now: LocalDate = LocalDate.now()): DayCount {
         val stored = load(now)
@@ -23,6 +23,10 @@ class CounterStore(context: Context) {
     fun addUnlock(now: LocalDate = LocalDate.now()) {
         save(today(now).plusUnlock(now))
         unlockLog.appendText("${OffsetDateTime.now()}\n")
+    }
+
+    fun clearLog() {
+        unlockLog.delete()
     }
 
     fun history(): Map<LocalDate, Int> = prefs.all

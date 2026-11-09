@@ -16,6 +16,10 @@
         <include
             android:id="@+id/tab_settings"
             layout="@layout/tab_settings" />
+
+        <include
+            android:id="@+id/tab_system"
+            layout="@layout/tab_system" />
     </FrameLayout>
 
     <LinearLayout
@@ -38,5 +42,13 @@
             android:layout_height="56dp"
             android:layout_weight="1"
             android:text="@string/tab_settings" />
+
+        <Button
+            android:id="@+id/show_system"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:text="@string/tab_system" />
     </LinearLayout>
 </LinearLayout>
