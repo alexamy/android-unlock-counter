@@ -6,12 +6,14 @@ import android.app.WallpaperManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import java.time.format.DateTimeFormatter
 import kotlin.concurrent.thread
@@ -21,7 +23,7 @@ class MainActivity : Activity() {
     private lateinit var renderer: WallpaperRenderer
     private lateinit var preview: WallpaperPreview
     private lateinit var tabs: List<View>
-    private lateinit var tabButtons: List<View>
+    private lateinit var tabButtons: List<TextView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,7 +116,13 @@ class MainActivity : Activity() {
 
     private fun showTab(index: Int) {
         tabs.forEachIndexed { i, tab -> tab.visibility = if (i == index) View.VISIBLE else View.GONE }
-        tabButtons.forEachIndexed { i, button -> button.alpha = if (i == index) 1f else 0.5f }
+        tabButtons.forEachIndexed { i, button ->
+            val selected = i == index
+            button.isSelected = selected
+            button.setBackgroundResource(if (selected) R.drawable.bg_segment_selected else 0)
+            button.setTextColor(getColor(if (selected) R.color.background else R.color.text_muted))
+            button.typeface = if (selected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        }
     }
 
     private fun openWallpaperPicker() {
