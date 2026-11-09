@@ -50,4 +50,4 @@ Samsung A71, Android 13, One UI 5.1, over `adb`.
 ## Tickets
 
 - v1: 03 look, 04 launcher screen, 05 font and size, 08 app icon.
-- v2: 06 history, 07 wallpaper image and text style, 09 number position, 10 settings preview.
+- v2: 06 history, 07 wallpaper image and text style, 09 number position, 10 settings preview, 11 tabs.
