@@ -13,11 +13,11 @@ The wallpaper redraws with the new settings. Anything the user has not picked fa
 
 **Blocked by:** 05 (Number font and size)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] "Settings" in the system wallpaper picker opens the settings screen
-- [ ] Picked image fills the screen with center-crop and no stretching
-- [ ] Image survives a reboot and removal of the original from the gallery
-- [ ] Without a picked image the dark gray background stays
-- [ ] Without picked settings the wallpaper looks the same as v1 (Six Caps, white, 100%)
-- [ ] Color, font and size changes show on the wallpaper
+- [x] "Settings" in the system wallpaper picker opens the settings screen
+- [x] Picked image fills the screen with center-crop and no stretching
+- [x] Image survives a reboot and removal of the original from the gallery
+- [x] Without a picked image the dark gray background stays
+- [x] Without picked settings the wallpaper looks the same as v1 (Six Caps, white, 100%)
+- [x] Color, font and size changes show on the wallpaper
