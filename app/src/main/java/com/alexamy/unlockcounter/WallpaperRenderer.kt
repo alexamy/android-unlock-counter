@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
+import kotlin.math.roundToInt
 
 /** Draws the wallpaper; shared by the live wallpaper and the settings preview. */
 class WallpaperRenderer(private val context: Context) {
@@ -28,6 +29,7 @@ class WallpaperRenderer(private val context: Context) {
             canvas.drawBitmap(it, Rect(l, t, r, b), Rect(0, 0, width, height), imagePaint)
         }
         paint.color = style.color
+        paint.alpha = (style.opacity * 255).roundToInt()
         paint.typeface = typefaces.getOrPut(style.font) { style.font.load(context.assets) }
         // Size and anchor from "888", so the number does not jump when digits change.
         paint.textSize = 100f

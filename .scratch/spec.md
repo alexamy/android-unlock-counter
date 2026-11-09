@@ -32,6 +32,7 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
   - background image from the system photo picker, cropped to fill; a slider moves the crop of a wide image horizontally; no zoom;
   - number color from Hue, Saturation and Brightness sliders with a preview swatch, no library;
   - font from the four bundled fonts plus the system default;
+  - number opacity slider from 10% to 100%;
   - size slider from 15% to 100% of the default;
   - number position: one of 9 places in a 3×3 grid, 5% from the edges, default center;
   - preview box of the wallpaper fixed at the top of the settings page.

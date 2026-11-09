@@ -65,6 +65,10 @@ class StyleSettingsActivity : Activity() {
         }
         listOf(hue, saturation, brightness).forEach { it.setOnSeekBarChangeListener(onColor) }
 
+        val opacity = findViewById<SeekBar>(R.id.opacity)
+        opacity.progress = ((style.opacity - StyleStore.MIN_OPACITY) * 100).roundToInt()
+        opacity.setOnSeekBarChangeListener(onUserChange { style.opacity = StyleStore.MIN_OPACITY + opacity.progress / 100f })
+
         val fonts = findViewById<RadioGroup>(R.id.fonts)
         NumberFont.entries.forEach { font ->
             fonts.addView(RadioButton(this).apply {

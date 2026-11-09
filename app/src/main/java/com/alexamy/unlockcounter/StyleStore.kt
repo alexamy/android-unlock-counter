@@ -19,6 +19,10 @@ class StyleStore(private val context: Context) {
         get() = prefs.getInt(COLOR, Color.WHITE)
         set(value) = prefs.edit().putInt(COLOR, value).apply()
 
+    var opacity: Float
+        get() = prefs.getFloat(OPACITY, 1f)
+        set(value) = prefs.edit().putFloat(OPACITY, value.coerceIn(MIN_OPACITY, 1f)).apply()
+
     var font: NumberFont
         get() = NumberFont.entries.find { it.name == prefs.getString(FONT, null) } ?: NumberFont.SIX_CAPS
         set(value) = prefs.edit().putString(FONT, value.name).apply()
@@ -67,7 +71,9 @@ class StyleStore(private val context: Context) {
     companion object {
         const val IMAGE = "image"
         const val MIN_SIZE = 0.15f
+        const val MIN_OPACITY = 0.1f
         private const val COLOR = "color"
+        private const val OPACITY = "opacity"
         private const val FONT = "font"
         private const val SIZE = "size"
         private const val POSITION = "position"
