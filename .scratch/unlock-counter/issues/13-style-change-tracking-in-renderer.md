@@ -6,8 +6,8 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] No preferences listener or image-key check outside the renderer
-- [ ] Wallpaper and preview redraw on every style change, including a new or removed image
-- [ ] Settings tab uses slider levels only; size and opacity limits live in the settings store
+- [x] No preferences listener or image-key check outside the renderer
+- [x] Wallpaper and preview redraw on every style change, including a new or removed image
+- [x] Settings tab uses slider levels only; size and opacity limits live in the settings store

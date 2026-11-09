@@ -6,10 +6,12 @@
 
 **Blocked by:** 04 (Launcher screen)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] At midnight the finished day's count is saved to history
-- [ ] Days with the phone off all day or another wallpaper set show as missing, not as 0
-- [ ] App icon opens the history page; days listed newest first
-- [ ] "Set wallpaper" button opens the picker preview of this wallpaper
-- [ ] Unit test covers the day rollover into history
+- [x] At midnight the finished day's count is saved to history
+- [x] Days with the phone off all day or another wallpaper set show as missing, not as 0
+- [x] App icon opens the history page; days listed newest first
+- [x] "Set wallpaper" button opens the picker preview of this wallpaper
+- [x] Unit test covers the day rollover into history
+
+> Superseded: "Set wallpaper" moved to the Settings tab (ticket 11); History now shows today, a 14-day bar chart and average, then the day list (ticket 14).

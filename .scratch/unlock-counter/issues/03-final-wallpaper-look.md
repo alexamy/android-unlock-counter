@@ -12,3 +12,5 @@
 - [x] Number is centered horizontally and placed in the bottom half
 - [x] Number does not overlap the One UI lock clock on the A71 (user confirms)
 - [x] No label is drawn
+
+> Superseded: the number is now centered by default; ticket 09 adds 9 positions.

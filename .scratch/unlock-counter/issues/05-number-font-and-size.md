@@ -12,3 +12,5 @@
 - [x] Font license allows bundling (e.g. SIL OFL)
 - [x] Size fits "888" to the screen width or the bottom-half height, whichever is smaller (Six Caps hits the height first); 1 and 2 digits use the same size, centered
 - [x] Number fits in the bottom half on the A71
+
+> Superseded: the number is centered by default (ticket 09); the size rule still fits "888" to the width or half the height.

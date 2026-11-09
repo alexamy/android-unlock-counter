@@ -8,5 +8,11 @@ Android live wallpaper that shows how many times you unlocked the phone today. S
 
 ### Keep the counter running on Samsung (One UI)
 
+The app shows the same steps in System → Keep it running.
+
 1. Open Settings → Apps → Unlock Counter → Battery and pick "Unrestricted".
-2. Open Settings → Battery → Background usage limits. Make sure the app is not in "Sleeping apps" or "Deep sleeping apps", and add it to "Never sleeping apps".
+2. Open Settings → Battery → Background usage limits. Keep the app out of "Sleeping apps" and "Deep sleeping apps", and add it to "Never sleeping apps".
+
+## License
+
+The code is under the MIT license (`LICENSE`). The bundled fonts (Six Caps, Antonio, Big Shoulders Display, Oswald) are under the SIL Open Font License 1.1; each license text is next to its font in `app/src/main/assets/fonts/`.

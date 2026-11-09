@@ -15,7 +15,7 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 - One unlock = one `ACTION_USER_PRESENT` broadcast. Screen-on without unlock does not count.
 - The wallpaper service registers the `ACTION_USER_PRESENT` receiver at runtime. No separate background service.
 - Count and its date live in SharedPreferences. The count resets at local midnight.
-- Each unlock time is appended to `unlocks.log` in app storage: one ISO date-time with UTC offset per line. Not shown in the UI.
+- Each unlock time is appended to `unlocks.log` in app storage: one ISO date-time with UTC offset per line. The System tab shows the number of entries and exports the file.
 - Count starts at 0 when the wallpaper is first set. No history is available from Android.
 
 ## Default look
@@ -26,17 +26,16 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 
 ## App screen
 
-One screen with a bottom tab bar (tap only). The app icon opens History; "Settings" in the system wallpaper picker opens Settings.
+Dark theme. A large "Unlock Counter" title and a segmented control with three tabs (tap only). The app icon opens History; "Settings" in the system wallpaper picker opens Settings.
 
-- History: today's count, then every past day, newest first; days without data shown as missing.
-- Settings: a wallpaper preview fixed at the top, the "Set wallpaper" button under it, then:
-  - background image from the system photo picker, cropped to fill; a slider moves the crop of a wide image horizontally; no zoom;
-  - number color from Hue, Saturation and Brightness sliders with a swatch, no library;
-  - number opacity from 10% to 100%;
-  - size from 15% to 100% of the default;
-  - position: one of 9 places in a 3×3 grid, 5% from the edges, default center;
-  - font: Six Caps, Antonio, Big Shoulders Display, Oswald (bundled) or the system default.
-- System: export log via "Save as", clear log (unlock times only), reset settings; the last two ask for confirmation.
+- History: today's count in Six Caps, the 14-day average, a 14-day bar chart (today highlighted, days without data dashed), then every past day, newest first; days without data shown as "—".
+- Settings: a wallpaper preview card with "Set wallpaper", then section chips; one section shows at a time:
+  - Image: pick or remove a photo from the system photo picker, cropped to fill; a slider moves the crop of a wide image horizontally; no zoom;
+  - Color: Hue (rainbow track), Saturation, Brightness with a swatch, and opacity from 10% to 100%;
+  - Size: 15% to 100% of the default;
+  - Position: one of 9 places in a 3×3 grid, 5% from the edges, default center;
+  - Font: Six Caps, Antonio, Big Shoulders Display, Oswald (bundled) or the system default.
+- System: grouped rows. Export log via "Save as" (shows the number of entries), clear log (unlock times only), reset settings (default look, removes the photo); the last two ask for confirmation. A "Keep it running" card with the Samsung battery steps.
 
 ## Toolchain
 

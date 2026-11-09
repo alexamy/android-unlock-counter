@@ -21,3 +21,5 @@ The wallpaper redraws with the new settings. Anything the user has not picked fa
 - [x] Without a picked image the dark gray background stays
 - [x] Without picked settings the wallpaper shows the default look (Six Caps, white, 100%)
 - [x] Color, font and size changes show on the wallpaper
+
+> Superseded: a "Horizontal position" slider now moves the crop of a wide image; opacity was added (10–100%); size range is 15–100%.

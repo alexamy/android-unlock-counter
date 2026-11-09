@@ -11,10 +11,12 @@ The app icon opens the History tab. "Settings" in the system wallpaper picker op
 
 **Blocked by:** 06 (History), 10 (Wallpaper preview on the settings page)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Bottom bar with two tabs; the current tab is marked
-- [ ] App icon opens History; wallpaper picker "Settings" opens Settings
-- [ ] "Set wallpaper" on the Settings tab opens the system picker with this wallpaper
-- [ ] Settings changes show in the preview
-- [ ] No new dependency
+- [x] Bottom bar with two tabs; the current tab is marked
+- [x] App icon opens History; wallpaper picker "Settings" opens Settings
+- [x] "Set wallpaper" on the Settings tab opens the system picker with this wallpaper
+- [x] Settings changes show in the preview
+- [x] No new dependency
+
+> Superseded: there are 3 tabs (History, Settings, System) in a segmented control under a large title (ticket 14); the Settings preview is a card with section chips.

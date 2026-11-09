@@ -22,7 +22,7 @@
     <string name="export_subtitle">%d unlock times · save as file</string>
     <string name="clear_log_subtitle">Daily counts stay</string>
     <string name="reset_settings_subtitle">Default look, removes the photo</string>
-    <string name="keep_running_tip">On Samsung, open Settings → Apps → Unlock Counter → Battery and pick “Unrestricted”. Then in Settings → Battery → Background usage limits, keep the app out of “Sleeping apps” and “Deep sleeping apps”, and add it to “Never sleeping apps”.</string>
+    <string name="keep_running_tip">On Samsung, open Settings → Apps → Unlock Counter → Battery and pick “Unrestricted”. Then open Settings → Battery → Background usage limits. Keep the app out of “Sleeping apps” and “Deep sleeping apps”, and add it to “Never sleeping apps”.</string>
     <string name="section_image">Image</string>
     <string name="section_color">Color</string>
     <string name="pick_image">Pick image</string>
