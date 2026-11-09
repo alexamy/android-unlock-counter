@@ -6,9 +6,9 @@
 
 **Blocked by:** 09 (Number position)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Preview and wallpaper use one shared drawing code path
-- [ ] Preview has the screen's aspect ratio and stays at the top while controls scroll
-- [ ] Every setting change shows in the preview at once
-- [ ] Preview works when Unlock Counter is not the active wallpaper
+- [x] Preview and wallpaper use one shared drawing code path
+- [x] Preview has the screen's aspect ratio and stays at the top while controls scroll
+- [x] Every setting change shows in the preview at once
+- [x] Preview works when Unlock Counter is not the active wallpaper
