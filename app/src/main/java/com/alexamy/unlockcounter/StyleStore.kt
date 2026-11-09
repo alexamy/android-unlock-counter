@@ -23,10 +23,10 @@ class StyleStore(private val context: Context) {
         get() = NumberFont.entries.find { it.name == prefs.getString(FONT, null) } ?: NumberFont.SIX_CAPS
         set(value) = prefs.edit().putString(FONT, value.name).apply()
 
-    /** 0.5..1 of the size that fits "888". */
+    /** 0.15..1 of the size that fits "888". */
     var size: Float
         get() = prefs.getFloat(SIZE, 1f)
-        set(value) = prefs.edit().putFloat(SIZE, value.coerceIn(0.5f, 1f)).apply()
+        set(value) = prefs.edit().putFloat(SIZE, value.coerceIn(MIN_SIZE, 1f)).apply()
 
     fun loadImage(): Bitmap? = if (imageFile.exists()) BitmapFactory.decodeFile(imageFile.path) else null
 
@@ -56,6 +56,7 @@ class StyleStore(private val context: Context) {
 
     companion object {
         const val IMAGE = "image"
+        const val MIN_SIZE = 0.15f
         private const val COLOR = "color"
         private const val FONT = "font"
         private const val SIZE = "size"

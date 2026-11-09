@@ -59,8 +59,8 @@ class StyleSettingsActivity : Activity() {
         fonts.setOnCheckedChangeListener { group, id -> style.font = group.findViewById<View>(id).tag as NumberFont }
 
         val size = findViewById<SeekBar>(R.id.size)
-        size.progress = ((style.size - 0.5f) * 100).roundToInt()
-        size.setOnSeekBarChangeListener(onUserChange { style.size = 0.5f + size.progress / 100f })
+        size.progress = ((style.size - StyleStore.MIN_SIZE) * 100).roundToInt()
+        size.setOnSeekBarChangeListener(onUserChange { style.size = StyleStore.MIN_SIZE + size.progress / 100f })
     }
 
     @Deprecated("Framework Activity has no ActivityResult API without AndroidX")

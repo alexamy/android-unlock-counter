@@ -7,7 +7,7 @@
 - a background image with the system photo picker; the app keeps a copy and fits it center-crop, scaled to fill, no pan or zoom;
 - the number color with a picker built from Hue, Saturation and Brightness sliders and a live preview swatch (no library);
 - the font from the four bundled fonts of ticket 05 plus the system default;
-- the size with a slider from 50% to 100% of the default (100% = three digits span the screen width).
+- the size with a slider from 15% to 100% of the default (100% = three digits span the screen width).
 
 The wallpaper redraws with the new settings. Anything the user has not picked falls back to the v1 look: dark gray `#424242` background, white number, Six Caps, 100% size.
 

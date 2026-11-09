@@ -96,6 +96,6 @@
             android:id="@+id/size"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:max="50" />
+            android:max="85" />
     </LinearLayout>
 </ScrollView>
