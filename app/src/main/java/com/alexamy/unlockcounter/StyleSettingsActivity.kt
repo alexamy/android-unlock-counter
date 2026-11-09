@@ -2,6 +2,7 @@ package com.alexamy.unlockcounter
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -18,12 +19,26 @@ import kotlin.math.roundToInt
 
 class StyleSettingsActivity : Activity() {
     private lateinit var style: StyleStore
+    private lateinit var preview: WallpaperPreview
     private val hsv = FloatArray(3)
+
+    // Kept in a field: SharedPreferences holds listeners weakly.
+    private val styleListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == null || key == StyleStore.IMAGE) preview.renderer.reloadImage()
+        preview.invalidate()
+    }
+
+    override fun onDestroy() {
+        style.prefs.unregisterOnSharedPreferenceChangeListener(styleListener)
+        super.onDestroy()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_style)
-        style = StyleStore(this)
+        preview = findViewById(R.id.preview)
+        style = preview.renderer.style
+        style.prefs.registerOnSharedPreferenceChangeListener(styleListener)
 
         findViewById<Button>(R.id.pick_image).setOnClickListener { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
         findViewById<Button>(R.id.remove_image).setOnClickListener { style.removeImage() }
