@@ -8,7 +8,8 @@ import java.time.OffsetDateTime
 
 /**
  * Today's unlock count, the daily history and the log of unlock times.
- * The count of a finished day moves to history at the first read or unlock of a new day.
+ * The count of a finished day moves to history at the first read or unlock of another day.
+ * History is never overwritten: a day seen again (clock or time zone moved back) continues from its stored count.
  */
 class CounterStore(
     private val storage: CounterStorage,
@@ -21,16 +22,17 @@ class CounterStore(
     fun addUnlock() {
         val time = now()
         val current = rollover(time.toLocalDate())
-        save(current.copy(count = current.count + 1))
+        storage.write(dayChanges(current.copy(count = current.count + 1)))
         storage.appendLog("$time\n")
     }
 
     /** Past days from yesterday back to the oldest record, newest first; null count = no data that day. */
     fun historyRows(): List<Pair<LocalDate, Int?>> {
         val today = rollover(now().toLocalDate()).day
-        val records = storage.keys()
-            .filter { it.startsWith(HISTORY) }
-            .associate { LocalDate.parse(it.removePrefix(HISTORY)) to storage[it]!!.toInt() }
+        val records = storage.all()
+            .filterKeys { it.startsWith(HISTORY) }
+            .map { (key, value) -> LocalDate.parse(key.removePrefix(HISTORY)) to value.toInt() }
+            .toMap()
         val oldest = records.keys.minOrNull() ?: return emptyList()
         return generateSequence(today.minusDays(1)) { it.minusDays(1) }
             .takeWhile { it >= oldest }
@@ -48,20 +50,22 @@ class CounterStore(
 
     private fun rollover(today: LocalDate): DayCount {
         val stored = DayCount(storage[DAY]?.let(LocalDate::parse) ?: today, storage[COUNT]?.toInt() ?: 0)
-        if (stored.day == today) return stored
-        storage[HISTORY + stored.day] = stored.count.toString()
-        return DayCount(today, 0).also(::save)
+        // Before network time sync a phone can boot at 1970: keep counting on the stored day.
+        if (stored.day == today || today < MIN_DAY) return stored
+        val archived = (storage[HISTORY + stored.day]?.toInt() ?: 0) + stored.count
+        val current = DayCount(today, storage[HISTORY + today]?.toInt() ?: 0)
+        storage.write(dayChanges(current) + mapOf(HISTORY + stored.day to archived.toString(), HISTORY + today to null))
+        return current
     }
 
-    private fun save(value: DayCount) {
-        storage[DAY] = value.day.toString()
-        storage[COUNT] = value.count.toString()
-    }
+    private fun dayChanges(value: DayCount): Map<String, String?> =
+        mapOf(DAY to value.day.toString(), COUNT to value.count.toString())
 
     private companion object {
         const val DAY = "day"
         const val COUNT = "count"
         const val HISTORY = "history:"
         const val NEWLINE = '\n'.code.toByte()
+        val MIN_DAY: LocalDate = LocalDate.of(2020, 1, 1)
     }
 }

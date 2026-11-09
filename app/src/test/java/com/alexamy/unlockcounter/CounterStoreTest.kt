@@ -13,8 +13,10 @@ class CounterStoreTest {
         val values = mutableMapOf<String, String>()
         val log = StringBuilder()
         override fun get(key: String) = values[key]
-        override fun set(key: String, value: String) { values[key] = value }
-        override fun keys() = values.keys
+        override fun all(): Map<String, String> = values.toMap()
+        override fun write(changes: Map<String, String?>) {
+            changes.forEach { (key, value) -> if (value == null) values.remove(key) else values[key] = value }
+        }
         override fun appendLog(text: String) { log.append(text) }
         override fun writeLog(out: OutputStream) = out.write(log.toString().toByteArray())
         override fun clearLog() = log.setLength(0)
@@ -85,10 +87,45 @@ class CounterStoreTest {
     }
 
     @Test
-    fun readsOldIntData() {
+    fun storedPastDayGoesToHistory() {
         storage.values["day"] = day.minusDays(1).toString()
         storage.values["count"] = "7"
         assertEquals(0, store.todayCount())
         assertEquals(listOf(day.minusDays(1) to 7), store.historyRows())
+    }
+
+    @Test
+    fun timeZoneMovedBackDoesNotOverwriteHistory() {
+        repeat(80) { store.addUnlock() }
+        time = OffsetDateTime.of(2026, 11, 10, 0, 30, 0, 0, ZoneOffset.ofHours(1))
+        repeat(5) { store.addUnlock() }
+        time = time.withOffsetSameInstant(ZoneOffset.ofHours(-5))
+        assertEquals(80, store.todayCount())
+        repeat(12) { store.addUnlock() }
+        time = time.plusHours(10)
+        assertEquals(5, store.todayCount())
+        assertEquals(listOf(day to 92), store.historyRows())
+    }
+
+    @Test
+    fun unsetClockKeepsCountingOnStoredDay() {
+        repeat(3) { store.addUnlock() }
+        time = OffsetDateTime.of(1970, 1, 1, 0, 1, 0, 0, ZoneOffset.UTC)
+        store.addUnlock()
+        assertEquals(4, store.todayCount())
+        assertEquals(emptyList<Pair<LocalDate, Int?>>(), store.historyRows())
+    }
+
+    @Test
+    fun clockMovedForwardAndBackKeepsBothDays() {
+        repeat(4) { store.addUnlock() }
+        nextDay(30)
+        repeat(2) { store.addUnlock() }
+        time = time.minusDays(30)
+        assertEquals(4, store.todayCount())
+        store.addUnlock()
+        assertEquals(5, store.todayCount())
+        nextDay(30)
+        assertEquals(2, store.todayCount())
     }
 }
