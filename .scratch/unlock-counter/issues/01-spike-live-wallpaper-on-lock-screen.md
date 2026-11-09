@@ -6,10 +6,9 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `./gradlew assembleDebug` builds from the CLI
-- [ ] APK installs on the A71 with `adb install`
-- [ ] The wallpaper appears in the system live wallpaper picker
-- [ ] The fixed number is visible on the A71 lock screen (user confirms)
-- [ ] If One UI blocks it on the lock screen: stop and report; fallback is a notification (see spec)
+- [x] `./gradlew assembleDebug` builds from the CLI
+- [x] APK installs on the A71 with `adb install`
+- [x] The wallpaper appears in the system live wallpaper picker
+- [x] The fixed number is visible on the A71 lock screen (user confirms)
