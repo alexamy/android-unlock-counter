@@ -19,26 +19,26 @@ import kotlin.concurrent.thread
 class MainActivity : Activity() {
     private val dateFormat = DateTimeFormatter.ofPattern("EEE, d MMM yyyy")
     private lateinit var renderer: WallpaperRenderer
-    private lateinit var previews: List<WallpaperPreview>
+    private lateinit var preview: WallpaperPreview
     private lateinit var tabs: List<View>
     private lateinit var tabButtons: List<View>
 
     // Kept in a field: SharedPreferences holds listeners weakly.
     private val styleListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == null || key == StyleStore.IMAGE) renderer.reloadImage()
-        previews.forEach { it.invalidate() }
+        preview.invalidate()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         renderer = WallpaperRenderer(this)
-        previews = listOf(findViewById(R.id.big_preview), findViewById(R.id.settings_preview))
-        previews.forEach { it.renderer = renderer }
+        preview = findViewById(R.id.settings_preview)
+        preview.renderer = renderer
         renderer.style.prefs.registerOnSharedPreferenceChangeListener(styleListener)
 
-        tabs = listOf(R.id.tab_history, R.id.tab_preview, R.id.tab_settings).map { findViewById(it) }
-        tabButtons = listOf(R.id.show_history, R.id.show_preview, R.id.show_settings).map { findViewById(it) }
+        tabs = listOf(R.id.tab_history, R.id.tab_settings).map { findViewById(it) }
+        tabButtons = listOf(R.id.show_history, R.id.show_settings).map { findViewById(it) }
         tabButtons.forEachIndexed { index, button -> button.setOnClickListener { showTab(index) } }
         findViewById<View>(R.id.set_wallpaper).setOnClickListener { openWallpaperPicker() }
         SettingsTab(this, renderer.style) { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
@@ -62,7 +62,7 @@ class MainActivity : Activity() {
                 "${day.format(dateFormat)}    ${count ?: "—"}"
             }
         findViewById<ListView>(R.id.history).adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, rows)
-        previews.forEach { it.invalidate() }
+        preview.invalidate()
     }
 
     override fun onDestroy() {
@@ -106,7 +106,7 @@ class MainActivity : Activity() {
     companion object {
         const val EXTRA_TAB = "tab"
         const val HISTORY = 0
-        const val SETTINGS = 2
+        const val SETTINGS = 1
         private const val PICK_IMAGE = 1
     }
 }

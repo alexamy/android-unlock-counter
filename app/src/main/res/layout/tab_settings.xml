@@ -9,7 +9,15 @@
         android:layout_width="wrap_content"
         android:layout_height="300dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginVertical="8dp" />
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/set_wallpaper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="8dp"
+        android:text="@string/set_wallpaper" />
 
     <ScrollView
         android:layout_width="match_parent"

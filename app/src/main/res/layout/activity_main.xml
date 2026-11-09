@@ -14,10 +14,6 @@
             layout="@layout/tab_history" />
 
         <include
-            android:id="@+id/tab_preview"
-            layout="@layout/tab_preview" />
-
-        <include
             android:id="@+id/tab_settings"
             layout="@layout/tab_settings" />
     </FrameLayout>
@@ -34,14 +30,6 @@
             android:layout_height="56dp"
             android:layout_weight="1"
             android:text="@string/tab_history" />
-
-        <Button
-            android:id="@+id/show_preview"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_weight="1"
-            android:text="@string/tab_preview" />
 
         <Button
             android:id="@+id/show_settings"
