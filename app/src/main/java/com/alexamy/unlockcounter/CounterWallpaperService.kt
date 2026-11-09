@@ -10,26 +10,36 @@ import android.view.SurfaceHolder
 class CounterWallpaperService : WallpaperService() {
     private val engines = mutableSetOf<CounterEngine>()
     private val store by lazy { CounterStore(this) }
-    private val renderer by lazy { WallpaperRenderer(this) { engines.forEach { it.draw() } } }
+    private val rendererLazy = lazy { WallpaperRenderer(this) { redrawVisible() } }
+    private val renderer by rendererLazy
 
     // One receiver per service, not per engine: the picker preview runs a second engine.
-    private val unlockReceiver = object : BroadcastReceiver() {
+    private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            store.addUnlock()
-            engines.forEach { it.draw() }
+            if (intent.action == Intent.ACTION_USER_PRESENT) store.addUnlock()
+            redrawVisible()
         }
     }
 
     override fun onCreate() {
         super.onCreate()
-        registerReceiver(unlockReceiver, IntentFilter(Intent.ACTION_USER_PRESENT))
+        val filter = IntentFilter(Intent.ACTION_USER_PRESENT).apply {
+            // Midnight and clock changes: the shown day may change without an unlock.
+            addAction(Intent.ACTION_DATE_CHANGED)
+            addAction(Intent.ACTION_TIME_CHANGED)
+            addAction(Intent.ACTION_TIMEZONE_CHANGED)
+        }
+        registerReceiver(receiver, filter)
     }
 
     override fun onDestroy() {
-        unregisterReceiver(unlockReceiver)
-        renderer.close()
+        unregisterReceiver(receiver)
+        if (rendererLazy.isInitialized()) renderer.close()
         super.onDestroy()
     }
+
+    // Hidden engines redraw in onVisibilityChanged; drawing them now only costs main-thread time.
+    private fun redrawVisible() = engines.filter { it.isVisible }.forEach { it.draw() }
 
     override fun onCreateEngine(): Engine = CounterEngine()
 
