@@ -13,7 +13,7 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
 - Name: "Unlock Counter". Package: `com.alexamy.unlockcounter`.
 - Kotlin, plain Canvas drawing, no Compose, no AndroidX. `minSdk 26`.
 - One unlock = one `ACTION_USER_PRESENT` broadcast. Screen-on without unlock does not count.
-- The wallpaper service registers the `ACTION_USER_PRESENT` receiver at runtime. No separate background service. The first unlock after a boot comes before the wallpaper runs; a `BOOT_COMPLETED` receiver counts it unless an unlock since the boot is already recorded.
+- The wallpaper service registers the `ACTION_USER_PRESENT` receiver at runtime. No separate background service. The first unlock after a boot comes before the wallpaper runs; the wallpaper service counts it when it starts, if an earlier unlock is recorded but none since the boot.
 - Count and its date live in SharedPreferences. The count resets at local midnight.
 - Each unlock time is appended to `unlocks.log` in app storage: one ISO date-time with UTC offset per line. The System tab shows the number of entries and exports the file.
 - Count starts at 0 when the wallpaper is first set. No history is available from Android.

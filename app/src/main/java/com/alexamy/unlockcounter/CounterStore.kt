@@ -27,11 +27,11 @@ class CounterStore(
 
     /**
      * Counts the first unlock after a boot, which happens before the wallpaper is running,
-     * unless an unlock since [boot] is already recorded.
+     * when an earlier unlock is recorded but none since [boot]. Without any record (fresh install) nothing is counted.
      */
     fun addUnlockIfNoneSince(boot: OffsetDateTime) {
-        val last = storage[LAST]?.let(OffsetDateTime::parse)
-        if (last == null || last.isBefore(boot)) addUnlock()
+        val last = storage[LAST]?.let(OffsetDateTime::parse) ?: return
+        if (last.isBefore(boot)) addUnlock()
     }
 
     /** Past days from yesterday back to the oldest record, newest first; null count = no data that day. */

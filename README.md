@@ -18,7 +18,7 @@ Android has no lock screen widgets since version 5, so the counter is a live wal
 ## How counting works
 
 - One unlock is one `ACTION_USER_PRESENT` broadcast. Turning the screen on without unlocking does not count.
-- The wallpaper service counts unlocks while it runs. The first unlock after a reboot comes before the wallpaper starts; a `BOOT_COMPLETED` receiver counts it.
+- The wallpaper service counts unlocks while it runs. The first unlock after a reboot comes a few seconds before the wallpaper starts; the service counts it when it starts.
 - A finished day moves to history at the first unlock or screen read of the next day. If the clock or time zone moves back, history is never overwritten.
 - Each unlock time goes to `unlocks.log` in app storage, one ISO date-time with UTC offset per line.
 

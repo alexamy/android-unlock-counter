@@ -172,4 +172,10 @@ class CounterStoreTest {
         store.addUnlockIfNoneSince(boot)
         assertEquals(1, store.todayCount())
     }
+
+    @Test
+    fun noUnlockAddedWithoutAnyRecord() {
+        store.addUnlockIfNoneSince(time.minusMinutes(1))
+        assertEquals(0, store.todayCount())
+    }
 }

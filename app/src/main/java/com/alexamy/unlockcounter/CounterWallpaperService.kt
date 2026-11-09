@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.SystemClock
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
+import java.time.OffsetDateTime
 
 class CounterWallpaperService : WallpaperService() {
     private val engines = mutableSetOf<CounterEngine>()
@@ -30,6 +32,9 @@ class CounterWallpaperService : WallpaperService() {
             addAction(Intent.ACTION_TIMEZONE_CHANGED)
         }
         registerReceiver(receiver, filter)
+        // The service starts a few seconds after the first unlock of a boot, too late to receive it.
+        // shortcut: also counts one unlock when the wallpaper is set again after a boot with no unlock since, rare.
+        store.addUnlockIfNoneSince(OffsetDateTime.now().minusNanos(SystemClock.elapsedRealtimeNanos()))
     }
 
     override fun onDestroy() {
