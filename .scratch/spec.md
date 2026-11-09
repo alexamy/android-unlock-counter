@@ -32,7 +32,9 @@ Android 5+ has no lock screen widgets. The app is a live wallpaper set for home 
   - background image from the system photo picker, center-crop, no pan or zoom;
   - number color from Hue, Saturation and Brightness sliders with a preview swatch, no library;
   - font from the four bundled fonts plus the system default;
-  - size slider from 15% to 100% of the default.
+  - size slider from 15% to 100% of the default;
+  - number position: one of 9 places in a 3×3 grid, 5% from the edges, default center;
+  - preview box of the wallpaper fixed at the top of the settings page.
 
 ## Toolchain
 
@@ -47,4 +49,4 @@ Samsung A71, Android 13, One UI 5.1, over `adb`.
 ## Tickets
 
 - v1: 03 look, 04 launcher screen, 05 font and size, 08 app icon.
-- v2: 06 history, 07 wallpaper image and text style.
+- v2: 06 history, 07 wallpaper image and text style, 09 number position, 10 settings preview.
