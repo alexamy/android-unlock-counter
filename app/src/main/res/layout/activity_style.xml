@@ -91,12 +91,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/font" />
+                android:text="@string/size" />
 
-            <RadioGroup
-                android:id="@+id/fonts"
+            <SeekBar
+                android:id="@+id/size"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="48dp"
+                android:max="85" />
 
             <TextView
                 style="@android:style/TextAppearance.DeviceDefault.Medium"
@@ -117,13 +118,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/size" />
+                android:text="@string/font" />
 
-            <SeekBar
-                android:id="@+id/size"
+            <RadioGroup
+                android:id="@+id/fonts"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:max="85" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
