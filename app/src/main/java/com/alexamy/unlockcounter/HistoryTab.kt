@@ -16,6 +16,7 @@ import kotlin.math.roundToInt
 /** History tab: today's count, one week of bars with its average (swipe or arrows for other weeks), then every past day. */
 class HistoryTab(private val activity: Activity, private val store: CounterStore) {
     private val todayCount = view<TextView>(R.id.today_count)
+    private val todayTile = view<View>(R.id.today_tile)
     private val average = view<TextView>(R.id.average)
     private val bars = view<BarChart>(R.id.bars)
     private val weekLabel = view<TextView>(R.id.week_label)
@@ -28,7 +29,6 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
     private var shown = 0
 
     init {
-        todayCount.typeface = NumberFont.SIX_CAPS.load(activity.assets)
         val weekdays = view<ViewGroup>(R.id.weekdays)
         DayOfWeek.entries.forEachIndexed { i, day -> (weekdays.getChildAt(i) as TextView).text = day.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
         prevWeek.setOnClickListener { showWeek(shown - 1, -1) }
@@ -42,7 +42,7 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
         weeks = store.weeks()
         val today = weeks.last().days.last().first
         todayCount.text = store.todayCount().toString()
-        todayCount.setOnClickListener { openDay(today) }
+        todayTile.setOnClickListener { openDay(today) }
         showWeek(weeks.indexOfFirst { it.monday == kept }.takeIf { it >= 0 } ?: weeks.lastIndex, 0)
         list.setOnItemClickListener { _, _, position, _ -> openDay(rows[position].first) }
         empty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE

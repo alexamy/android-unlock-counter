@@ -13,52 +13,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:id="@+id/today_tile"
+                style="@style/HeaderTile"
+                android:layout_marginEnd="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/today"
-                    android:textColor="@color/text_muted"
-                    android:textSize="13sp" />
+                <TextView style="@style/StatLabel" android:textSize="12sp" android:text="@string/today" />
 
-                <TextView
-                    android:id="@+id/today_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:textColor="@color/text"
-                    android:textSize="96sp" />
+                <TextView android:id="@+id/today_count" style="@style/HeaderTileValue" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:gravity="end"
-                android:orientation="vertical">
+                android:id="@+id/average_tile"
+                style="@style/HeaderTile">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/average_14"
-                    android:textColor="@color/text_muted"
-                    android:textSize="13sp" />
+                <TextView style="@style/StatLabel" android:textSize="12sp" android:text="@string/average_14" />
 
-                <TextView
-                    android:id="@+id/average"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
+                <TextView android:id="@+id/average" style="@style/HeaderTileValue" />
             </LinearLayout>
         </LinearLayout>
 
