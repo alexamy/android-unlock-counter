@@ -49,8 +49,7 @@ class SystemTab(
     fun refresh() {
         exportSubtitle.text = activity.getString(R.string.export_subtitle, store.logEntries())
         burstSubtitle.text = activity.getString(R.string.burst_subtitle, store.burst.toMinutes())
-        val start = store.dayStart.format(TIME)
-        dayStartSubtitle.text = activity.getString(R.string.day_start_subtitle, start, start)
+        dayStartSubtitle.text = activity.getString(R.string.day_start_subtitle, store.dayStart.format(TIME))
     }
 
     private fun editDayStart() {

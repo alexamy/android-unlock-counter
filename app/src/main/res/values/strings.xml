@@ -23,7 +23,7 @@
     <string name="burst_subtitle">Unlocks %d min apart or closer count as a burst</string>
     <string name="burst_prompt">Minutes, from 1 to 60</string>
     <string name="day_start">Day starts at</string>
-    <string name="day_start_subtitle">A day runs from %1$s to %2$s next day</string>
+    <string name="day_start_subtitle">Unlocks before %s count on the previous day</string>
     <string name="burst_invalid">Enter a whole number of minutes from 1 to 60.</string>
     <string name="keep_running">Keep it running</string>
     <string name="export_subtitle">%d unlock times · save as file</string>
