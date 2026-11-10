@@ -43,7 +43,12 @@
     <string name="back">Back</string>
     <string name="day_no_times">No unlock times recorded for this day.</string>
     <string name="times_partial">Times recorded for %1$d of %2$d unlocks</string>
-    <string name="hours_description">Unlocks per hour</string>
+    <string name="strip_legend">Shaded: no unlock for 1 h or more · outlined: longest gap</string>
+    <string name="strip_description">Unlocks across the day. First %1$s, last %2$s, longest gap %3$s.</string>
+    <string name="timeline_unlock">unlock</string>
+    <string name="timeline_burst">%1$d unlocks within %2$s</string>
+    <string name="timeline_break">%s without the phone</string>
+    <string name="timeline_break_longest">%s without the phone · longest</string>
     <string name="stat_first">First</string>
     <string name="stat_last">Last</string>
     <string name="stat_longest_gap">Longest gap</string>

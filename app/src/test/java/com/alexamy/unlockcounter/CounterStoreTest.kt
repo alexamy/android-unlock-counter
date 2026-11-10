@@ -214,7 +214,7 @@ class CounterStoreTest {
     }
 
     @Test
-    fun dayMissingAndPerHour() {
+    fun dayMissing() {
         store.addUnlock()
         store.clearLog()
         time = time.plusMinutes(5)
@@ -223,8 +223,7 @@ class CounterStoreTest {
         store.addUnlock()
         val today = store.day(day)
         assertEquals(1, today.missing)
-        assertEquals(List(24) { if (it == 10 || it == 11) 1 else 0 }, today.perHour)
-        assertEquals(11, today.hour)
+        assertEquals(true, today.isToday)
     }
 
     @Test

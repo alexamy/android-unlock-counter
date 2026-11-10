@@ -76,7 +76,7 @@ class CounterStore(
                 .sortedByDescending { it.toInstant() }
                 .toList()
         }
-        return Day(date, count, times, if (isToday) time.hour else null)
+        return Day(date, count, times, isToday)
     }
 
     fun writeLog(out: OutputStream) = storage.writeLog(out)

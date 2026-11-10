@@ -58,27 +58,21 @@
             android:layout_marginVertical="16dp"
             android:background="@drawable/bg_card"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="14dp">
 
-            <com.alexamy.unlockcounter.BarChart
-                android:id="@+id/hours"
+            <com.alexamy.unlockcounter.DayStrip
+                android:id="@+id/strip"
                 android:layout_width="match_parent"
-                android:layout_height="140dp" />
+                android:layout_height="72dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:importantForAccessibility="noHideDescendants"
-                android:orientation="horizontal">
-
-                <TextView style="@style/HourLabel" android:text="0" />
-                <TextView style="@style/HourLabel" android:text="4" />
-                <TextView style="@style/HourLabel" android:text="8" />
-                <TextView style="@style/HourLabel" android:text="12" />
-                <TextView style="@style/HourLabel" android:text="16" />
-                <TextView style="@style/HourLabel" android:text="20" />
-            </LinearLayout>
+                android:layout_marginTop="6dp"
+                android:importantForAccessibility="no"
+                android:text="@string/strip_legend"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -122,11 +116,11 @@
             android:textSize="13sp" />
 
         <ListView
-            android:id="@+id/times"
+            android:id="@+id/timeline"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:divider="@color/surface_high"
-            android:dividerHeight="1dp" />
+            android:choiceMode="singleChoice"
+            android:divider="@null" />
     </LinearLayout>
 </LinearLayout>
