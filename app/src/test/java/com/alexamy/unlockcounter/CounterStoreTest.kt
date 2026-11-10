@@ -18,8 +18,8 @@ class CounterStoreTest {
             changes.forEach { (key, value) -> if (value == null) values.remove(key) else values[key] = value }
         }
         override fun appendLog(text: String) { log.append(text) }
+        override fun <T> readLog(block: (Sequence<String>) -> T): T = log.toString().reader().buffered().useLines(block)
         override fun writeLog(out: OutputStream) = out.write(log.toString().toByteArray())
-        override fun logLines() = log.count { it == '\n' }
         override fun clearLog() = log.setLength(0)
     }
 
