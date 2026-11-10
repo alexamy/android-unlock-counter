@@ -131,27 +131,26 @@ class CounterStoreTest {
     }
 
     @Test
-    fun lastDaysEndsWithTodayOldestFirst() {
-        store.addUnlock()
-        nextDay(2)
+    fun weeksSkipEmptyWeeksAndEndWithCurrent() {
+        repeat(2) { store.addUnlock() }
+        nextDay(15)
         repeat(3) { store.addUnlock() }
-        assertEquals(listOf(day to 1, day.plusDays(1) to null, day.plusDays(2) to 3), store.lastDays(3))
+        val weeks = store.weeks()
+        assertEquals(listOf(day, day.plusDays(14)), weeks.map { it.monday })
+        assertEquals(listOf(day to 2) + (1L..6L).map { day.plusDays(it) to null }, weeks.first().days)
+        assertEquals(listOf(day.plusDays(14) to null, day.plusDays(15) to 3), weeks.last().days)
+        assertEquals(2.0, weeks.first().average!!, 0.001)
+        assertEquals(null, weeks.last().average)
     }
 
     @Test
-    fun dailyAverageSkipsTodayAndMissingDays() {
+    fun weekAverageSkipsTodayAndMissingDays() {
         repeat(2) { store.addUnlock() }
         nextDay(2)
         repeat(6) { store.addUnlock() }
         nextDay()
         repeat(100) { store.addUnlock() }
-        assertEquals(4.0, store.dailyAverage(14)!!, 0.001)
-    }
-
-    @Test
-    fun dailyAverageIsNullWithoutFinishedDays() {
-        store.addUnlock()
-        assertEquals(null, store.dailyAverage(14))
+        assertEquals(4.0, store.weeks().single().average!!, 0.001)
     }
 
     @Test

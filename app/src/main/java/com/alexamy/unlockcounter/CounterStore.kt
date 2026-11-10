@@ -2,8 +2,10 @@ package com.alexamy.unlockcounter
 
 import android.content.Context
 import java.io.OutputStream
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.temporal.TemporalAdjusters
 
 /**
  * Today's unlock count, the daily history and the log of unlock times.
@@ -45,19 +47,21 @@ class CounterStore(
             .toList()
     }
 
-    /** The last [days] days ending today, oldest first; today is the current count, null = no data that day. */
-    fun lastDays(days: Int): List<Pair<LocalDate, Int?>> {
+    /** Monday-to-Sunday weeks that have data, oldest first; the last one is the current week. */
+    fun weeks(): List<Week> {
         val today = rollover(now().toLocalDate())
-        val records = history()
-        return (days - 1 downTo 0).map { back ->
-            val day = today.day.minusDays(back.toLong())
-            day to if (back == 0) today.count else records[day]
-        }
+        val records = history() + (today.day to today.count)
+        val current = today.day.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        return records.keys.map { it.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
+            .filter { it <= current }
+            .distinct()
+            .sorted()
+            .map { monday ->
+                val days = (0L..6L).map(monday::plusDays).filter { it <= today.day }.map { it to records[it] }
+                val finished = days.filter { it.first < today.day }.mapNotNull { it.second }
+                Week(monday, days, finished.takeIf { it.isNotEmpty() }?.average())
+            }
     }
-
-    /** Average over the finished days with data among the last [days] days; null when there are none. */
-    fun dailyAverage(days: Int): Double? =
-        lastDays(days).dropLast(1).mapNotNull { it.second }.takeIf { it.isNotEmpty() }?.average()
 
     /**
      * [date] with its count and logged unlock times. "Today" is the store's current day, also before a clock sync.

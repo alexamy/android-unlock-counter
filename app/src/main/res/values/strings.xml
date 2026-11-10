@@ -38,7 +38,9 @@
     <string name="size">Size</string>
     <string name="position">Position</string>
     <string name="history_empty">History starts tomorrow. Each finished day shows up here.</string>
-    <string name="chart_description">Unlocks in the last 14 days, oldest first</string>
+    <string name="week_description">Unlocks in the week %s</string>
+    <string name="previous_week">Previous week</string>
+    <string name="next_week">Next week</string>
     <string name="no_data">no data</string>
     <string name="back">Back</string>
     <string name="day_no_times">No unlock times recorded for this day.</string>

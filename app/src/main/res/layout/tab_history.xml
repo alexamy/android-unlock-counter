@@ -68,33 +68,68 @@
             android:layout_marginVertical="16dp"
             android:background="@drawable/bg_card"
             android:orientation="vertical"
-            android:padding="16dp">
-
-            <com.alexamy.unlockcounter.BarChart
-                android:id="@+id/bars"
-                android:layout_width="match_parent"
-                android:layout_height="140dp" />
+            android:paddingHorizontal="16dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <ImageButton
+                    android:id="@+id/prev_week"
+                    style="@style/Spot"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/previous_week"
+                    android:src="@drawable/ic_chevron_left"
+                    android:tint="@color/text" />
+
                 <TextView
-                    android:id="@+id/bars_start"
+                    android:id="@+id/week_label"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
+                    android:accessibilityLiveRegion="polite"
+                    android:gravity="center"
+                    android:textColor="@color/text"
+                    android:textSize="14sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/today_lower"
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
+                <ImageButton
+                    android:id="@+id/next_week"
+                    style="@style/Spot"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/next_week"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="@color/text" />
+            </LinearLayout>
+
+            <com.alexamy.unlockcounter.BarChart
+                android:id="@+id/bars"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginTop="8dp" />
+
+            <LinearLayout
+                android:id="@+id/weekdays"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:importantForAccessibility="noHideDescendants"
+                android:orientation="horizontal">
+
+                <TextView style="@style/WeekdayLabel" />
+                <TextView style="@style/WeekdayLabel" />
+                <TextView style="@style/WeekdayLabel" />
+                <TextView style="@style/WeekdayLabel" />
+                <TextView style="@style/WeekdayLabel" />
+                <TextView style="@style/WeekdayLabel" />
+                <TextView style="@style/WeekdayLabel" />
             </LinearLayout>
         </LinearLayout>
 
