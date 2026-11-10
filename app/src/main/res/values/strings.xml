@@ -44,7 +44,6 @@
     <string name="font_sample">%1$s  123</string>
     <string name="size">Size</string>
     <string name="position">Position</string>
-    <string name="history_empty">History starts tomorrow. Each finished day shows up here.</string>
     <string name="week_description">Unlocks in the week %s</string>
     <string name="previous_week">Previous week</string>
     <string name="next_week">Next week</string>

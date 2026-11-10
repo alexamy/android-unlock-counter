@@ -22,7 +22,6 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
     private val weekLabel = view<TextView>(R.id.week_label)
     private val prevWeek = view<View>(R.id.prev_week)
     private val nextWeek = view<View>(R.id.next_week)
-    private val empty = view<View>(R.id.history_empty)
     private val list = view<ListView>(R.id.history)
 
     private var weeks: List<Week> = emptyList()
@@ -37,21 +36,20 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
     }
 
     fun refresh() {
-        val rows = store.historyRows()
         val kept = weeks.getOrNull(shown)?.monday
         weeks = store.weeks()
         val today = weeks.last().days.last().first
-        todayCount.text = store.todayCount().toString()
+        val count = store.todayCount()
+        val rows = listOf(today to count) + store.historyRows()
+        todayCount.text = count.toString()
         todayTile.setOnClickListener { openDay(today) }
         showWeek(weeks.indexOfFirst { it.monday == kept }.takeIf { it >= 0 } ?: weeks.lastIndex, 0)
         list.setOnItemClickListener { _, _, position, _ -> openDay(rows[position].first) }
-        empty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
-        list.visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
         list.adapter = object : ArrayAdapter<Pair<LocalDate, Int?>>(activity, 0, rows) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val row = convertView ?: activity.layoutInflater.inflate(R.layout.row_history, parent, false)
                 val (day, count) = rows[position]
-                row.findViewById<TextView>(R.id.day).text = day.format(DATE)
+                row.findViewById<TextView>(R.id.day).text = if (day == today) activity.getString(R.string.today) else day.format(DATE)
                 row.findViewById<TextView>(R.id.count).apply {
                     text = count?.toString() ?: NO_DATA
                     setTextColor(activity.getColor(if (count == null) R.color.text_muted else R.color.text))

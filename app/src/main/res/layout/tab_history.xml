@@ -116,15 +116,5 @@
             android:layout_weight="1"
             android:divider="@color/surface_high"
             android:dividerHeight="1dp" />
-
-        <TextView
-            android:id="@+id/history_empty"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingTop="16dp"
-            android:text="@string/history_empty"
-            android:textColor="@color/text_muted"
-            android:textSize="14sp" />
     </LinearLayout>
 </FrameLayout>
