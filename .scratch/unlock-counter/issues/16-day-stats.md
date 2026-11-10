@@ -6,10 +6,10 @@
 
 **Blocked by:** 15 (Day screen with hourly histogram and unlock list)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] First and last unlock show as `HH:mm`
-- [ ] Longest and median gap show as "3 h 05 min" or "6 min"
-- [ ] Bursts count unlocks 60 seconds or less after the previous one
-- [ ] Fewer than 2 logged unlocks shows "—" for the gaps; no logged unlocks shows "—" for all values
-- [ ] Tests cover each stat, including 0, 1 and 2 unlocks and the 60-second boundary
+- [x] First and last unlock show as `HH:mm`
+- [x] Longest and median gap show as "3 h 05 min" or "6 min"
+- [x] Bursts count unlocks 60 seconds or less after the previous one
+- [x] Fewer than 2 logged unlocks shows "—" for the gaps; no logged unlocks shows "—" for all values
+- [x] Tests cover each stat, including 0, 1 and 2 unlocks and the 60-second boundary

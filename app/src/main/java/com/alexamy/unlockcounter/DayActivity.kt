@@ -43,13 +43,21 @@ class DayActivity : Activity() {
             highlight = if (day == now.toLocalDate()) now.hour else null
             contentDescription = getString(R.string.hours_description, hours.withIndex().joinToString { (hour, n) -> "$hour: $n" })
         }
+        val stats = DayStats.of(times)
+        findViewById<TextView>(R.id.first).text = stats.first?.format(MINUTE) ?: NONE
+        findViewById<TextView>(R.id.last).text = stats.last?.format(MINUTE) ?: NONE
+        findViewById<TextView>(R.id.longest_gap).text = stats.longestGap?.let(DayStats::formatGap) ?: NONE
+        findViewById<TextView>(R.id.median_gap).text = stats.medianGap?.let(DayStats::formatGap) ?: NONE
+        findViewById<TextView>(R.id.bursts).text = stats.bursts?.toString() ?: NONE
         findViewById<ListView>(R.id.times).adapter =
             ArrayAdapter(this, R.layout.row_time, times.reversed().map { it.format(TIME) })
     }
 
     companion object {
         private const val EXTRA_DAY = "day"
+        private const val NONE = "—"
         private val TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+        private val MINUTE: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
         fun intent(context: Context, day: LocalDate): Intent =
             Intent(context, DayActivity::class.java).putExtra(EXTRA_DAY, day.toString())

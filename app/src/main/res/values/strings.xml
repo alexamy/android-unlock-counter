@@ -45,6 +45,11 @@
     <string name="day_no_times">No unlock times recorded for this day.</string>
     <string name="times_partial">Times recorded for %1$d of %2$d unlocks</string>
     <string name="hours_description">Unlocks per hour, from midnight: %s</string>
+    <string name="stat_first">First</string>
+    <string name="stat_last">Last</string>
+    <string name="stat_longest_gap">Longest gap</string>
+    <string name="stat_median_gap">Median gap</string>
+    <string name="stat_bursts">Bursts</string>
     <string name="preview_description">Wallpaper preview</string>
     <string-array name="positions">
         <item>Top left</item>

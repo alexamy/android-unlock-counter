@@ -79,6 +79,38 @@
             </LinearLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal">
+
+            <LinearLayout style="@style/StatCell">
+                <TextView style="@style/StatLabel" android:text="@string/stat_first" />
+                <TextView android:id="@+id/first" style="@style/StatValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/StatCell">
+                <TextView style="@style/StatLabel" android:text="@string/stat_last" />
+                <TextView android:id="@+id/last" style="@style/StatValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/StatCell">
+                <TextView style="@style/StatLabel" android:text="@string/stat_longest_gap" />
+                <TextView android:id="@+id/longest_gap" style="@style/StatValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/StatCell">
+                <TextView style="@style/StatLabel" android:text="@string/stat_median_gap" />
+                <TextView android:id="@+id/median_gap" style="@style/StatValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/StatCell">
+                <TextView style="@style/StatLabel" android:text="@string/stat_bursts" />
+                <TextView android:id="@+id/bursts" style="@style/StatValue" />
+            </LinearLayout>
+        </LinearLayout>
+
         <TextView
             android:id="@+id/partial"
             android:layout_width="match_parent"
