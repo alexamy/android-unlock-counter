@@ -36,6 +36,8 @@ class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     private var seconds: List<Int> = emptyList()
     private var downX = 0f
+    private var downY = 0f
+    private var pressed = false
     private var tapped: Int? = null
     private val slop = ViewConfiguration.get(context).scaledTouchSlop
     private val density = resources.displayMetrics.density
@@ -81,8 +83,14 @@ class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (onTap == null || seconds.isEmpty()) return false
         when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN -> downX = event.x
-            MotionEvent.ACTION_UP -> if (abs(event.x - downX) < slop) {
+            MotionEvent.ACTION_DOWN -> {
+                downX = event.x
+                downY = event.y
+                pressed = true
+            }
+            MotionEvent.ACTION_MOVE -> if (abs(event.x - downX) >= slop || abs(event.y - downY) >= slop) pressed = false
+            MotionEvent.ACTION_CANCEL -> pressed = false
+            MotionEvent.ACTION_UP -> if (pressed) {
                 val second = ((event.x - paddingLeft) / (width - paddingLeft - paddingRight) * DAY).toInt()
                 tapped = seconds.indices.minBy { abs(seconds[it] - second) }
                 performClick()
