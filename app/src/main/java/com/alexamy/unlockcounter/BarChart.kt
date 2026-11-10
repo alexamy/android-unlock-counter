@@ -22,8 +22,15 @@ class BarChart(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             invalidate()
         }
 
-    /** Called with the index of the tapped bar; null makes the chart ignore touches. */
+    /** Called with the index of the tapped bar; null makes the chart ignore touches. A click without a touch, as from TalkBack, picks the highlighted bar. */
     var onBarClick: ((Int) -> Unit)? = null
+        set(value) {
+            field = value
+            isClickable = value != null
+        }
+
+    private var pressed: Int? = null
+    private var tapped: Int? = null
 
     private val density = resources.displayMetrics.density
     private val bar = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -53,13 +60,25 @@ class BarChart(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val listener = onBarClick ?: return false
-        if (event.action == MotionEvent.ACTION_UP && values.isNotEmpty()) {
-            performClick()
-            listener((event.x / width * values.size).toInt().coerceIn(0, values.lastIndex))
+        if (onBarClick == null || values.isEmpty()) return false
+        val index = (event.x / width * values.size).toInt().coerceIn(0, values.lastIndex)
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> pressed = index
+            MotionEvent.ACTION_MOVE -> if (index != pressed) pressed = null
+            MotionEvent.ACTION_UP -> if (index == pressed) {
+                tapped = index
+                performClick()
+            }
+            MotionEvent.ACTION_CANCEL -> pressed = null
         }
         return true
     }
 
-    override fun performClick(): Boolean = super.performClick()
+    override fun performClick(): Boolean {
+        super.performClick()
+        val index = tapped ?: highlight ?: values.lastIndex
+        tapped = null
+        onBarClick?.invoke(index)
+        return true
+    }
 }
