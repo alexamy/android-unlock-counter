@@ -5,6 +5,7 @@ import java.io.OutputStream
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.temporal.TemporalAdjusters
 
@@ -19,11 +20,11 @@ class CounterStore(
 ) {
     constructor(context: Context) : this(PrefsCounterStorage(context))
 
-    fun todayCount(): Int = rollover(now().toLocalDate()).count
+    fun todayCount(): Int = rollover(dayOf(now())).count
 
     fun addUnlock() {
         val time = now()
-        val current = rollover(time.toLocalDate())
+        val current = rollover(dayOf(time))
         storage.write(dayChanges(current.copy(count = current.count + 1)) + (LAST to time.toString()))
         storage.appendLog("$time\n")
     }
@@ -39,7 +40,7 @@ class CounterStore(
 
     /** Past days from yesterday back to the oldest record, newest first; null count = no data that day. */
     fun historyRows(): List<Pair<LocalDate, Int?>> {
-        val today = rollover(now().toLocalDate()).day
+        val today = rollover(dayOf(now())).day
         val records = history()
         val oldest = records.keys.minOrNull() ?: return emptyList()
         return generateSequence(today.minusDays(1)) { it.minusDays(1) }
@@ -50,7 +51,7 @@ class CounterStore(
 
     /** Monday-to-Sunday weeks that have data, oldest first; the last one is the current week. */
     fun weeks(): List<Week> {
-        val today = rollover(now().toLocalDate())
+        val today = rollover(dayOf(now()))
         val records = history() + (today.day to today.count)
         val current = today.day.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         return records.keys.map { it.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
@@ -66,28 +67,36 @@ class CounterStore(
 
     /**
      * [date] with its count and logged unlock times. "Today" is the store's current day, also before a clock sync.
-     * Each log line belongs to the date at the offset it was recorded with; unreadable lines are skipped.
+     * Each log line belongs to the day at the offset it was recorded with, by [dayStart]; unreadable lines are skipped.
      */
     fun day(date: LocalDate): Day {
-        val time = now()
-        val today = rollover(time.toLocalDate())
+        val start = dayStart
+        val today = rollover(dayOf(now(), start))
         val isToday = date == today.day
         // Count before log: an unlock recorded in between then adds a time, never a false "missing".
         val count = if (isToday) today.count else history()[date]
         val times = storage.readLog { lines ->
-            lines.filter { it.startsWith(date.toString()) }
+            lines.filter { it.startsWith(date.toString()) || it.startsWith(date.plusDays(1).toString()) }
                 .mapNotNull { runCatching { OffsetDateTime.parse(it) }.getOrNull() }
-                .filter { it.toLocalDate() == date }
+                .filter { dayOf(it, start) == date }
                 .sortedByDescending { it.toInstant() }
                 .toList()
         }
-        return Day(date, count, times, isToday, burst)
+        return Day(date, count, times, isToday, burst, start)
     }
 
     /** How close unlocks must be to count as a burst. */
     var burst: Duration
         get() = storage[BURST]?.toLongOrNull()?.let(Duration::ofMinutes) ?: DayStats.DEFAULT_BURST
         set(value) = storage.write(mapOf(BURST to value.toMinutes().toString()))
+
+    /** When a day begins; an unlock before it counts on the day before. */
+    var dayStart: LocalTime
+        get() = storage[DAY_START]?.let { runCatching { LocalTime.parse(it) }.getOrNull() } ?: Day.DEFAULT_START
+        set(value) = storage.write(mapOf(DAY_START to value.toString()))
+
+    private fun dayOf(time: OffsetDateTime, start: LocalTime = dayStart): LocalDate =
+        time.toLocalDateTime().minusSeconds(start.toSecondOfDay().toLong()).toLocalDate()
 
     fun writeLog(out: OutputStream) = storage.writeLog(out)
 
@@ -121,6 +130,7 @@ class CounterStore(
         const val HISTORY = "history:"
         const val LAST = "last"
         const val BURST = "burst_minutes"
+        const val DAY_START = "day_start"
         val MIN_DAY: LocalDate = LocalDate.of(2020, 1, 1)
     }
 }

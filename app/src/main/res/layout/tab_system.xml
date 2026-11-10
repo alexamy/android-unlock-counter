@@ -54,6 +54,16 @@
                     <TextView android:id="@+id/burst_subtitle" style="@style/RowSubtitle" />
                 </LinearLayout>
             </LinearLayout>
+
+            <View style="@style/RowDivider" />
+
+            <LinearLayout android:id="@+id/day_start" style="@style/Row">
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_clock" android:tint="@color/accent" />
+                <LinearLayout style="@style/RowText">
+                    <TextView style="@style/RowTitle" android:text="@string/day_start" />
+                    <TextView android:id="@+id/day_start_subtitle" style="@style/RowSubtitle" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <TextView style="@style/SectionHeader" android:text="@string/wallpaper" />

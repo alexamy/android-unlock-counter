@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
@@ -240,5 +241,44 @@ class CounterStoreTest {
         store.burst = Duration.ofMinutes(2)
         assertEquals(Duration.ofMinutes(2), CounterStore(storage) { time }.burst)
         assertEquals(Duration.ofMinutes(2), store.day(day).burst)
+    }
+
+    @Test
+    fun unlockBeforeDayStartCountsOnPreviousDay() {
+        store.dayStart = LocalTime.of(1, 0)
+        store.addUnlock()
+        time = OffsetDateTime.of(2026, 11, 10, 0, 30, 0, 0, ZoneOffset.ofHours(1))
+        store.addUnlock()
+        assertEquals(2, store.todayCount())
+        time = time.plusHours(1)
+        assertEquals(0, store.todayCount())
+        assertEquals(listOf(day to 2), store.historyRows())
+    }
+
+    @Test
+    fun dayGroupsLogByDayStart() {
+        store.dayStart = LocalTime.of(1, 0)
+        storage.log.append("2026-11-09T00:59+01:00\n2026-11-09T23:00+01:00\n2026-11-10T00:30+01:00\n2026-11-10T01:00+01:00\n")
+        assertEquals(
+            listOf(OffsetDateTime.parse("2026-11-10T00:30+01:00"), OffsetDateTime.parse("2026-11-09T23:00+01:00")),
+            store.day(day).times,
+        )
+    }
+
+    @Test
+    fun changingDayStartKeepsCounts() {
+        repeat(3) { store.addUnlock() }
+        store.dayStart = LocalTime.NOON
+        assertEquals(0, store.todayCount())
+        store.dayStart = LocalTime.MIDNIGHT
+        assertEquals(3, store.todayCount())
+    }
+
+    @Test
+    fun dayStartDefaultsToMidnightAndIsSaved() {
+        assertEquals(LocalTime.MIDNIGHT, store.dayStart)
+        store.dayStart = LocalTime.of(4, 30)
+        assertEquals(LocalTime.of(4, 30), CounterStore(storage) { time }.dayStart)
+        assertEquals(LocalTime.of(4, 30), store.day(day).start)
     }
 }

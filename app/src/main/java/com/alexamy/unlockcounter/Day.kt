@@ -2,6 +2,7 @@ package com.alexamy.unlockcounter
 
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.OffsetDateTime
 
 /** One day as the day screen shows it. [times] are the logged unlocks, newest first; [count] is null when there is no data. */
@@ -11,6 +12,7 @@ data class Day(
     val times: List<OffsetDateTime>,
     val isToday: Boolean,
     val burst: Duration = DayStats.DEFAULT_BURST,
+    val start: LocalTime = DEFAULT_START,
 ) {
     /** Unlocks counted but not in the log. */
     val missing: Int get() = ((count ?: 0) - times.size).coerceAtLeast(0)
@@ -44,5 +46,6 @@ data class Day(
 
     companion object {
         val BREAK: Duration = Duration.ofMinutes(15)
+        val DEFAULT_START: LocalTime = LocalTime.MIDNIGHT
     }
 }

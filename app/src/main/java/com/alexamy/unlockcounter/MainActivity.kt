@@ -43,9 +43,14 @@ class MainActivity : Activity() {
 
         historyTab = HistoryTab(this, store)
         settingsTab = SettingsTab(this, style) { startActivityForResult(pickImageIntent(), PICK_IMAGE) }
-        systemTab = SystemTab(this, store, style, exportLog = { startActivityForResult(exportLogIntent(), EXPORT_LOG) }) {
-            settingsTab.refresh()
-        }
+        systemTab = SystemTab(
+            this, store, style,
+            exportLog = { startActivityForResult(exportLogIntent(), EXPORT_LOG) },
+            onDayStartChange = {
+                historyTab.refresh()
+                preview.count = store.todayCount()
+            },
+        ) { settingsTab.refresh() }
 
         showTab(startTab(intent))
     }

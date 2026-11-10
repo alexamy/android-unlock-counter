@@ -8,19 +8,23 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
-/** 24 hours left to right with a tick per unlock; gaps of an hour or more are shaded and the longest gap is outlined. */
+/** 24 hours from the day start, left to right, with a tick per unlock; gaps of an hour or more are shaded and the longest gap is outlined. */
 class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    var times: List<OffsetDateTime> = emptyList()
-        set(value) {
-            field = value
-            seconds = value.map { it.toLocalTime().toSecondOfDay() }
-            invalidate()
-        }
+    private var start: LocalTime = LocalTime.MIDNIGHT
 
-    /** Indices of [times] drawn in the accent color. */
+    /** Shows [times] on a day that begins at [start]. */
+    fun show(times: List<OffsetDateTime>, start: LocalTime) {
+        this.start = start
+        seconds = times.map { Math.floorMod(it.toLocalTime().toSecondOfDay() - start.toSecondOfDay(), DAY) }
+        invalidate()
+    }
+
+    /** Indices of the shown times drawn in the accent color. */
     var lit: IntRange = IntRange.EMPTY
         set(value) {
             field = value
@@ -70,7 +74,7 @@ class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         for (hour in 0..24 step 6) {
             val ax = x(hour * HOUR)
             canvas.drawRect(ax - density / 2, band + 2 * density, ax + density / 2, band + 6 * density, axis)
-            val text = "%02d:00".format(hour)
+            val text = start.plusHours(hour.toLong()).format(LABEL)
             label.textAlign = when (hour) {
                 0 -> Paint.Align.LEFT
                 24 -> Paint.Align.RIGHT
@@ -110,5 +114,6 @@ class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private companion object {
         const val HOUR = 3600
         const val DAY = 24 * HOUR
+        val LABEL: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     }
 }

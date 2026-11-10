@@ -2,14 +2,14 @@
 
 # 21: Day start setting
 
-**What to build:** A "Day starts at" row in the System tab's Counting group, with a time picker. A day runs from that time to the same time next day everywhere: the wallpaper count resets then, History and the week chart use it, and the day screen groups logged times by it with the strip running from the start time round to it again. Stored daily counts are never rewritten when the setting changes; the day screen regroups logged times, and the "X of Y" note covers any mismatch. Default 01:00.
+**What to build:** A "Day starts at" row in the System tab's Counting group, with a time picker. A day runs from that time to the same time next day everywhere: the wallpaper count resets then, History and the week chart use it, and the day screen groups logged times by it with the strip running from the start time round to it again. Stored daily counts are never rewritten when the setting changes; the day screen regroups logged times, and the "X of Y" note covers any mismatch. Default 00:00.
 
 **Blocked by:** 20 (Burst window setting), for the Counting group
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The row shows the current start; the picker saves any time of day
-- [ ] An unlock before the start time counts on the previous day
-- [ ] The day screen groups times and draws the strip from the start time
-- [ ] Changing the start never overwrites a stored count
-- [ ] Tests cover counting, rollover and log grouping around the start time
+- [x] The row shows the current start; the picker saves any time of day
+- [x] An unlock before the start time counts on the previous day
+- [x] The day screen groups times and draws the strip from the start time
+- [x] Changing the start never overwrites a stored count
+- [x] Tests cover counting, rollover and log grouping around the start time

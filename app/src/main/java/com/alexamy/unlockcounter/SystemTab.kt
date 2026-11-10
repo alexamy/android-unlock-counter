@@ -2,6 +2,8 @@ package com.alexamy.unlockcounter
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.TimePickerDialog
+import android.text.format.DateFormat
 import android.text.InputType
 import android.view.View
 import android.widget.EditText
@@ -9,6 +11,8 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import java.time.Duration
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 /** System tab: export and clear the unlock log, counting settings, reset the wallpaper settings. */
 class SystemTab(
@@ -16,10 +20,12 @@ class SystemTab(
     private val store: CounterStore,
     style: StyleStore,
     exportLog: () -> Unit,
+    private val onDayStartChange: () -> Unit,
     onReset: () -> Unit,
 ) {
     private val exportSubtitle = activity.findViewById<TextView>(R.id.export_subtitle)
     private val burstSubtitle = activity.findViewById<TextView>(R.id.burst_subtitle)
+    private val dayStartSubtitle = activity.findViewById<TextView>(R.id.day_start_subtitle)
 
     init {
         activity.findViewById<View>(R.id.export_log).setOnClickListener { exportLog() }
@@ -31,6 +37,7 @@ class SystemTab(
             }
         }
         activity.findViewById<View>(R.id.burst_window).setOnClickListener { editBurst() }
+        activity.findViewById<View>(R.id.day_start).setOnClickListener { editDayStart() }
         activity.findViewById<View>(R.id.reset_settings).setOnClickListener {
             confirm(R.string.reset_settings_confirm) {
                 style.reset()
@@ -42,6 +49,17 @@ class SystemTab(
     fun refresh() {
         exportSubtitle.text = activity.getString(R.string.export_subtitle, store.logEntries())
         burstSubtitle.text = activity.getString(R.string.burst_subtitle, store.burst.toMinutes())
+        val start = store.dayStart.format(TIME)
+        dayStartSubtitle.text = activity.getString(R.string.day_start_subtitle, start, start)
+    }
+
+    private fun editDayStart() {
+        val start = store.dayStart
+        TimePickerDialog(activity, { _, hour, minute ->
+            store.dayStart = LocalTime.of(hour, minute)
+            refresh()
+            onDayStartChange()
+        }, start.hour, start.minute, DateFormat.is24HourFormat(activity)).show()
     }
 
     private fun editBurst() {
@@ -78,5 +96,9 @@ class SystemTab(
             .setPositiveButton(android.R.string.ok) { _, _ -> action() }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    private companion object {
+        val TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     }
 }

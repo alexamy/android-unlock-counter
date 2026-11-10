@@ -46,7 +46,7 @@ class DayActivity : Activity() {
         val timeline = day.timeline
         val strip = findViewById<DayStrip>(R.id.strip)
         val list = findViewById<ListView>(R.id.timeline)
-        strip.times = times
+        strip.show(times, day.start)
         strip.contentDescription = getString(R.string.strip_description, first, last, longest)
         // The oldest of equal longest breaks, as the strip outlines the first one in the day.
         list.adapter = TimelineAdapter(timeline, timeline.indexOfLast { it is Day.Entry.Break && it.length == stats.longestGap })
