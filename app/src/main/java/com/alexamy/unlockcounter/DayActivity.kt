@@ -54,7 +54,7 @@ class DayActivity : Activity() {
         strip.onTap = { index ->
             val position = timeline.indexOfFirst { it is Day.Entry.Unlocks && index in it.indices }
             list.setItemChecked(position, true)
-            list.smoothScrollToPosition(position)
+            list.post { list.smoothScrollToPositionFromTop(position, 0) }
             strip.lit = (timeline[position] as Day.Entry.Unlocks).indices
         }
     }
