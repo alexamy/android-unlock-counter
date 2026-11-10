@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ListView
 import android.widget.TextView
-import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.ln
@@ -49,7 +48,8 @@ class DayActivity : Activity() {
         val list = findViewById<ListView>(R.id.timeline)
         strip.times = times
         strip.contentDescription = getString(R.string.strip_description, first, last, longest)
-        list.adapter = TimelineAdapter(timeline, stats.longestGap)
+        // The oldest of equal longest breaks, as the strip outlines the first one in the day.
+        list.adapter = TimelineAdapter(timeline, timeline.indexOfLast { it is Day.Entry.Break && it.length == stats.longestGap })
         list.setOnItemClickListener { _, _, position, _ -> strip.lit = (timeline[position] as Day.Entry.Unlocks).indices }
         strip.onTap = { index ->
             val position = timeline.indexOfFirst { it is Day.Entry.Unlocks && index in it.indices }
@@ -59,7 +59,7 @@ class DayActivity : Activity() {
         }
     }
 
-    private inner class TimelineAdapter(val entries: List<Day.Entry>, val longest: Duration?) : BaseAdapter() {
+    private inner class TimelineAdapter(val entries: List<Day.Entry>, val longest: Int) : BaseAdapter() {
         override fun getCount() = entries.size
         override fun getItem(position: Int) = entries[position]
         override fun getItemId(position: Int) = position.toLong()
@@ -71,14 +71,11 @@ class DayActivity : Activity() {
             when (val entry = entries[position]) {
                 is Day.Entry.Unlocks -> (convertView ?: layoutInflater.inflate(R.layout.row_unlock, parent, false)).apply {
                     findViewById<TextView>(R.id.time).text = entry.first.format(MINUTE)
-                    findViewById<TextView>(R.id.note).apply {
-                        val burst = entry.count > 1
-                        text = if (burst) getString(R.string.timeline_burst, entry.count, DayStats.formatGap(entry.span)) else ""
-                        setTextColor(getColor(R.color.burst))
-                    }
+                    findViewById<TextView>(R.id.note).text =
+                        if (entry.count > 1) getString(R.string.timeline_burst, entry.count, DayStats.formatGap(entry.span)) else ""
                 }
                 is Day.Entry.Break -> (convertView ?: layoutInflater.inflate(R.layout.row_break, parent, false)).apply {
-                    val isLongest = entry.length == longest
+                    val isLongest = position == longest
                     val color = getColor(if (isLongest) R.color.accent else R.color.bar_past)
                     // Height grows with the log of the break, so a 6 h night does not fill the screen.
                     minimumHeight = (resources.displayMetrics.density * (20 + 22 * ln(1.0 + entry.length.toMinutes() / 15.0) / ln(2.0))).toInt()
