@@ -73,9 +73,11 @@
                 android:orientation="horizontal">
 
                 <TextView style="@style/HourLabel" android:text="0" />
-                <TextView style="@style/HourLabel" android:text="6" />
+                <TextView style="@style/HourLabel" android:text="4" />
+                <TextView style="@style/HourLabel" android:text="8" />
                 <TextView style="@style/HourLabel" android:text="12" />
-                <TextView style="@style/HourLabel" android:text="18" />
+                <TextView style="@style/HourLabel" android:text="16" />
+                <TextView style="@style/HourLabel" android:text="20" />
             </LinearLayout>
         </LinearLayout>
 
