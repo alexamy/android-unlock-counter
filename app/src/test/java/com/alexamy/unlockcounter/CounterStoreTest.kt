@@ -180,30 +180,58 @@ class CounterStoreTest {
     }
 
     @Test
-    fun unlockTimesUseRecordedOffsetAndLogOrder() {
+    fun dayTimesUseRecordedOffsetNewestFirst() {
         storage.log.append("2026-11-09T23:30+01:00\n2026-11-10T00:10+01:00\n2026-11-09T22:00-05:00\n")
         assertEquals(
-            listOf(OffsetDateTime.parse("2026-11-09T23:30+01:00"), OffsetDateTime.parse("2026-11-09T22:00-05:00")),
-            store.unlockTimes(day),
+            listOf(OffsetDateTime.parse("2026-11-09T22:00-05:00"), OffsetDateTime.parse("2026-11-09T23:30+01:00")),
+            store.day(day).times,
         )
     }
 
     @Test
-    fun unlockTimesSkipUnreadableLines() {
+    fun dayTimesSkipUnreadableLines() {
         storage.log.append("2026-11-09T08:00+01:00\ngarbage\n2026-11-09T0")
-        assertEquals(listOf(OffsetDateTime.parse("2026-11-09T08:00+01:00")), store.unlockTimes(day))
+        assertEquals(listOf(OffsetDateTime.parse("2026-11-09T08:00+01:00")), store.day(day).times)
     }
 
     @Test
-    fun unlockTimesEmptyWithoutLog() = assertEquals(emptyList<OffsetDateTime>(), store.unlockTimes(day))
+    fun dayWithoutLogHasNoTimes() {
+        val today = store.day(day)
+        assertEquals(emptyList<OffsetDateTime>(), today.times)
+        assertEquals(0, today.missing)
+    }
 
     @Test
     fun dayCountIsTodayHistoryOrNull() {
         repeat(4) { store.addUnlock() }
         nextDay(2)
         store.addUnlock()
-        assertEquals(1, store.dayCount(day.plusDays(2)))
-        assertEquals(4, store.dayCount(day))
-        assertEquals(null, store.dayCount(day.plusDays(1)))
+        assertEquals(1, store.day(day.plusDays(2)).count)
+        assertEquals(true, store.day(day.plusDays(2)).isToday)
+        assertEquals(4, store.day(day).count)
+        assertEquals(false, store.day(day).isToday)
+        assertEquals(null, store.day(day.plusDays(1)).count)
+    }
+
+    @Test
+    fun dayMissingAndPerHour() {
+        store.addUnlock()
+        store.clearLog()
+        time = time.plusMinutes(5)
+        store.addUnlock()
+        time = time.plusHours(1)
+        store.addUnlock()
+        val today = store.day(day)
+        assertEquals(1, today.missing)
+        assertEquals(List(24) { if (it == 10 || it == 11) 1 else 0 }, today.perHour)
+        assertEquals(11, today.hour)
+    }
+
+    @Test
+    fun todayBeforeClockSyncIsStoredDay() {
+        store.addUnlock()
+        time = OffsetDateTime.of(1970, 1, 1, 0, 1, 0, 0, ZoneOffset.UTC)
+        assertEquals(true, store.day(day).isToday)
+        assertEquals(1, store.day(day).count)
     }
 }

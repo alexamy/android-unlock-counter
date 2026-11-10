@@ -59,20 +59,25 @@ class CounterStore(
     fun dailyAverage(days: Int): Double? =
         lastDays(days).dropLast(1).mapNotNull { it.second }.takeIf { it.isNotEmpty() }?.average()
 
-    /** The count of [day]: today's running count, a past day's history, or null when there is no data. */
-    fun dayCount(day: LocalDate): Int? {
-        val today = rollover(now().toLocalDate())
-        return if (day == today.day) today.count else history()[day]
-    }
-
-    /** Unlock times logged on [day], at the offset each was recorded with, in log order. Unreadable lines are skipped. */
-    fun unlockTimes(day: LocalDate): List<OffsetDateTime> =
-        storage.readLog { lines ->
-            lines.filter { it.startsWith(day.toString()) }
+    /**
+     * [date] with its count and logged unlock times. "Today" is the store's current day, also before a clock sync.
+     * Each log line belongs to the date at the offset it was recorded with; unreadable lines are skipped.
+     */
+    fun day(date: LocalDate): Day {
+        val time = now()
+        val today = rollover(time.toLocalDate())
+        val isToday = date == today.day
+        // Count before log: an unlock recorded in between then adds a time, never a false "missing".
+        val count = if (isToday) today.count else history()[date]
+        val times = storage.readLog { lines ->
+            lines.filter { it.startsWith(date.toString()) }
                 .mapNotNull { runCatching { OffsetDateTime.parse(it) }.getOrNull() }
-                .filter { it.toLocalDate() == day }
+                .filter { it.toLocalDate() == date }
+                .sortedByDescending { it.toInstant() }
                 .toList()
         }
+        return Day(date, count, times, if (isToday) time.hour else null)
+    }
 
     fun writeLog(out: OutputStream) = storage.writeLog(out)
 
