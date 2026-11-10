@@ -29,6 +29,10 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
         todayCount.text = window.last().second.toString()
         average.text = store.dailyAverage(BAR_DAYS)?.roundToInt()?.toString() ?: "—"
         bars.values = window.map { it.second }
+        bars.highlight = window.lastIndex
+        bars.onBarClick = { openDay(window[it].first) }
+        todayCount.setOnClickListener { openDay(window.last().first) }
+        list.setOnItemClickListener { _, _, position, _ -> openDay(rows[position].first) }
         bars.contentDescription = activity.getString(R.string.chart_description, window.mapIndexed { i, (_, count) ->
             if (i == window.lastIndex) activity.getString(R.string.today_value, count) else count?.toString() ?: activity.getString(R.string.no_data)
         }.joinToString())
@@ -49,11 +53,13 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
         }
     }
 
+    private fun openDay(day: LocalDate) = activity.startActivity(DayActivity.intent(activity, day))
+
     private fun <T : View> view(id: Int): T = activity.findViewById(id)
 
-    private companion object {
-        const val BAR_DAYS = 14
+    companion object {
+        private const val BAR_DAYS = 14
         val DATE: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy")
-        val SHORT_DATE: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM")
+        private val SHORT_DATE: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM")
     }
 }

@@ -28,14 +28,7 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (Build.VERSION.SDK_INT >= 35) {
-            // Android 15 forces edge-to-edge for targetSdk 35: keep content out of the system bars.
-            findViewById<View>(R.id.root).setOnApplyWindowInsetsListener { view, insets ->
-                val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
-                view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-                insets
-            }
-        }
+        findViewById<View>(R.id.root).padForSystemBars()
         renderer = WallpaperRenderer(this) {
             preview.invalidate()
             settingsTab.updateImageControls()
@@ -131,5 +124,15 @@ class MainActivity : Activity() {
         const val SYSTEM = 2
         private const val PICK_IMAGE = 1
         private const val EXPORT_LOG = 2
+    }
+}
+
+/** Android 15 forces edge-to-edge for targetSdk 35: keep content out of the system bars. */
+fun View.padForSystemBars() {
+    if (Build.VERSION.SDK_INT < 35) return
+    setOnApplyWindowInsetsListener { view, insets ->
+        val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
+        view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+        insets
     }
 }

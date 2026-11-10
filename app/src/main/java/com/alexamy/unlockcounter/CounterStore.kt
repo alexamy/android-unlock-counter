@@ -1,6 +1,7 @@
 package com.alexamy.unlockcounter
 
 import android.content.Context
+import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -58,6 +59,19 @@ class CounterStore(
     /** Average over the finished days with data among the last [days] days; null when there are none. */
     fun dailyAverage(days: Int): Double? =
         lastDays(days).dropLast(1).mapNotNull { it.second }.takeIf { it.isNotEmpty() }?.average()
+
+    /** The count of [day]: today's running count, a past day's history, or null when there is no data. */
+    fun dayCount(day: LocalDate): Int? {
+        val today = rollover(now().toLocalDate())
+        return if (day == today.day) today.count else history()[day]
+    }
+
+    /** Unlock times logged on [day], at the offset each was recorded with, in log order. Unreadable lines are skipped. */
+    fun unlockTimes(day: LocalDate): List<OffsetDateTime> =
+        ByteArrayOutputStream().also(storage::writeLog).toString().lineSequence()
+            .mapNotNull { runCatching { OffsetDateTime.parse(it) }.getOrNull() }
+            .filter { it.toLocalDate() == day }
+            .toList()
 
     fun writeLog(out: OutputStream) = storage.writeLog(out)
 

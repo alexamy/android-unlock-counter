@@ -124,4 +124,12 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">@color/surface_high</item>
     </style>
+
+    <style name="HourLabel">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/text_muted</item>
+        <item name="android:textSize">11sp</item>
+    </style>
 </resources>

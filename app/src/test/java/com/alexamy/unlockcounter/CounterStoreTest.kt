@@ -178,4 +178,32 @@ class CounterStoreTest {
         store.addUnlockIfNoneSince(time.minusMinutes(1))
         assertEquals(0, store.todayCount())
     }
+
+    @Test
+    fun unlockTimesUseRecordedOffsetAndLogOrder() {
+        storage.log.append("2026-11-09T23:30+01:00\n2026-11-10T00:10+01:00\n2026-11-09T22:00-05:00\n")
+        assertEquals(
+            listOf(OffsetDateTime.parse("2026-11-09T23:30+01:00"), OffsetDateTime.parse("2026-11-09T22:00-05:00")),
+            store.unlockTimes(day),
+        )
+    }
+
+    @Test
+    fun unlockTimesSkipUnreadableLines() {
+        storage.log.append("2026-11-09T08:00+01:00\ngarbage\n2026-11-09T0")
+        assertEquals(listOf(OffsetDateTime.parse("2026-11-09T08:00+01:00")), store.unlockTimes(day))
+    }
+
+    @Test
+    fun unlockTimesEmptyWithoutLog() = assertEquals(emptyList<OffsetDateTime>(), store.unlockTimes(day))
+
+    @Test
+    fun dayCountIsTodayHistoryOrNull() {
+        repeat(4) { store.addUnlock() }
+        nextDay(2)
+        store.addUnlock()
+        assertEquals(1, store.dayCount(day.plusDays(2)))
+        assertEquals(4, store.dayCount(day))
+        assertEquals(null, store.dayCount(day.plusDays(1)))
+    }
 }

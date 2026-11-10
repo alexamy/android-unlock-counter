@@ -20,6 +20,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".DayActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".SettingsEntryActivity"
             android:exported="true"
             android:theme="@android:style/Theme.NoDisplay" />
