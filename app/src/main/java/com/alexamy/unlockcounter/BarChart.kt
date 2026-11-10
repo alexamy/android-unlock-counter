@@ -10,11 +10,18 @@ import android.view.View
 
 /** Bars left to right; the [highlight] bar uses the accent color, a null value is drawn as a dashed empty slot. */
 class BarChart(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    var values: List<Int?> = emptyList()
-        set(value) {
-            field = value
-            invalidate()
-        }
+    /** A bar's value, null = no data, and the label spoken before it. */
+    data class Bar(val value: Int?, val label: String)
+
+    private var values: List<Int?> = emptyList()
+
+    /** Shows [bars] and describes them to screen readers as "[title]: label: value, …". */
+    fun show(title: String, bars: List<Bar>) {
+        values = bars.map { it.value }
+        val noData = context.getString(R.string.no_data)
+        contentDescription = "$title: " + bars.joinToString { "${it.label}: ${it.value ?: noData}" }
+        invalidate()
+    }
 
     var highlight: Int? = null
         set(value) {

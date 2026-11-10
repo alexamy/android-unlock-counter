@@ -31,11 +31,9 @@ class DayActivity : Activity() {
             text = getString(R.string.times_partial, times.size, day.count)
         }
 
-        val hours = day.perHour
         findViewById<BarChart>(R.id.hours).apply {
-            values = hours
+            show(getString(R.string.hours_description), day.perHour.mapIndexed { hour, n -> BarChart.Bar(n, "$hour h") })
             highlight = day.hour
-            contentDescription = getString(R.string.hours_description, hours.withIndex().joinToString { (hour, n) -> "$hour: $n" })
         }
         val stats = day.stats
         findViewById<TextView>(R.id.first).text = stats.first?.format(MINUTE) ?: HistoryTab.NO_DATA

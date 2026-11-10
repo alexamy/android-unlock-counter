@@ -38,13 +38,12 @@
     <string name="size">Size</string>
     <string name="position">Position</string>
     <string name="history_empty">History starts tomorrow. Each finished day shows up here.</string>
-    <string name="chart_description">Unlocks in the last 14 days, oldest first: %s</string>
+    <string name="chart_description">Unlocks in the last 14 days, oldest first</string>
     <string name="no_data">no data</string>
-    <string name="today_value">today %d</string>
     <string name="back">Back</string>
     <string name="day_no_times">No unlock times recorded for this day.</string>
     <string name="times_partial">Times recorded for %1$d of %2$d unlocks</string>
-    <string name="hours_description">Unlocks per hour, from midnight: %s</string>
+    <string name="hours_description">Unlocks per hour</string>
     <string name="stat_first">First</string>
     <string name="stat_last">Last</string>
     <string name="stat_longest_gap">Longest gap</string>

@@ -28,14 +28,13 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
         val window = store.lastDays(BAR_DAYS)
         todayCount.text = window.last().second.toString()
         average.text = store.dailyAverage(BAR_DAYS)?.roundToInt()?.toString() ?: NO_DATA
-        bars.values = window.map { it.second }
+        bars.show(activity.getString(R.string.chart_description), window.mapIndexed { i, (day, count) ->
+            BarChart.Bar(count, if (i == window.lastIndex) activity.getString(R.string.today_lower) else day.format(SHORT_DATE))
+        })
         bars.highlight = window.lastIndex
         bars.onBarClick = { openDay(window[it].first) }
         todayCount.setOnClickListener { openDay(window.last().first) }
         list.setOnItemClickListener { _, _, position, _ -> openDay(rows[position].first) }
-        bars.contentDescription = activity.getString(R.string.chart_description, window.mapIndexed { i, (_, count) ->
-            if (i == window.lastIndex) activity.getString(R.string.today_value, count) else count?.toString() ?: activity.getString(R.string.no_data)
-        }.joinToString())
         barsStart.text = window.first().first.format(SHORT_DATE)
         empty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
         list.visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
