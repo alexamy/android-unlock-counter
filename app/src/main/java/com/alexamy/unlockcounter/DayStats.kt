@@ -12,7 +12,6 @@ data class DayStats(
     val bursts: Int?,
 ) {
     companion object {
-        /** A burst unlock comes this soon or sooner after the previous one. */
         val BURST: Duration = Duration.ofSeconds(60)
 
         fun of(times: List<OffsetDateTime>): DayStats {

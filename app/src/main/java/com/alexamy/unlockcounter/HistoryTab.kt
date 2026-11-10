@@ -27,7 +27,7 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
         val rows = store.historyRows()
         val window = store.lastDays(BAR_DAYS)
         todayCount.text = window.last().second.toString()
-        average.text = store.dailyAverage(BAR_DAYS)?.roundToInt()?.toString() ?: "—"
+        average.text = store.dailyAverage(BAR_DAYS)?.roundToInt()?.toString() ?: NO_DATA
         bars.values = window.map { it.second }
         bars.highlight = window.lastIndex
         bars.onBarClick = { openDay(window[it].first) }
@@ -45,7 +45,7 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
                 val (day, count) = rows[position]
                 row.findViewById<TextView>(R.id.day).text = day.format(DATE)
                 row.findViewById<TextView>(R.id.count).apply {
-                    text = count?.toString() ?: "—"
+                    text = count?.toString() ?: NO_DATA
                     setTextColor(activity.getColor(if (count == null) R.color.text_muted else R.color.text))
                 }
                 return row
@@ -59,6 +59,7 @@ class HistoryTab(private val activity: Activity, private val store: CounterStore
 
     companion object {
         private const val BAR_DAYS = 14
+        const val NO_DATA = "—"
         val DATE: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy")
         private val SHORT_DATE: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM")
     }

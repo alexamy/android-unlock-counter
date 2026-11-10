@@ -12,7 +12,6 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-/** One day: unlocks per hour and the logged unlock times, newest first. */
 class DayActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,11 +22,12 @@ class DayActivity : Activity() {
         val store = CounterStore(this)
         val day = LocalDate.parse(intent.getStringExtra(EXTRA_DAY))
         val now = OffsetDateTime.now()
+        val isToday = day == now.toLocalDate()
         val times = store.unlockTimes(day)
         val count = store.dayCount(day)
 
         findViewById<TextView>(R.id.title).text =
-            if (day == now.toLocalDate()) getString(R.string.today) else day.format(HistoryTab.DATE)
+            if (isToday) getString(R.string.today) else day.format(HistoryTab.DATE)
 
         findViewById<View>(R.id.day_empty).visibility = if (times.isEmpty()) View.VISIBLE else View.GONE
         findViewById<View>(R.id.day_content).visibility = if (times.isEmpty()) View.GONE else View.VISIBLE
@@ -40,22 +40,21 @@ class DayActivity : Activity() {
         val hours = (0..23).map { perHour[it] ?: 0 }
         findViewById<BarChart>(R.id.hours).apply {
             values = hours
-            highlight = if (day == now.toLocalDate()) now.hour else null
+            highlight = if (isToday) now.hour else null
             contentDescription = getString(R.string.hours_description, hours.withIndex().joinToString { (hour, n) -> "$hour: $n" })
         }
         val stats = DayStats.of(times)
-        findViewById<TextView>(R.id.first).text = stats.first?.format(MINUTE) ?: NONE
-        findViewById<TextView>(R.id.last).text = stats.last?.format(MINUTE) ?: NONE
-        findViewById<TextView>(R.id.longest_gap).text = stats.longestGap?.let(DayStats::formatGap) ?: NONE
-        findViewById<TextView>(R.id.median_gap).text = stats.medianGap?.let(DayStats::formatGap) ?: NONE
-        findViewById<TextView>(R.id.bursts).text = stats.bursts?.toString() ?: NONE
+        findViewById<TextView>(R.id.first).text = stats.first?.format(MINUTE) ?: HistoryTab.NO_DATA
+        findViewById<TextView>(R.id.last).text = stats.last?.format(MINUTE) ?: HistoryTab.NO_DATA
+        findViewById<TextView>(R.id.longest_gap).text = stats.longestGap?.let(DayStats::formatGap) ?: HistoryTab.NO_DATA
+        findViewById<TextView>(R.id.median_gap).text = stats.medianGap?.let(DayStats::formatGap) ?: HistoryTab.NO_DATA
+        findViewById<TextView>(R.id.bursts).text = stats.bursts?.toString() ?: HistoryTab.NO_DATA
         findViewById<ListView>(R.id.times).adapter =
             ArrayAdapter(this, R.layout.row_time, times.sortedByDescending { it.toInstant() }.map { it.format(TIME) })
     }
 
     companion object {
         private const val EXTRA_DAY = "day"
-        private const val NONE = "—"
         private val TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
         private val MINUTE: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
