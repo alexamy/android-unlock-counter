@@ -73,8 +73,8 @@ class DayActivity : Activity() {
                     findViewById<TextView>(R.id.time).text = entry.first.format(MINUTE)
                     findViewById<TextView>(R.id.note).apply {
                         val burst = entry.count > 1
-                        text = if (burst) getString(R.string.timeline_burst, entry.count, DayStats.formatGap(entry.span)) else getString(R.string.timeline_unlock)
-                        setTextColor(getColor(if (burst) R.color.burst else R.color.text_muted))
+                        text = if (burst) getString(R.string.timeline_burst, entry.count, DayStats.formatGap(entry.span)) else ""
+                        setTextColor(getColor(R.color.burst))
                     }
                 }
                 is Day.Entry.Break -> (convertView ?: layoutInflater.inflate(R.layout.row_break, parent, false)).apply {

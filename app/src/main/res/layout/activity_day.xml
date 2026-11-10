@@ -64,15 +64,6 @@
                 android:id="@+id/strip"
                 android:layout_width="match_parent"
                 android:layout_height="72dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:importantForAccessibility="no"
-                android:text="@string/strip_legend"
-                android:textColor="@color/text_muted"
-                android:textSize="11sp" />
         </LinearLayout>
 
         <LinearLayout
