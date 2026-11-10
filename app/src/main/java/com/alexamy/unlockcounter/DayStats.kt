@@ -12,7 +12,7 @@ data class DayStats(
     val bursts: Int?,
 ) {
     companion object {
-        val BURST: Duration = Duration.ofSeconds(60)
+        val BURST: Duration = Duration.ofMinutes(5)
 
         fun of(times: List<OffsetDateTime>): DayStats {
             val sorted = times.sortedBy { it.toInstant() }

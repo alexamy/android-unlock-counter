@@ -42,8 +42,8 @@ class DayStatsTest {
         assertEquals(Duration.ofSeconds(150), DayStats.of(listOf(start, at(100), at(300), at(1300), at(1400))).medianGap)
 
     @Test
-    fun burstIncludesSixtySecondsExactly() =
-        assertEquals(1, DayStats.of(listOf(start, at(60), at(121))).bursts)
+    fun burstIncludesFiveMinutesExactly() =
+        assertEquals(1, DayStats.of(listOf(start, at(300), at(601))).bursts)
 
     @Test
     fun gapFormat() {

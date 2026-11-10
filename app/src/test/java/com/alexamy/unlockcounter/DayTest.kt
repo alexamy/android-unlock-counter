@@ -18,9 +18,9 @@ class DayTest {
     fun emptyDayHasNoEntries() = assertEquals(emptyList<Day.Entry>(), timeline())
 
     @Test
-    fun unlocksSixtySecondsApartFoldNewestFirst() = assertEquals(
-        listOf(Unlocks(at(300), Duration.ZERO, 0..0), Unlocks(start, Duration.ofSeconds(120), 1..3)),
-        timeline(0, 60, 120, 300),
+    fun unlocksFiveMinutesApartFoldNewestFirst() = assertEquals(
+        listOf(Unlocks(at(601), Duration.ZERO, 0..0), Unlocks(start, Duration.ofSeconds(300), 1..2)),
+        timeline(0, 300, 601),
     )
 
     @Test
