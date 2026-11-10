@@ -10,19 +10,20 @@ data class Day(
     val count: Int?,
     val times: List<OffsetDateTime>,
     val isToday: Boolean,
+    val burst: Duration = DayStats.DEFAULT_BURST,
 ) {
     /** Unlocks counted but not in the log. */
     val missing: Int get() = ((count ?: 0) - times.size).coerceAtLeast(0)
-    val stats: DayStats get() = DayStats.of(times)
+    val stats: DayStats get() = DayStats.of(times, burst)
 
-    /** Newest first: unlocks [DayStats.BURST] or less apart share one entry, and a gap of [BREAK] or more gets its own. */
+    /** Newest first: unlocks [burst] or less apart share one entry, and a gap of [BREAK] or more gets its own. */
     val timeline: List<Entry>
         get() {
             val entries = mutableListOf<Entry>()
             var start = 0
             while (start < times.size) {
                 var end = start
-                while (end + 1 < times.size && gap(end + 1, end) <= DayStats.BURST) end++
+                while (end + 1 < times.size && gap(end + 1, end) <= burst) end++
                 entries += Entry.Unlocks(times[end], Duration.between(times[end], times[start]), start..end)
                 if (end + 1 < times.size && gap(end + 1, end) >= BREAK) entries += Entry.Break(gap(end + 1, end))
                 start = end + 1

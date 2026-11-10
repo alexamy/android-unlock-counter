@@ -18,6 +18,11 @@
     <string name="log_cleared">Log cleared.</string>
     <string name="unlock_log">Unlock log</string>
     <string name="wallpaper">Wallpaper</string>
+    <string name="counting">Counting</string>
+    <string name="burst_window">Burst window</string>
+    <string name="burst_subtitle">Unlocks %d min apart or closer count as a burst</string>
+    <string name="burst_prompt">Minutes, from 1 to 60</string>
+    <string name="burst_invalid">Enter a whole number of minutes from 1 to 60.</string>
     <string name="keep_running">Keep it running</string>
     <string name="export_subtitle">%d unlock times · save as file</string>
     <string name="clear_log_subtitle">Daily counts stay</string>

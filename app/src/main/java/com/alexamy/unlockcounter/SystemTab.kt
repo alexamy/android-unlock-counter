@@ -2,11 +2,15 @@ package com.alexamy.unlockcounter
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.text.InputType
 import android.view.View
+import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import java.time.Duration
 
-/** System tab: export and clear the unlock log, reset the wallpaper settings. */
+/** System tab: export and clear the unlock log, counting settings, reset the wallpaper settings. */
 class SystemTab(
     private val activity: Activity,
     private val store: CounterStore,
@@ -15,6 +19,7 @@ class SystemTab(
     onReset: () -> Unit,
 ) {
     private val exportSubtitle = activity.findViewById<TextView>(R.id.export_subtitle)
+    private val burstSubtitle = activity.findViewById<TextView>(R.id.burst_subtitle)
 
     init {
         activity.findViewById<View>(R.id.export_log).setOnClickListener { exportLog() }
@@ -25,6 +30,7 @@ class SystemTab(
                 Toast.makeText(activity, R.string.log_cleared, Toast.LENGTH_LONG).show()
             }
         }
+        activity.findViewById<View>(R.id.burst_window).setOnClickListener { editBurst() }
         activity.findViewById<View>(R.id.reset_settings).setOnClickListener {
             confirm(R.string.reset_settings_confirm) {
                 style.reset()
@@ -35,6 +41,35 @@ class SystemTab(
 
     fun refresh() {
         exportSubtitle.text = activity.getString(R.string.export_subtitle, store.logEntries())
+        burstSubtitle.text = activity.getString(R.string.burst_subtitle, store.burst.toMinutes())
+    }
+
+    private fun editBurst() {
+        val field = EditText(activity).apply {
+            inputType = InputType.TYPE_CLASS_NUMBER
+            setText(store.burst.toMinutes().toString())
+            selectAll()
+        }
+        val box = FrameLayout(activity).apply {
+            val side = (20 * resources.displayMetrics.density).toInt()
+            setPadding(side, 0, side, 0)
+            addView(field)
+        }
+        AlertDialog.Builder(activity)
+            .setTitle(R.string.burst_window)
+            .setMessage(R.string.burst_prompt)
+            .setView(box)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val minutes = field.text.toString().toLongOrNull()
+                if (minutes != null && minutes in 1..60) {
+                    store.burst = Duration.ofMinutes(minutes)
+                    refresh()
+                } else {
+                    Toast.makeText(activity, R.string.burst_invalid, Toast.LENGTH_LONG).show()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun confirm(message: Int, action: () -> Unit) {

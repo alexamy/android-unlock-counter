@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
+import java.time.Duration
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -231,5 +232,13 @@ class CounterStoreTest {
         time = OffsetDateTime.of(1970, 1, 1, 0, 1, 0, 0, ZoneOffset.UTC)
         assertEquals(true, store.day(day).isToday)
         assertEquals(1, store.day(day).count)
+    }
+
+    @Test
+    fun burstDefaultsToFiveMinutesAndIsSaved() {
+        assertEquals(Duration.ofMinutes(5), store.burst)
+        store.burst = Duration.ofMinutes(2)
+        assertEquals(Duration.ofMinutes(2), CounterStore(storage) { time }.burst)
+        assertEquals(Duration.ofMinutes(2), store.day(day).burst)
     }
 }

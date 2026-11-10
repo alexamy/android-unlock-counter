@@ -12,9 +12,10 @@ data class DayStats(
     val bursts: Int?,
 ) {
     companion object {
-        val BURST: Duration = Duration.ofMinutes(5)
+        val DEFAULT_BURST: Duration = Duration.ofMinutes(5)
 
-        fun of(times: List<OffsetDateTime>): DayStats {
+        /** A burst unlock comes [burst] or sooner after the previous one. */
+        fun of(times: List<OffsetDateTime>, burst: Duration = DEFAULT_BURST): DayStats {
             val sorted = times.sortedBy { it.toInstant() }
             val gaps = sorted.zipWithNext { a, b -> Duration.between(a, b) }.sorted()
             val median = when {
@@ -27,7 +28,7 @@ data class DayStats(
                 last = sorted.lastOrNull(),
                 longestGap = gaps.lastOrNull(),
                 medianGap = median,
-                bursts = if (sorted.isEmpty()) null else gaps.count { it <= BURST },
+                bursts = if (sorted.isEmpty()) null else gaps.count { it <= burst },
             )
         }
 

@@ -38,6 +38,24 @@
             </LinearLayout>
         </LinearLayout>
 
+        <TextView style="@style/SectionHeader" android:text="@string/counting" />
+
+        <LinearLayout
+            android:id="@+id/counting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical">
+
+            <LinearLayout android:id="@+id/burst_window" style="@style/Row">
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_unlock" android:tint="@color/accent" />
+                <LinearLayout style="@style/RowText">
+                    <TextView style="@style/RowTitle" android:text="@string/burst_window" />
+                    <TextView android:id="@+id/burst_subtitle" style="@style/RowSubtitle" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
         <TextView style="@style/SectionHeader" android:text="@string/wallpaper" />
 
         <LinearLayout

@@ -46,6 +46,10 @@ class DayStatsTest {
         assertEquals(1, DayStats.of(listOf(start, at(300), at(601))).bursts)
 
     @Test
+    fun burstUsesTheGivenWindow() =
+        assertEquals(2, DayStats.of(listOf(start, at(100), at(200)), Duration.ofSeconds(100)).bursts)
+
+    @Test
     fun gapFormat() {
         assertEquals("<1 min", DayStats.formatGap(Duration.ofSeconds(59)))
         assertEquals("6 min", DayStats.formatGap(Duration.ofMinutes(6)))

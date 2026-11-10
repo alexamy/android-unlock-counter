@@ -3,6 +3,7 @@ package com.alexamy.unlockcounter
 import android.content.Context
 import java.io.OutputStream
 import java.time.DayOfWeek
+import java.time.Duration
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.temporal.TemporalAdjusters
@@ -80,8 +81,13 @@ class CounterStore(
                 .sortedByDescending { it.toInstant() }
                 .toList()
         }
-        return Day(date, count, times, isToday)
+        return Day(date, count, times, isToday, burst)
     }
+
+    /** How close unlocks must be to count as a burst. */
+    var burst: Duration
+        get() = storage[BURST]?.toLongOrNull()?.let(Duration::ofMinutes) ?: DayStats.DEFAULT_BURST
+        set(value) = storage.write(mapOf(BURST to value.toMinutes().toString()))
 
     fun writeLog(out: OutputStream) = storage.writeLog(out)
 
@@ -114,6 +120,7 @@ class CounterStore(
         const val COUNT = "count"
         const val HISTORY = "history:"
         const val LAST = "last"
+        const val BURST = "burst_minutes"
         val MIN_DAY: LocalDate = LocalDate.of(2020, 1, 1)
     }
 }
