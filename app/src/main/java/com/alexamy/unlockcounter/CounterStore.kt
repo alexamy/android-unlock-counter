@@ -69,6 +69,7 @@ class CounterStore(
     /** Unlock times logged on [day], at the offset each was recorded with, in log order. Unreadable lines are skipped. */
     fun unlockTimes(day: LocalDate): List<OffsetDateTime> =
         ByteArrayOutputStream().also(storage::writeLog).toString().lineSequence()
+            .filter { it.startsWith(day.toString()) }
             .mapNotNull { runCatching { OffsetDateTime.parse(it) }.getOrNull() }
             .filter { it.toLocalDate() == day }
             .toList()

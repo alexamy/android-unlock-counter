@@ -50,7 +50,7 @@ class DayActivity : Activity() {
         findViewById<TextView>(R.id.median_gap).text = stats.medianGap?.let(DayStats::formatGap) ?: NONE
         findViewById<TextView>(R.id.bursts).text = stats.bursts?.toString() ?: NONE
         findViewById<ListView>(R.id.times).adapter =
-            ArrayAdapter(this, R.layout.row_time, times.reversed().map { it.format(TIME) })
+            ArrayAdapter(this, R.layout.row_time, times.sortedByDescending { it.toInstant() }.map { it.format(TIME) })
     }
 
     companion object {
