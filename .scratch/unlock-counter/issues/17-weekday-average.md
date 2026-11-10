@@ -2,14 +2,14 @@
 
 # 17: Average per weekday on the History tab
 
-**What to build:** Below the 14-day chart, seven bars from Mon to Sun show the average daily count for each weekday, with the rounded value under each bar. The averages use the daily counts (not the log), over all finished days with data; today is not included. A weekday with no data shows a dashed slot and "—". No bar is highlighted. The order is always Mon → Sun, whatever the phone's locale.
+**What to build:** Below the week chart, seven bars from Mon to Sun show the average daily count for each weekday, with the rounded value under each bar. The averages use the daily counts (not the log), over all finished days with data; today is not included. A weekday with no data shows a dashed slot and "—". No bar is highlighted. The order is always Mon → Sun, whatever the phone's locale; the labels use the locale's short weekday names, like the week chart.
 
-**Blocked by:** 15 (Day screen with hourly histogram and unlock list), for the bar chart highlight change
+**Blocked by:** None (can start immediately)
 
 **Status:** ready-for-agent
 
 - [ ] Seven bars, Mon → Sun, with rounded averages under them
 - [ ] Days without data and today are not in the average
 - [ ] A weekday with no data shows a dashed slot and "—"
-- [ ] The bars have a content description for screen readers, like the 14-day chart
+- [ ] The bars have a content description for screen readers, through `BarChart.show`, like the week chart
 - [ ] Tests cover the averages, including a weekday with no data and today being left out

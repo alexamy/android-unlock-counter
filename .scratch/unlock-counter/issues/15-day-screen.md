@@ -4,6 +4,8 @@
 
 **What to build:** Tapping a history row, one of the 14 bars, or today's count opens a day screen with a back arrow. The title is the date in the history format, or "Today". The screen shows 24 hourly bars with labels at 0, 6, 12 and 18, then a list of that day's unlock times, newest first, as `HH:mm:ss`. The data comes from `unlocks.log`; each line belongs to the date at the offset it was recorded with. When the log has fewer lines than the day's count, show "Times recorded for X of Y unlocks". When the log has no lines for the day, show "No unlock times recorded for this day" in place of the chart. Data loads when the screen opens; it does not update live. The bar chart highlights a chosen bar instead of always the last one.
 
+**Superseded:** the hourly histogram and the time list were replaced by 18 (pinned day strip and timeline).
+
 **Blocked by:** None (can start immediately)
 
 **Status:** done
