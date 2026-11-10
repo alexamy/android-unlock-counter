@@ -6,12 +6,12 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] A history row, a 14-day bar and today's count each open the day screen for their day
-- [ ] The histogram highlights the current hour on today and no bar on past days; hours without unlocks are zero-height bars
-- [ ] The list shows the day's logged times, newest first, as `HH:mm:ss`; tapping a bar does not filter it
-- [ ] Log lines are grouped by their recorded offset, not by the current time zone
-- [ ] The "X of Y" note and the "No unlock times" state show when the log and the count differ
-- [ ] The 14-day chart still highlights today
-- [ ] Tests cover reading a day's times from the log, including lines with other offsets and an empty or missing log
+- [x] A history row, a 14-day bar and today's count each open the day screen for their day
+- [x] The histogram highlights the current hour on today and no bar on past days; hours without unlocks are zero-height bars
+- [x] The list shows the day's logged times, newest first, as `HH:mm:ss`; tapping a bar does not filter it
+- [x] Log lines are grouped by their recorded offset, not by the current time zone
+- [x] The "X of Y" note and the "No unlock times" state show when the log and the count differ
+- [x] The 14-day chart still highlights today
+- [x] Tests cover reading a day's times from the log, including lines with other offsets and an empty or missing log
