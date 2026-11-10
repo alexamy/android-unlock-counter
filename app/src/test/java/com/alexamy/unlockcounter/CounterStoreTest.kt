@@ -269,9 +269,30 @@ class CounterStoreTest {
     fun changingDayStartKeepsCounts() {
         repeat(3) { store.addUnlock() }
         store.dayStart = LocalTime.NOON
-        assertEquals(0, store.todayCount())
+        assertEquals(3, store.todayCount())
         store.dayStart = LocalTime.MIDNIGHT
         assertEquals(3, store.todayCount())
+    }
+
+    @Test
+    fun laterDayStartKeepsTodayUntilItBegins() {
+        repeat(2) { store.addUnlock() }
+        nextDay()
+        repeat(3) { store.addUnlock() }
+        store.dayStart = LocalTime.NOON
+        assertEquals(3, store.todayCount())
+        assertEquals(listOf(day to 2), store.historyRows())
+        time = time.plusDays(1).withHour(11)
+        assertEquals(3, store.todayCount())
+        time = time.withHour(13)
+        assertEquals(0, store.todayCount())
+        assertEquals(listOf(day.plusDays(1) to 3, day to 2), store.historyRows())
+    }
+
+    @Test
+    fun savedBurstOutOfRangeFallsBackToDefault() {
+        storage.values["burst_minutes"] = "0"
+        assertEquals(Duration.ofMinutes(5), store.burst)
     }
 
     @Test

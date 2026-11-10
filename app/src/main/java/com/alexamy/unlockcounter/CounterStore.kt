@@ -87,13 +87,17 @@ class CounterStore(
 
     /** How close unlocks must be to count as a burst. */
     var burst: Duration
-        get() = storage[BURST]?.toLongOrNull()?.let(Duration::ofMinutes) ?: DayStats.DEFAULT_BURST
+        get() = storage[BURST]?.toLongOrNull()?.takeIf { it in 1..60 }?.let(Duration::ofMinutes) ?: DayStats.DEFAULT_BURST
         set(value) = storage.write(mapOf(BURST to value.toMinutes().toString()))
 
     /** When a day begins; an unlock before it counts on the day before. */
     var dayStart: LocalTime
         get() = storage[DAY_START]?.let { runCatching { LocalTime.parse(it) }.getOrNull() } ?: Day.DEFAULT_START
-        set(value) = storage.write(mapOf(DAY_START to value.toString()))
+        set(value) {
+            // The current day keeps counting until the new start, so a later start never reopens yesterday.
+            val current = rollover(dayOf(now()))
+            storage.write(mapOf(DAY_START to value.toString(), HELD_DAY to current.day.toString()))
+        }
 
     private fun dayOf(time: OffsetDateTime, start: LocalTime = dayStart): LocalDate =
         time.toLocalDateTime().minusSeconds(start.toSecondOfDay().toLong()).toLocalDate()
@@ -115,6 +119,7 @@ class CounterStore(
         val stored = DayCount(storage[DAY]?.let(LocalDate::parse) ?: today, storage[COUNT]?.toInt() ?: 0)
         // Before network time sync a phone can boot at 1970: keep counting on the stored day.
         if (stored.day == today || today < MIN_DAY) return stored
+        if (today < stored.day && storage[HELD_DAY] == stored.day.toString()) return stored
         val archived = (storage[HISTORY + stored.day]?.toInt() ?: 0) + stored.count
         val current = DayCount(today, storage[HISTORY + today]?.toInt() ?: 0)
         storage.write(dayChanges(current) + mapOf(HISTORY + stored.day to archived.toString(), HISTORY + today to null))
@@ -131,6 +136,7 @@ class CounterStore(
         const val LAST = "last"
         const val BURST = "burst_minutes"
         const val DAY_START = "day_start"
+        const val HELD_DAY = "held_day"
         val MIN_DAY: LocalDate = LocalDate.of(2020, 1, 1)
     }
 }

@@ -26,8 +26,8 @@ class CounterWallpaperService : WallpaperService() {
     override fun onCreate() {
         super.onCreate()
         val filter = IntentFilter(Intent.ACTION_USER_PRESENT).apply {
-            // Midnight and clock changes: the shown day may change without an unlock.
-            addAction(Intent.ACTION_DATE_CHANGED)
+            // Each minute and on clock changes: a day can begin at any minute (day start setting), or the setting can change.
+            addAction(Intent.ACTION_TIME_TICK)
             addAction(Intent.ACTION_TIME_CHANGED)
             addAction(Intent.ACTION_TIMEZONE_CHANGED)
         }
