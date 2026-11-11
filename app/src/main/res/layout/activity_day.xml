@@ -158,14 +158,6 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/locks_note"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:textColor="@color/text_muted"
-            android:textSize="13sp" />
-
-        <TextView
             android:id="@+id/partial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

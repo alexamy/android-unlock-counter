@@ -41,11 +41,8 @@ data class Day(
     val missing: Int get() = ((count ?: 0) - times.size).coerceAtLeast(0)
     val stats: DayStats by lazy { DayStats.of(times, burst) }
 
-    /** True when at least one session of the day has a logged lock; the day then shows sessions, else unlocks only. */
-    private val hasLocks: Boolean by lazy { ends.any { it != null } }
-
-    /** The first day with lock times, when this day comes before it and so shows unlocks only. */
-    val locksStart: LocalDate? get() = locksSince?.takeIf { !hasLocks && date < it }
+    /** A past day recorded before lock tracking started; it has no sessions to show. */
+    val legacy: Boolean get() = !isToday && locksSince?.let { date < it } != false
 
     /**
      * One per unlock, newest first. The newest one today with no lock yet is open and ends now.
@@ -68,38 +65,21 @@ data class Day(
 
     val offTimes: List<Duration> get() = offSpans.map { (lock, unlock) -> Duration.between(lock, unlock) }
 
-    /**
-     * The longest break, the oldest of equal ones: the longest locked span on a day with locks,
-     * else the longest gap between unlocks. The strip outlines it and the timeline marks it.
-     */
+    /** The longest locked span, the oldest of equal ones. The strip outlines it and the timeline marks it. */
     val longestBreak: Pair<OffsetDateTime, OffsetDateTime>? by lazy {
-        val spans = if (hasLocks) offSpans else times.reversed().zipWithNext()
-        spans.maxByOrNull { (from, to) -> Duration.between(from, to) }
+        offSpans.maxByOrNull { (from, to) -> Duration.between(from, to) }
     }
 
-    /** What the statistics card lists, by the day's kind: sessions or unlocks only. */
+    /** What the statistics card lists. */
     val statRows: List<Stat>
-        get() {
-            val longest = longestBreak?.let { (from, to) -> Duration.between(from, to) }
-            return if (hasLocks) {
-                listOf(
-                    Stat.Time(Stat.Name.FIRST_UNLOCK, stats.first),
-                    Stat.Time(Stat.Name.LAST_LOCK, lastLock),
-                    Stat.Length(Stat.Name.LONGEST_OFF, longest),
-                    Stat.Length(Stat.Name.MEDIAN_OFF, DayStats.median(offTimes)),
-                    Stat.Length(Stat.Name.SCREEN_TIME, screenTime),
-                    Stat.Count(Stat.Name.BURSTS, stats.bursts),
-                )
-            } else {
-                listOf(
-                    Stat.Time(Stat.Name.FIRST_UNLOCK, stats.first),
-                    Stat.Time(Stat.Name.LAST_UNLOCK, stats.last),
-                    Stat.Length(Stat.Name.LONGEST_GAP, longest),
-                    Stat.Length(Stat.Name.MEDIAN_GAP, stats.medianGap),
-                    Stat.Count(Stat.Name.BURSTS, stats.bursts),
-                )
-            }
-        }
+        get() = listOf(
+            Stat.Time(Stat.Name.FIRST_UNLOCK, stats.first),
+            Stat.Time(Stat.Name.LAST_LOCK, lastLock),
+            Stat.Length(Stat.Name.LONGEST_OFF, longestBreak?.let { (from, to) -> Duration.between(from, to) }),
+            Stat.Length(Stat.Name.MEDIAN_OFF, DayStats.median(offTimes)),
+            Stat.Length(Stat.Name.SCREEN_TIME, screenTime),
+            Stat.Count(Stat.Name.BURSTS, stats.bursts),
+        )
 
     val screenTime: Duration get() = sessions.mapNotNull { it.length }.fold(Duration.ZERO, Duration::plus)
     val lastLock: OffsetDateTime? get() = sessions.filter { !it.open }.mapNotNull { it.end }.maxByOrNull { it.toInstant() }
@@ -112,10 +92,9 @@ data class Day(
     /** An unlock [burst] or sooner after the one before it. */
     private fun isBurst(index: Int): Boolean = index + 1 < times.size && gap(index + 1, index) <= burst
 
-    /** Finished sessions counted by length: under the glance limit, then up to 10, 30 and more minutes; null without locks. */
-    val lengths: List<Bucket>?
+    /** Finished sessions counted by length: under the glance limit, then up to 10, 30 and more minutes. */
+    val lengths: List<Bucket>
         get() {
-            if (!hasLocks) return null
             val limits = listOf(glance.toMinutes()) + listOf(10L, 30L).filter { it > glance.toMinutes() }
             val bounds = listOf(0L) + limits
             val finished = sessions.filter { !it.open }.mapNotNull { it.length }
@@ -126,30 +105,19 @@ data class Day(
         }
 
     /**
-     * Newest first. Without locks, unlocks [burst] or less apart share one entry, and a gap of [BREAK] or more gets its own.
-     * With locks, each session is its own entry, and a break is the time locked between two sessions,
-     * or the time between the unlocks where the lock is missing. The [longestBreak] entry is marked.
+     * Newest first: each session is an entry, and a break of [BREAK] or more between two sessions gets its own.
+     * A break runs from the lock, or from the unlock where the lock is missing. The [longestBreak] entry is marked.
      */
     val timeline: List<Entry> by lazy {
-        val entries = mutableListOf<Entry>()
-        var start = 0
-        while (start < times.size) {
-            var end = start
-            while (!hasLocks && end + 1 < times.size && gap(end + 1, end) <= burst) end++
-            entries += if (hasLocks) {
-                Entry.Use(sessions[start], start, burst = isBurst(start), glance = start in glances)
-            } else {
-                Entry.Unlocks(times[end], Duration.between(times[end], times[start]), start..end)
-            }
-            if (end + 1 < times.size) {
-                val lock = if (hasLocks) ends[end + 1] else null
-                val from = lock ?: times[end + 1]
-                val off = Duration.between(from, times[end])
-                if (off >= BREAK) entries += Entry.Break(off, locked = lock != null, longest = (from to times[end]) == longestBreak)
-            }
-            start = end + 1
+        times.indices.flatMap { i ->
+            val use = Entry.Use(sessions[i], i, burst = isBurst(i), glance = i in glances)
+            if (i + 1 == times.size) return@flatMap listOf(use)
+            val lock = ends[i + 1]
+            val from = lock ?: times[i + 1]
+            val off = Duration.between(from, times[i])
+            if (off < BREAK) listOf(use)
+            else listOf(use, Entry.Break(off, locked = lock != null, longest = (from to times[i]) == longestBreak))
         }
-        entries
     }
 
     private fun gap(older: Int, newer: Int): Duration = Duration.between(times[older], times[newer])
@@ -162,20 +130,8 @@ data class Day(
     data class Bucket(val from: Long, val to: Long?, val count: Int)
 
     sealed interface Entry {
-        /** An entry that stands for the unlocks at [indices] of [times]. */
-        sealed interface Picked : Entry {
-            val indices: IntRange
-        }
-
-        /** The unlocks at [indices] of [times], starting at [first] and lasting [span]; shown on a day without locks. */
-        data class Unlocks(val first: OffsetDateTime, val span: Duration, override val indices: IntRange) : Picked {
-            val count: Int get() = indices.count()
-        }
-
-        /** One session, the unlock at [index] of [times]; shown on a day with locks. */
-        data class Use(val session: Session, val index: Int, val burst: Boolean, val glance: Boolean) : Picked {
-            override val indices: IntRange get() = index..index
-        }
+        /** One session, the unlock at [index] of [times]. */
+        data class Use(val session: Session, val index: Int, val burst: Boolean, val glance: Boolean) : Entry
 
         /** [locked] when the break runs from a logged lock; otherwise it runs from the unlock before it. */
         data class Break(val length: Duration, val locked: Boolean = false, val longest: Boolean = false) : Entry
@@ -189,7 +145,7 @@ data class Day(
         data class Length(override val name: Name, val value: Duration?) : Stat
         data class Count(override val name: Name, val value: Int?) : Stat
 
-        enum class Name { FIRST_UNLOCK, LAST_UNLOCK, LAST_LOCK, LONGEST_GAP, MEDIAN_GAP, LONGEST_OFF, MEDIAN_OFF, SCREEN_TIME, BURSTS }
+        enum class Name { FIRST_UNLOCK, LAST_LOCK, LONGEST_OFF, MEDIAN_OFF, SCREEN_TIME, BURSTS }
     }
 
     companion object {

@@ -38,22 +38,21 @@ class DayActivity : Activity() {
         findViewById<TextView>(R.id.title).text =
             if (day.isToday) getString(R.string.today) else day.date.format(HistoryTab.DATE)
 
-        findViewById<View>(R.id.day_empty).visibility = if (times.isEmpty()) View.VISIBLE else View.GONE
-        findViewById<View>(R.id.day_content).visibility = if (times.isEmpty()) View.GONE else View.VISIBLE
+        val empty = times.isEmpty() || day.legacy
+        findViewById<TextView>(R.id.day_empty).apply {
+            visibility = if (empty) View.VISIBLE else View.GONE
+            setText(if (day.legacy) R.string.day_legacy else R.string.day_no_times)
+        }
+        findViewById<View>(R.id.day_content).visibility = if (empty) View.GONE else View.VISIBLE
+        if (empty) return
         findViewById<TextView>(R.id.partial).apply {
             visibility = if (day.missing > 0) View.VISIBLE else View.GONE
             text = getString(R.string.times_partial, times.size, day.count)
         }
-        findViewById<TextView>(R.id.locks_note).apply {
-            visibility = if (day.locksStart != null) View.VISIBLE else View.GONE
-            text = getString(R.string.locks_since, day.locksStart?.format(HistoryTab.DATE))
-        }
 
         fold(R.id.lengths_head, R.id.lengths_chevron, R.id.lengths_body, expanded = true)
         fold(R.id.stats_head, R.id.stats_chevron, R.id.stats_body, expanded = false)
-        val lengths = day.lengths
-        findViewById<View>(R.id.lengths_card).visibility = if (lengths != null) View.VISIBLE else View.GONE
-        lengths?.let(::showLengths)
+        showLengths(day.lengths)
         showStats(day.statRows)
 
         val timeline = day.timeline
@@ -69,12 +68,12 @@ class DayActivity : Activity() {
             longest?.let(DayStats::formatGap) ?: HistoryTab.NO_DATA,
         )
         list.adapter = TimelineAdapter(timeline)
-        list.setOnItemClickListener { _, _, position, _ -> strip.lit = (timeline[position] as Day.Entry.Picked).indices }
+        list.setOnItemClickListener { _, _, position, _ -> strip.lit = (timeline[position] as Day.Entry.Use).index.let { it..it } }
         strip.onTap = { index ->
-            val position = timeline.indexOfFirst { it is Day.Entry.Picked && index in it.indices }
+            val position = timeline.indexOfFirst { it is Day.Entry.Use && it.index == index }
             list.setItemChecked(position, true)
             list.post { list.smoothScrollToPositionFromTop(position, 0) }
-            strip.lit = (timeline[position] as Day.Entry.Picked).indices
+            strip.lit = index..index
         }
     }
 
@@ -158,22 +157,13 @@ class DayActivity : Activity() {
         override fun getCount() = entries.size
         override fun getItem(position: Int) = entries[position]
         override fun getItemId(position: Int) = position.toLong()
-        override fun getViewTypeCount() = 3
-        override fun getItemViewType(position: Int) = when (entries[position]) {
-            is Day.Entry.Unlocks -> 0
-            is Day.Entry.Break -> 1
-            is Day.Entry.Use -> 2
-        }
-        override fun isEnabled(position: Int) = entries[position] is Day.Entry.Picked
+        override fun getViewTypeCount() = 2
+        override fun getItemViewType(position: Int) = if (entries[position] is Day.Entry.Use) 0 else 1
+        override fun isEnabled(position: Int) = entries[position] is Day.Entry.Use
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
             when (val entry = entries[position]) {
                 is Day.Entry.Use -> session(entry, convertView, parent)
-                is Day.Entry.Unlocks -> (convertView ?: layoutInflater.inflate(R.layout.row_unlock, parent, false)).apply {
-                    findViewById<TextView>(R.id.time).text = entry.first.format(MINUTE)
-                    findViewById<TextView>(R.id.note).text =
-                        if (entry.count > 1) getString(R.string.timeline_burst, entry.count, DayStats.formatGap(entry.span)) else ""
-                }
                 is Day.Entry.Break -> (convertView ?: layoutInflater.inflate(R.layout.row_break, parent, false)).apply {
                     val isLongest = entry.longest
                     val color = getColor(if (isLongest) R.color.accent else R.color.bar_past)
@@ -228,10 +218,7 @@ class DayActivity : Activity() {
         private val MINUTE: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
         private val LABELS = mapOf(
             Day.Stat.Name.FIRST_UNLOCK to R.string.stat_first_unlock,
-            Day.Stat.Name.LAST_UNLOCK to R.string.stat_last_unlock,
             Day.Stat.Name.LAST_LOCK to R.string.stat_last_lock,
-            Day.Stat.Name.LONGEST_GAP to R.string.stat_longest_gap,
-            Day.Stat.Name.MEDIAN_GAP to R.string.stat_median_gap,
             Day.Stat.Name.LONGEST_OFF to R.string.stat_longest_off,
             Day.Stat.Name.MEDIAN_OFF to R.string.stat_median_off,
             Day.Stat.Name.SCREEN_TIME to R.string.stat_screen_time,

@@ -7,8 +7,6 @@ import java.time.OffsetDateTime
 data class DayStats(
     val first: OffsetDateTime?,
     val last: OffsetDateTime?,
-    val longestGap: Duration?,
-    val medianGap: Duration?,
     val bursts: Int?,
 ) {
     companion object {
@@ -21,8 +19,6 @@ data class DayStats(
             return DayStats(
                 first = sorted.firstOrNull(),
                 last = sorted.lastOrNull(),
-                longestGap = gaps.maxOrNull(),
-                medianGap = median(gaps),
                 bursts = if (sorted.isEmpty()) null else gaps.count { it <= burst },
             )
         }

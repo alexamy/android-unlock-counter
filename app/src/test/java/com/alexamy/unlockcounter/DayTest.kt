@@ -1,7 +1,6 @@
 package com.alexamy.unlockcounter
 
 import com.alexamy.unlockcounter.Day.Entry.Break
-import com.alexamy.unlockcounter.Day.Entry.Unlocks
 import com.alexamy.unlockcounter.Day.Entry.Use
 import com.alexamy.unlockcounter.Day.Session
 import com.alexamy.unlockcounter.Day.Stat
@@ -19,24 +18,6 @@ class DayTest {
 
     @Test
     fun emptyDayHasNoEntries() = assertEquals(emptyList<Day.Entry>(), timeline())
-
-    @Test
-    fun unlocksFiveMinutesApartFoldNewestFirst() = assertEquals(
-        listOf(Unlocks(at(601), Duration.ZERO, 0..0), Unlocks(start, Duration.ofSeconds(300), 1..2)),
-        timeline(0, 300, 601),
-    )
-
-    @Test
-    fun gapOfFifteenMinutesIsABreak() = assertEquals(
-        listOf(Unlocks(at(900), Duration.ZERO, 0..0), Break(Duration.ofMinutes(15), longest = true), Unlocks(start, Duration.ZERO, 1..1)),
-        timeline(0, 900),
-    )
-
-    @Test
-    fun gapUnderFifteenMinutesIsNoBreak() = assertEquals(
-        listOf(Unlocks(at(899), Duration.ZERO, 0..0), Unlocks(start, Duration.ZERO, 1..1)),
-        timeline(0, 899),
-    )
 
     private fun sessions(vararg spans: Pair<Long, Long?>, now: OffsetDateTime? = null): Day {
         val events = spans.flatMap { (unlock, lock) -> listOfNotNull(LogEvent(at(unlock), isLock = false), lock?.let { LogEvent(at(it), isLock = true) }) }
@@ -108,24 +89,6 @@ class DayTest {
     )
 
     @Test
-    fun withoutLocksTheLongestBreakIsTheLongestGapBetweenUnlocks() = assertEquals(
-        at(0) to at(900),
-        Day(LocalDate.of(2026, 11, 9), 3, listOf(0L, 900L, 1000L).map { LogEvent(at(it), isLock = false) }, false).longestBreak,
-    )
-
-    @Test
-    fun statRowsWithoutLocksShowUnlockGaps() = assertEquals(
-        listOf(
-            Stat.Time(Stat.Name.FIRST_UNLOCK, start),
-            Stat.Time(Stat.Name.LAST_UNLOCK, at(900)),
-            Stat.Length(Stat.Name.LONGEST_GAP, Duration.ofMinutes(15)),
-            Stat.Length(Stat.Name.MEDIAN_GAP, Duration.ofMinutes(15)),
-            Stat.Count(Stat.Name.BURSTS, 0),
-        ),
-        Day(LocalDate.of(2026, 11, 9), 2, listOf(0L, 900L).map { LogEvent(at(it), isLock = false) }, false).statRows,
-    )
-
-    @Test
     fun statRowsWithLocksShowSessions() = assertEquals(
         listOf(
             Stat.Time(Stat.Name.FIRST_UNLOCK, start),
@@ -137,14 +100,6 @@ class DayTest {
         ),
         sessions(0L to 60L, 600L to 700L).statRows,
     )
-
-    @Test
-    fun locksStartShowsOnlyOnADayBeforeLockTimes() {
-        val next = LocalDate.of(2026, 11, 10)
-        val unlocksOnly = Day(LocalDate.of(2026, 11, 9), 1, listOf(LogEvent(start, isLock = false)), false, locksSince = next)
-        assertEquals(next, unlocksOnly.locksStart)
-        assertEquals(null, sessions(0L to 60L).copy(locksSince = next).locksStart)
-    }
 
     @Test
     fun pairsTheLockRightAfterAnUnlockAlsoOnTheNextDay() {
@@ -159,4 +114,15 @@ class DayTest {
         assertEquals(listOf(night, start), day.times)
         assertEquals(listOf(night.plusMinutes(5), null), day.ends)
     }
+
+    @Test
+    fun aPastDayBeforeLockTrackingIsLegacy() {
+        val day = sessions(0L to null)
+        assertEquals(true, day.legacy)
+        assertEquals(true, day.copy(locksSince = LocalDate.of(2026, 11, 10)).legacy)
+        assertEquals(false, day.copy(locksSince = LocalDate.of(2026, 11, 9)).legacy)
+    }
+
+    @Test
+    fun todayIsNeverLegacy() = assertEquals(false, sessions(0L to null, now = at(60)).legacy)
 }

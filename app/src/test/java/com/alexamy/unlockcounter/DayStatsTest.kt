@@ -11,17 +11,15 @@ class DayStatsTest {
 
     @Test
     fun noUnlocksHasNoValues() =
-        assertEquals(DayStats(null, null, null, null, null), DayStats.of(emptyList()))
+        assertEquals(DayStats(null, null, null), DayStats.of(emptyList()))
 
     @Test
     fun oneUnlockHasNoGaps() =
-        assertEquals(DayStats(start, start, null, null, 0), DayStats.of(listOf(start)))
+        assertEquals(DayStats(start, start, 0), DayStats.of(listOf(start)))
 
     @Test
-    fun twoUnlocksHaveOneGap() {
-        val gap = Duration.ofMinutes(7)
-        assertEquals(DayStats(start, at(420), gap, gap, 0), DayStats.of(listOf(start, at(420))))
-    }
+    fun twoUnlocksHaveFirstAndLast() =
+        assertEquals(DayStats(start, at(420), 0), DayStats.of(listOf(start, at(420))))
 
     @Test
     fun firstAndLastFollowTimeNotLogOrder() {
@@ -31,15 +29,8 @@ class DayStatsTest {
     }
 
     @Test
-    fun longestAndMedianGap() {
-        val stats = DayStats.of(listOf(start, at(60), at(360), at(3960)))
-        assertEquals(Duration.ofMinutes(60), stats.longestGap)
-        assertEquals(Duration.ofMinutes(5), stats.medianGap)
-    }
-
-    @Test
     fun medianOfEvenGapsIsTheMiddleMean() =
-        assertEquals(Duration.ofSeconds(150), DayStats.of(listOf(start, at(100), at(300), at(1300), at(1400))).medianGap)
+        assertEquals(Duration.ofSeconds(150), DayStats.median(listOf(100L, 200L, 1000L, 100L).map(Duration::ofSeconds)))
 
     @Test
     fun burstIncludesFiveMinutesExactly() =
