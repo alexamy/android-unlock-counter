@@ -31,7 +31,13 @@ class DayActivity : Activity() {
         setContentView(R.layout.activity_day)
         findViewById<View>(R.id.root).padForSystemBars()
         findViewById<View>(R.id.back).setOnClickListener { finish() }
+        fold(R.id.lengths_head, R.id.lengths_chevron, R.id.lengths_body, expanded = true)
+        fold(R.id.stats_head, R.id.stats_chevron, R.id.stats_body, expanded = false)
+    }
 
+    // Built on each resume, so a day seen again after a lock or an app switch shows the new unlocks.
+    override fun onResume() {
+        super.onResume()
         val day = CounterStore(this).day(LocalDate.parse(intent.getStringExtra(EXTRA_DAY)))
         val times = day.times
 
@@ -50,8 +56,6 @@ class DayActivity : Activity() {
             text = getString(R.string.times_partial, times.size, day.count)
         }
 
-        fold(R.id.lengths_head, R.id.lengths_chevron, R.id.lengths_body, expanded = true)
-        fold(R.id.stats_head, R.id.stats_chevron, R.id.stats_body, expanded = false)
         showLengths(day.lengths)
         showStats(day.statRows)
 
@@ -94,6 +98,7 @@ class DayActivity : Activity() {
 
     private fun showStats(rows: List<Day.Stat>) {
         val body = findViewById<LinearLayout>(R.id.stats_body)
+        body.removeAllViews()
         rows.forEach { stat ->
             body.addView(layoutInflater.inflate(R.layout.row_stat, body, false).apply {
                 findViewById<TextView>(R.id.label).setText(LABELS.getValue(stat.name))
@@ -108,6 +113,7 @@ class DayActivity : Activity() {
 
     private fun showLengths(buckets: List<Day.Bucket>) {
         val body = findViewById<LinearLayout>(R.id.lengths_body)
+        body.removeAllViews()
         val max = buckets.maxOf { it.count }.coerceAtLeast(1)
         buckets.forEachIndexed { i, bucket ->
             body.addView(layoutInflater.inflate(R.layout.row_bucket, body, false).apply {
