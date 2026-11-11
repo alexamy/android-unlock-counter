@@ -55,6 +55,10 @@ class BarChart(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         color = context.getColor(R.color.bar_past)
         pathEffect = DashPathEffect(floatArrayOf(4 * density, 4 * density), 0f)
     }
+    private val label = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textAlign = Paint.Align.CENTER
+        textSize = 11 * resources.displayMetrics.scaledDensity
+    }
 
     override fun onDraw(canvas: Canvas) {
         if (values.isEmpty()) return
@@ -62,14 +66,19 @@ class BarChart(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val w = (width - gap * (slots - 1)) / slots
         val radius = minOf(4 * density, w / 2)
         val max = values.filterNotNull().maxOrNull()?.coerceAtLeast(1) ?: 1
+        val labelGap = 4 * density
+        val top = -label.ascent() + labelGap
+        val room = height - top
         values.forEachIndexed { i, value ->
             val left = i * (w + gap)
             if (value == null) {
-                canvas.drawRoundRect(left, 0f, left + w, height.toFloat(), radius, radius, empty)
+                canvas.drawRoundRect(left, top, left + w, height.toFloat(), radius, radius, empty)
             } else {
-                val h = maxOf(2 * density, height * value.toFloat() / max)
+                val h = maxOf(2 * density, room * value / max)
                 bar.color = context.getColor(if (i == highlight) R.color.accent else R.color.bar_past)
                 canvas.drawRoundRect(left, height - h, left + w, height.toFloat(), radius, radius, bar)
+                label.color = context.getColor(if (i == highlight) R.color.accent else R.color.text_muted)
+                canvas.drawText(value.toString(), left + w / 2, height - h - labelGap, label)
             }
         }
     }

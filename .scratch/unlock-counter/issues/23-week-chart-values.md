@@ -6,9 +6,9 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Each bar with a value shows its count above it
-- [ ] The highlighted bar's number is in the accent color
-- [ ] No number for a no-data slot or an unused slot
-- [ ] The tallest bar's number is not clipped
+- [x] Each bar with a value shows its count above it
+- [x] The highlighted bar's number is in the accent color
+- [x] No number for a no-data slot or an unused slot
+- [x] The tallest bar's number is not clipped
