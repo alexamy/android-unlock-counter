@@ -18,7 +18,7 @@
     <string name="log_cleared">Log cleared.</string>
     <string name="unlock_log">Unlock log</string>
     <string name="wallpaper">Wallpaper</string>
-    <string name="counting">Counting</string>
+    <string name="counting">Day and sessions</string>
     <string name="burst_window">Burst window</string>
     <string name="burst_subtitle">Unlocks %d min apart or closer count as a burst</string>
     <string name="minutes_prompt">Minutes, from 1 to 60</string>
