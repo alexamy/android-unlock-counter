@@ -6,8 +6,8 @@
 
 **Blocked by:** 24 (Session pairing in Day)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] DayActivity has no view-mode checks
-- [ ] Stat rows for both modes are tested in DayTest
-- [ ] Strip outline and timeline highlight come from one longest break
+- [x] DayActivity has no view-mode checks
+- [x] Stat rows for both modes are tested in DayTest
+- [x] Strip outline and timeline highlight come from one longest break

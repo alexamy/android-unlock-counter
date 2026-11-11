@@ -34,8 +34,6 @@ class DayActivity : Activity() {
 
         val day = CounterStore(this).day(LocalDate.parse(intent.getStringExtra(EXTRA_DAY)))
         val times = day.times
-        val stats = day.stats
-        val sessions = day.sessions
 
         findViewById<TextView>(R.id.title).text =
             if (day.isToday) getString(R.string.today) else day.date.format(HistoryTab.DATE)
@@ -46,59 +44,37 @@ class DayActivity : Activity() {
             visibility = if (day.missing > 0) View.VISIBLE else View.GONE
             text = getString(R.string.times_partial, times.size, day.count)
         }
-        val locksLater = !day.hasLocks && day.locksSince?.let { day.date < it } == true
         findViewById<TextView>(R.id.locks_note).apply {
-            visibility = if (locksLater) View.VISIBLE else View.GONE
-            text = getString(R.string.locks_since, day.locksSince?.format(HistoryTab.DATE))
+            visibility = if (day.locksStart != null) View.VISIBLE else View.GONE
+            text = getString(R.string.locks_since, day.locksStart?.format(HistoryTab.DATE))
         }
-
-        val first = stats.first?.format(MINUTE) ?: HistoryTab.NO_DATA
-        val last = stats.last?.format(MINUTE) ?: HistoryTab.NO_DATA
-        val longest = stats.longestGap?.let(DayStats::formatGap) ?: HistoryTab.NO_DATA
-        val bursts = stats.bursts?.toString() ?: HistoryTab.NO_DATA
-        val offTimes = day.offTimes
-        val longestOff = day.longestOff?.let { (lock, unlock) -> Duration.between(lock, unlock) }
-        fun format(d: Duration?) = d?.let(DayStats::formatGap) ?: HistoryTab.NO_DATA
 
         fold(R.id.lengths_head, R.id.lengths_chevron, R.id.lengths_body, expanded = true)
         fold(R.id.stats_head, R.id.stats_chevron, R.id.stats_body, expanded = false)
-        findViewById<View>(R.id.lengths_card).visibility = if (day.hasLocks) View.VISIBLE else View.GONE
-        if (day.hasLocks) showLengths(day.lengths)
-        showStats(
-            if (day.hasLocks) {
-                listOf(
-                    R.string.stat_first_unlock to first,
-                    R.string.stat_last_lock to (day.lastLock?.format(MINUTE) ?: HistoryTab.NO_DATA),
-                    R.string.stat_longest_off to format(longestOff),
-                    R.string.stat_median_off to format(DayStats.median(offTimes)),
-                    R.string.stat_screen_time to format(day.screenTime),
-                    R.string.stat_bursts to bursts,
-                )
-            } else {
-                listOf(
-                    R.string.stat_first_unlock to first,
-                    R.string.stat_last_unlock to last,
-                    R.string.stat_longest_gap to longest,
-                    R.string.stat_median_gap to format(stats.medianGap),
-                    R.string.stat_bursts to bursts,
-                )
-            },
-        )
+        val lengths = day.lengths
+        findViewById<View>(R.id.lengths_card).visibility = if (lengths != null) View.VISIBLE else View.GONE
+        lengths?.let(::showLengths)
+        showStats(day.statRows)
 
         val timeline = day.timeline
         val strip = findViewById<DayStrip>(R.id.strip)
         val list = findViewById<ListView>(R.id.timeline)
-        strip.show(times, day.start, sessions.indices.filter { day.isGlance(sessions[it]) }.toSet(), if (day.hasLocks) day.longestOff else null)
-        strip.contentDescription = getString(R.string.strip_description, first, last, if (day.hasLocks) format(longestOff) else longest)
-        val longestBreak = if (day.hasLocks) longestOff else stats.longestGap
-        // The oldest of equal longest breaks, as the strip outlines the first one in the day.
-        list.adapter = TimelineAdapter(day, timeline, timeline.indexOfLast { it is Day.Entry.Break && it.locked == day.hasLocks && it.length == longestBreak })
-        list.setOnItemClickListener { _, _, position, _ -> strip.lit = (timeline[position] as Day.Entry.Unlocks).indices }
+        strip.show(times, day.start, day.glances, day.longestBreak)
+        val stats = day.stats
+        val longest = day.longestBreak?.let { (from, to) -> Duration.between(from, to) }
+        strip.contentDescription = getString(
+            R.string.strip_description,
+            stats.first?.format(MINUTE) ?: HistoryTab.NO_DATA,
+            stats.last?.format(MINUTE) ?: HistoryTab.NO_DATA,
+            longest?.let(DayStats::formatGap) ?: HistoryTab.NO_DATA,
+        )
+        list.adapter = TimelineAdapter(timeline)
+        list.setOnItemClickListener { _, _, position, _ -> strip.lit = (timeline[position] as Day.Entry.Picked).indices }
         strip.onTap = { index ->
-            val position = timeline.indexOfFirst { it is Day.Entry.Unlocks && index in it.indices }
+            val position = timeline.indexOfFirst { it is Day.Entry.Picked && index in it.indices }
             list.setItemChecked(position, true)
             list.post { list.smoothScrollToPositionFromTop(position, 0) }
-            strip.lit = (timeline[position] as Day.Entry.Unlocks).indices
+            strip.lit = (timeline[position] as Day.Entry.Picked).indices
         }
     }
 
@@ -117,12 +93,16 @@ class DayActivity : Activity() {
         headView.setOnClickListener { apply(bodyView.visibility != View.VISIBLE) }
     }
 
-    private fun showStats(rows: List<Pair<Int, String>>) {
+    private fun showStats(rows: List<Day.Stat>) {
         val body = findViewById<LinearLayout>(R.id.stats_body)
-        rows.forEach { (label, value) ->
+        rows.forEach { stat ->
             body.addView(layoutInflater.inflate(R.layout.row_stat, body, false).apply {
-                findViewById<TextView>(R.id.label).setText(label)
-                findViewById<TextView>(R.id.value).text = value
+                findViewById<TextView>(R.id.label).setText(LABELS.getValue(stat.name))
+                findViewById<TextView>(R.id.value).text = when (stat) {
+                    is Day.Stat.Time -> stat.value?.format(MINUTE)
+                    is Day.Stat.Length -> stat.value?.let(DayStats::formatGap)
+                    is Day.Stat.Count -> stat.value?.toString()
+                } ?: HistoryTab.NO_DATA
             })
         }
     }
@@ -171,30 +151,31 @@ class DayActivity : Activity() {
         override fun getOpacity() = PixelFormat.TRANSLUCENT
     }
 
-    private inner class TimelineAdapter(val day: Day, val entries: List<Day.Entry>, val longest: Int) : BaseAdapter() {
-        private val sessions = day.sessions
-        private val longestSession = sessions.mapNotNull { it.length }.maxOrNull()?.takeIf { !it.isZero } ?: Duration.ofMinutes(1)
+    private inner class TimelineAdapter(val entries: List<Day.Entry>) : BaseAdapter() {
+        private val longestSession = entries.filterIsInstance<Day.Entry.Use>().mapNotNull { it.session.length }.maxOrNull()
+            ?.takeIf { !it.isZero } ?: Duration.ofMinutes(1)
 
         override fun getCount() = entries.size
         override fun getItem(position: Int) = entries[position]
         override fun getItemId(position: Int) = position.toLong()
         override fun getViewTypeCount() = 3
-        override fun getItemViewType(position: Int) = when {
-            entries[position] is Day.Entry.Break -> 1
-            day.hasLocks -> 2
-            else -> 0
+        override fun getItemViewType(position: Int) = when (entries[position]) {
+            is Day.Entry.Unlocks -> 0
+            is Day.Entry.Break -> 1
+            is Day.Entry.Use -> 2
         }
-        override fun isEnabled(position: Int) = entries[position] is Day.Entry.Unlocks
+        override fun isEnabled(position: Int) = entries[position] is Day.Entry.Picked
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
             when (val entry = entries[position]) {
-                is Day.Entry.Unlocks -> if (day.hasLocks) session(entry.indices.first, convertView, parent) else (convertView ?: layoutInflater.inflate(R.layout.row_unlock, parent, false)).apply {
+                is Day.Entry.Use -> session(entry, convertView, parent)
+                is Day.Entry.Unlocks -> (convertView ?: layoutInflater.inflate(R.layout.row_unlock, parent, false)).apply {
                     findViewById<TextView>(R.id.time).text = entry.first.format(MINUTE)
                     findViewById<TextView>(R.id.note).text =
                         if (entry.count > 1) getString(R.string.timeline_burst, entry.count, DayStats.formatGap(entry.span)) else ""
                 }
                 is Day.Entry.Break -> (convertView ?: layoutInflater.inflate(R.layout.row_break, parent, false)).apply {
-                    val isLongest = position == longest
+                    val isLongest = entry.longest
                     val color = getColor(if (isLongest) R.color.accent else R.color.bar_past)
                     // Height grows with the log of the break, so a 6 h night does not fill the screen.
                     minimumHeight = (resources.displayMetrics.density * (20 + 22 * ln(1.0 + entry.length.toMinutes() / 15.0) / ln(2.0))).toInt()
@@ -212,20 +193,20 @@ class DayActivity : Activity() {
                 }
             }
 
-        private fun session(index: Int, convertView: View?, parent: ViewGroup): View =
+        private fun session(entry: Day.Entry.Use, convertView: View?, parent: ViewGroup): View =
             (convertView ?: layoutInflater.inflate(R.layout.row_session, parent, false)).apply {
-                val session = sessions[index]
+                val session = entry.session
                 val start = session.start.format(MINUTE)
                 val end = when {
                     session.open -> getString(R.string.session_now)
                     else -> session.end?.format(MINUTE)
                 }
                 val text = SpannableString(if (end == null) start else getString(R.string.session_range, start, end))
-                if (day.isBurst(index)) text.setSpan(ForegroundColorSpan(getColor(R.color.burst)), 0, start.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                if (entry.burst) text.setSpan(ForegroundColorSpan(getColor(R.color.burst)), 0, start.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 if (session.open) text.setSpan(ForegroundColorSpan(getColor(R.color.accent)), text.length - end!!.length, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 findViewById<TextView>(R.id.time).text = text
 
-                val glance = day.isGlance(session)
+                val glance = entry.glance
                 val length = session.length
                 findViewById<TextView>(R.id.length).apply {
                     this.text = length?.let(DayStats::formatGap) ?: ""
@@ -245,6 +226,17 @@ class DayActivity : Activity() {
     companion object {
         private const val EXTRA_DAY = "day"
         private val MINUTE: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+        private val LABELS = mapOf(
+            Day.Stat.Name.FIRST_UNLOCK to R.string.stat_first_unlock,
+            Day.Stat.Name.LAST_UNLOCK to R.string.stat_last_unlock,
+            Day.Stat.Name.LAST_LOCK to R.string.stat_last_lock,
+            Day.Stat.Name.LONGEST_GAP to R.string.stat_longest_gap,
+            Day.Stat.Name.MEDIAN_GAP to R.string.stat_median_gap,
+            Day.Stat.Name.LONGEST_OFF to R.string.stat_longest_off,
+            Day.Stat.Name.MEDIAN_OFF to R.string.stat_median_off,
+            Day.Stat.Name.SCREEN_TIME to R.string.stat_screen_time,
+            Day.Stat.Name.BURSTS to R.string.stat_bursts,
+        )
 
         fun intent(context: Context, day: LocalDate): Intent =
             Intent(context, DayActivity::class.java).putExtra(EXTRA_DAY, day.toString())

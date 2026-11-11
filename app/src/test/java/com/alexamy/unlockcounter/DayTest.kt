@@ -2,6 +2,9 @@ package com.alexamy.unlockcounter
 
 import com.alexamy.unlockcounter.Day.Entry.Break
 import com.alexamy.unlockcounter.Day.Entry.Unlocks
+import com.alexamy.unlockcounter.Day.Entry.Use
+import com.alexamy.unlockcounter.Day.Session
+import com.alexamy.unlockcounter.Day.Stat
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Duration
@@ -25,7 +28,7 @@ class DayTest {
 
     @Test
     fun gapOfFifteenMinutesIsABreak() = assertEquals(
-        listOf(Unlocks(at(900), Duration.ZERO, 0..0), Break(Duration.ofMinutes(15)), Unlocks(start, Duration.ZERO, 1..1)),
+        listOf(Unlocks(at(900), Duration.ZERO, 0..0), Break(Duration.ofMinutes(15), longest = true), Unlocks(start, Duration.ZERO, 1..1)),
         timeline(0, 900),
     )
 
@@ -42,7 +45,12 @@ class DayTest {
 
     @Test
     fun withLocksEachSessionIsAnEntryAndABreakIsTheLockedTime() = assertEquals(
-        listOf(Unlocks(at(1020), Duration.ZERO, 0..0), Unlocks(at(960), Duration.ZERO, 1..1), Break(Duration.ofMinutes(15), locked = true), Unlocks(start, Duration.ZERO, 2..2)),
+        listOf(
+            Use(Session(at(1020), at(1100), open = false), 0, burst = true, glance = true),
+            Use(Session(at(960), at(1000), open = false), 1, burst = false, glance = true),
+            Break(Duration.ofMinutes(15), locked = true, longest = true),
+            Use(Session(start, at(60), open = false), 2, burst = false, glance = true),
+        ),
         sessions(0L to 60L, 960L to 1000L, 1020L to 1100L).timeline,
     )
 
@@ -65,9 +73,9 @@ class DayTest {
     @Test
     fun lengthsSplitAtTheGlanceLimit() {
         val day = sessions(0L to 179L, 1000L to 1180L, 2000L to 2700L, 5000L to 7000L)
-        assertEquals(listOf(1, 1, 1, 1), day.lengths.map { it.count })
-        assertEquals(listOf(0L, 3L, 10L, 30L), day.lengths.map { it.from })
-        assertEquals(listOf(true, false, false, false), day.sessions.reversed().map(day::isGlance))
+        assertEquals(listOf(1, 1, 1, 1), day.lengths?.map { it.count })
+        assertEquals(listOf(0L, 3L, 10L, 30L), day.lengths?.map { it.from })
+        assertEquals(setOf(3), day.glances)
     }
 
     @Test
@@ -78,7 +86,11 @@ class DayTest {
 
     @Test
     fun breakAfterAnUnlockWithoutLockRunsFromTheUnlock() = assertEquals(
-        listOf(Unlocks(at(3600), Duration.ZERO, 0..0), Break(Duration.ofHours(1)), Unlocks(start, Duration.ZERO, 1..1)),
+        listOf(
+            Use(Session(at(3600), at(3700), open = false), 0, burst = false, glance = true),
+            Break(Duration.ofHours(1)),
+            Use(Session(start, null, open = false), 1, burst = false, glance = false),
+        ),
         sessions(0L to null, 3600L to 3700L).timeline,
     )
 
@@ -90,10 +102,49 @@ class DayTest {
     }
 
     @Test
-    fun longestOffIsTheOldestLongestLockedSpan() = assertEquals(
+    fun longestBreakIsTheOldestLongestLockedSpan() = assertEquals(
         at(60) to at(600),
-        sessions(0L to 60L, 600L to 700L, 1240L to 1300L).longestOff,
+        sessions(0L to 60L, 600L to 700L, 1240L to 1300L).longestBreak,
     )
+
+    @Test
+    fun withoutLocksTheLongestBreakIsTheLongestGapBetweenUnlocks() = assertEquals(
+        at(0) to at(900),
+        Day(LocalDate.of(2026, 11, 9), 3, listOf(0L, 900L, 1000L).map { LogEvent(at(it), isLock = false) }, false).longestBreak,
+    )
+
+    @Test
+    fun statRowsWithoutLocksShowUnlockGaps() = assertEquals(
+        listOf(
+            Stat.Time(Stat.Name.FIRST_UNLOCK, start),
+            Stat.Time(Stat.Name.LAST_UNLOCK, at(900)),
+            Stat.Length(Stat.Name.LONGEST_GAP, Duration.ofMinutes(15)),
+            Stat.Length(Stat.Name.MEDIAN_GAP, Duration.ofMinutes(15)),
+            Stat.Count(Stat.Name.BURSTS, 0),
+        ),
+        Day(LocalDate.of(2026, 11, 9), 2, listOf(0L, 900L).map { LogEvent(at(it), isLock = false) }, false).statRows,
+    )
+
+    @Test
+    fun statRowsWithLocksShowSessions() = assertEquals(
+        listOf(
+            Stat.Time(Stat.Name.FIRST_UNLOCK, start),
+            Stat.Time(Stat.Name.LAST_LOCK, at(700)),
+            Stat.Length(Stat.Name.LONGEST_OFF, Duration.ofSeconds(540)),
+            Stat.Length(Stat.Name.MEDIAN_OFF, Duration.ofSeconds(540)),
+            Stat.Length(Stat.Name.SCREEN_TIME, Duration.ofSeconds(160)),
+            Stat.Count(Stat.Name.BURSTS, 0),
+        ),
+        sessions(0L to 60L, 600L to 700L).statRows,
+    )
+
+    @Test
+    fun locksStartShowsOnlyOnADayBeforeLockTimes() {
+        val next = LocalDate.of(2026, 11, 10)
+        val unlocksOnly = Day(LocalDate.of(2026, 11, 9), 1, listOf(LogEvent(start, isLock = false)), false, locksSince = next)
+        assertEquals(next, unlocksOnly.locksStart)
+        assertEquals(null, sessions(0L to 60L).copy(locksSince = next).locksStart)
+    }
 
     @Test
     fun pairsTheLockRightAfterAnUnlockAlsoOnTheNextDay() {

@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 /**
- * 24 hours from the day start, left to right, with a tick per unlock; gaps of an hour or more are shaded and the longest gap is outlined.
+ * 24 hours from the day start, left to right, with a tick per unlock; gaps of an hour or more are shaded and the given longest break is outlined.
  * Glance ticks use the burst color; a short mark under the strip shows each hour.
  */
 class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
@@ -22,7 +22,7 @@ class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     /**
      * Shows [times] on a day that begins at [start]; [glances] are indices of times whose session was a glance.
-     * [longest] is the span to outline; without it the longest gap between unlocks is outlined.
+     * [longest] is the span to outline.
      */
     fun show(times: List<OffsetDateTime>, start: LocalTime, glances: Set<Int> = emptySet(), longest: Pair<OffsetDateTime, OffsetDateTime>? = null) {
         this.start = start
@@ -78,7 +78,7 @@ class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val sorted = seconds.sorted()
         val gaps = sorted.zipWithNext()
         gaps.filter { (a, b) -> b - a >= HOUR }.forEach { (a, b) -> canvas.drawRoundRect(x(a), 0f, x(b), band, radius, radius, shade) }
-        (longest ?: gaps.maxByOrNull { (a, b) -> b - a })?.let { (a, b) -> canvas.drawRoundRect(x(a), 0f, x(b), band, radius, radius, outline) }
+        longest?.let { (a, b) -> canvas.drawRoundRect(x(a), 0f, x(b), band, radius, radius, outline) }
         seconds.forEachIndexed { i, s ->
             tick.color = context.getColor(
                 when {
