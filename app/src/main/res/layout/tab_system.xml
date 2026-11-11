@@ -48,7 +48,7 @@
             android:orientation="vertical">
 
             <LinearLayout android:id="@+id/burst_window" style="@style/Row">
-                <ImageView style="@style/RowIcon" android:src="@drawable/ic_unlock" android:tint="@color/accent" />
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_bolt" android:tint="@color/accent" />
                 <LinearLayout style="@style/RowText">
                     <TextView style="@style/RowTitle" android:text="@string/burst_window" />
                     <TextView android:id="@+id/burst_subtitle" style="@style/RowSubtitle" />
@@ -58,7 +58,7 @@
             <View style="@style/RowDivider" />
 
             <LinearLayout android:id="@+id/glance_limit" style="@style/Row">
-                <ImageView style="@style/RowIcon" android:src="@drawable/ic_clock" android:tint="@color/accent" />
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_eye" android:tint="@color/accent" />
                 <LinearLayout style="@style/RowText">
                     <TextView style="@style/RowTitle" android:text="@string/glance_limit" />
                     <TextView android:id="@+id/glance_subtitle" style="@style/RowSubtitle" />
@@ -68,7 +68,7 @@
             <View style="@style/RowDivider" />
 
             <LinearLayout android:id="@+id/open_limit" style="@style/Row">
-                <ImageView style="@style/RowIcon" android:src="@drawable/ic_clock" android:tint="@color/accent" />
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_hourglass" android:tint="@color/accent" />
                 <LinearLayout style="@style/RowText">
                     <TextView style="@style/RowTitle" android:text="@string/open_limit" />
                     <TextView android:id="@+id/open_limit_subtitle" style="@style/RowSubtitle" />
@@ -78,7 +78,7 @@
             <View style="@style/RowDivider" />
 
             <LinearLayout android:id="@+id/day_start" style="@style/Row">
-                <ImageView style="@style/RowIcon" android:src="@drawable/ic_clock" android:tint="@color/accent" />
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_sunrise" android:tint="@color/accent" />
                 <LinearLayout style="@style/RowText">
                     <TextView style="@style/RowTitle" android:text="@string/day_start" />
                     <TextView android:id="@+id/day_start_subtitle" style="@style/RowSubtitle" />
