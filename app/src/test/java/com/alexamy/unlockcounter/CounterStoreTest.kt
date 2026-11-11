@@ -236,14 +236,6 @@ class CounterStoreTest {
     }
 
     @Test
-    fun burstDefaultsToFiveMinutesAndIsSaved() {
-        assertEquals(Duration.ofMinutes(5), store.burst)
-        store.burst = Duration.ofMinutes(2)
-        assertEquals(Duration.ofMinutes(2), CounterStore(storage) { time }.burst)
-        assertEquals(Duration.ofMinutes(2), store.day(day).burst)
-    }
-
-    @Test
     fun unlockBeforeDayStartCountsOnPreviousDay() {
         store.dayStart = LocalTime.of(1, 0)
         store.addUnlock()
@@ -287,12 +279,6 @@ class CounterStoreTest {
         time = time.withHour(13)
         assertEquals(0, store.todayCount())
         assertEquals(listOf(day.plusDays(1) to 3, day to 2), store.historyRows())
-    }
-
-    @Test
-    fun savedBurstOutOfRangeFallsBackToDefault() {
-        storage.values["burst_minutes"] = "0"
-        assertEquals(Duration.ofMinutes(5), store.burst)
     }
 
     @Test
@@ -340,15 +326,6 @@ class CounterStoreTest {
     }
 
     @Test
-    fun glanceDefaultsToThreeMinutesAndIsSaved() {
-        assertEquals(Duration.ofMinutes(3), store.glance)
-        store.glance = Duration.ofMinutes(7)
-        assertEquals(Duration.ofMinutes(7), store.glance)
-        storage.values["glance_minutes"] = "0"
-        assertEquals(Duration.ofMinutes(3), store.glance)
-    }
-
-    @Test
     fun clearLogForgetsWhenLocksStarted() {
         store.addUnlock()
         store.addLock()
@@ -365,11 +342,30 @@ class CounterStoreTest {
     }
 
     @Test
-    fun openLimitDefaultsToTwoHoursAndIsSaved() {
-        assertEquals(Duration.ofHours(2), store.openLimit)
-        store.openLimit = Duration.ofHours(5)
-        assertEquals(Duration.ofHours(5), store.day(day).openLimit)
-        storage.values["open_limit_hours"] = "13"
-        assertEquals(Duration.ofHours(2), store.openLimit)
+    fun durationSettingsDefaultSaveAndFallBack() {
+        val defaults = mapOf(
+            DurationSetting.BURST to Duration.ofMinutes(5),
+            DurationSetting.GLANCE to Duration.ofMinutes(3),
+            DurationSetting.OPEN_LIMIT to Duration.ofHours(2),
+        )
+        DurationSetting.entries.forEach { setting ->
+            assertEquals(setting.name, defaults[setting], store[setting])
+            val saved = setting.of(setting.range.last)
+            store[setting] = saved
+            assertEquals(setting.name, saved, CounterStore(storage) { time }[setting])
+            storage.values[setting.key] = (setting.range.last + 1).toString()
+            assertEquals(setting.name, defaults[setting], store[setting])
+        }
+    }
+
+    @Test
+    fun dayUsesTheSavedDurationSettings() {
+        store[DurationSetting.BURST] = Duration.ofMinutes(2)
+        store[DurationSetting.GLANCE] = Duration.ofMinutes(7)
+        store[DurationSetting.OPEN_LIMIT] = Duration.ofHours(5)
+        val today = store.day(day)
+        assertEquals(Duration.ofMinutes(2), today.burst)
+        assertEquals(Duration.ofMinutes(7), today.glance)
+        assertEquals(Duration.ofHours(5), today.openLimit)
     }
 }

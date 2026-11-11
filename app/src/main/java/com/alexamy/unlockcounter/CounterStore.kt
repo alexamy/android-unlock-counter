@@ -90,28 +90,19 @@ class CounterStore(
         val prefixes = (0L..2L).map { date.plusDays(it).toString() }
         val events = storage.readLog { lines -> lines.filter { line -> prefixes.any(line::startsWith) }.mapNotNull(LogEvent::parse).toList() }
         return Day(
-            date, count, events, isToday, burst, start,
-            glance = glance,
+            date, count, events, isToday, this[DurationSetting.BURST], start,
+            glance = this[DurationSetting.GLANCE],
             now = if (isToday) now() else null,
             locksSince = storage[LOCKS_SINCE]?.let(LocalDate::parse),
-            openLimit = openLimit,
+            openLimit = this[DurationSetting.OPEN_LIMIT],
         )
     }
 
-    /** Sessions shorter than this count as a glance. */
-    var glance: Duration
-        get() = storage[GLANCE]?.toLongOrNull()?.takeIf { it in 1..60 }?.let(Duration::ofMinutes) ?: Day.DEFAULT_GLANCE
-        set(value) = storage.write(mapOf(GLANCE to value.toMinutes().toString()))
+    operator fun get(setting: DurationSetting): Duration =
+        storage[setting.key]?.toLongOrNull()?.takeIf { it in setting.range }?.let(setting::of) ?: setting.default
 
-    /** How long today's newest session may stay open without a lock before it counts as a missed lock. */
-    var openLimit: Duration
-        get() = storage[OPEN_LIMIT]?.toLongOrNull()?.takeIf { it in 1..12 }?.let(Duration::ofHours) ?: Day.DEFAULT_OPEN_LIMIT
-        set(value) = storage.write(mapOf(OPEN_LIMIT to value.toHours().toString()))
-
-    /** How close unlocks must be to count as a burst. */
-    var burst: Duration
-        get() = storage[BURST]?.toLongOrNull()?.takeIf { it in 1..60 }?.let(Duration::ofMinutes) ?: DayStats.DEFAULT_BURST
-        set(value) = storage.write(mapOf(BURST to value.toMinutes().toString()))
+    operator fun set(setting: DurationSetting, value: Duration) =
+        storage.write(mapOf(setting.key to setting.units(value).toString()))
 
     /** When a day begins; an unlock before it counts on the day before. */
     var dayStart: LocalTime
@@ -159,11 +150,8 @@ class CounterStore(
         const val COUNT = "count"
         const val HISTORY = "history:"
         const val LAST = "last"
-        const val BURST = "burst_minutes"
         const val DAY_START = "day_start"
         const val HELD_DAY = "held_day"
-        const val GLANCE = "glance_minutes"
-        const val OPEN_LIMIT = "open_limit_hours"
         const val LAST_LOCK = "last_lock"
         const val LOCKS_SINCE = "locks_since"
         val MIN_DAY: LocalDate = LocalDate.of(2020, 1, 1)

@@ -6,8 +6,8 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] One description per duration setting; the range check is written once
-- [ ] System tab rows and dialogs come from the descriptions
-- [ ] One test covers default, save and out-of-range fallback for all three
+- [x] One description per duration setting; the range check is written once
+- [x] System tab rows and dialogs come from the descriptions
+- [x] One test covers default, save and out-of-range fallback for all three
