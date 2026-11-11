@@ -363,4 +363,13 @@ class CounterStoreTest {
         store.addLock()
         assertEquals(null, storage.values["locks_since"])
     }
+
+    @Test
+    fun openLimitDefaultsToTwoHoursAndIsSaved() {
+        assertEquals(Duration.ofHours(2), store.openLimit)
+        store.openLimit = Duration.ofHours(5)
+        assertEquals(Duration.ofHours(5), store.day(day).openLimit)
+        storage.values["open_limit_hours"] = "13"
+        assertEquals(Duration.ofHours(2), store.openLimit)
+    }
 }

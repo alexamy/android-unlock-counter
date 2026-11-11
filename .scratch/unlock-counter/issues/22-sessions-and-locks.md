@@ -16,7 +16,7 @@ Day screen, for a day with lock times:
 
 Edge cases:
 
-- Open session today: the row reads "start – now", its bar is dashed, and screen time counts it up to now
+- Open session today: the row reads "start – now", its bar is dashed, and screen time counts it up to now; after the open session limit (setting, 1–12 h, default 2 h) with no lock it counts as a missed lock
 - A day with no lock times: the current unlock-only view, Statistics card with unlock gaps (First unlock, Last unlock, Longest gap, Median gap, Bursts), no Session length card, and a note "Lock times start on …"
 - An unlock with no lock before the next unlock: the row shows only the start; screen time and the histogram skip it
 
@@ -27,6 +27,7 @@ System tab: the export row ("%d unlock times · save as file") keeps counting un
 **Status:** ready-for-agent
 
 - [ ] Screen-off writes a `lock` line; unlock lines get the `unlock` type; untyped lines read as unlocks
+- [ ] "Open session limit" row in the Counting group, 1–12 h, default 2 h
 - [ ] "Glance limit" row in the System tab's Counting group, 1–60 min, default 3 min, subtitle names the current value
 - [ ] Day screen shows the strip, Session length card, Statistics card and session timeline from the mockup
 - [ ] Open session, days without lock times and unlocks without a lock behave as listed above

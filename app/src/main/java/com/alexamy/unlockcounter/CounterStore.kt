@@ -102,6 +102,7 @@ class CounterStore(
             glance = glance,
             now = if (isToday) now() else null,
             locksSince = storage[LOCKS_SINCE]?.let(LocalDate::parse),
+            openLimit = openLimit,
         )
     }
 
@@ -116,6 +117,11 @@ class CounterStore(
     var glance: Duration
         get() = storage[GLANCE]?.toLongOrNull()?.takeIf { it in 1..60 }?.let(Duration::ofMinutes) ?: Day.DEFAULT_GLANCE
         set(value) = storage.write(mapOf(GLANCE to value.toMinutes().toString()))
+
+    /** How long today's newest session may stay open without a lock before it counts as a missed lock. */
+    var openLimit: Duration
+        get() = storage[OPEN_LIMIT]?.toLongOrNull()?.takeIf { it in 1..12 }?.let(Duration::ofHours) ?: Day.DEFAULT_OPEN_LIMIT
+        set(value) = storage.write(mapOf(OPEN_LIMIT to value.toHours().toString()))
 
     /** How close unlocks must be to count as a burst. */
     var burst: Duration
@@ -173,6 +179,7 @@ class CounterStore(
         const val DAY_START = "day_start"
         const val HELD_DAY = "held_day"
         const val GLANCE = "glance_minutes"
+        const val OPEN_LIMIT = "open_limit_hours"
         const val LAST_LOCK = "last_lock"
         const val LOCKS_SINCE = "locks_since"
         const val UNLOCK = "unlock"

@@ -21,10 +21,14 @@
     <string name="counting">Counting</string>
     <string name="burst_window">Burst window</string>
     <string name="burst_subtitle">Unlocks %d min apart or closer count as a burst</string>
-    <string name="burst_prompt">Minutes, from 1 to 60</string>
+    <string name="minutes_prompt">Minutes, from 1 to 60</string>
+    <string name="hours_prompt">Hours, from 1 to 12</string>
     <string name="day_start">Day starts at</string>
     <string name="day_start_subtitle">Unlocks before %s count on the previous day</string>
-    <string name="burst_invalid">Enter a whole number of minutes from 1 to 60.</string>
+    <string name="minutes_invalid">Enter a whole number of minutes from 1 to 60.</string>
+    <string name="hours_invalid">Enter a whole number of hours from 1 to 12.</string>
+    <string name="open_limit">Open session limit</string>
+    <string name="open_limit_subtitle">A session with no lock after %d h counts as a missed lock</string>
     <string name="glance_limit">Glance limit</string>
     <string name="glance_subtitle">Sessions shorter than %d min count as a glance</string>
     <string name="keep_running">Keep it running</string>

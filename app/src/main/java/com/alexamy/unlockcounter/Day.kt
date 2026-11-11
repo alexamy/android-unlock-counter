@@ -21,6 +21,7 @@ data class Day(
     val glance: Duration = DEFAULT_GLANCE,
     val now: OffsetDateTime? = null,
     val locksSince: LocalDate? = null,
+    val openLimit: Duration = DEFAULT_OPEN_LIMIT,
 ) {
     /** Unlocks counted but not in the log. */
     val missing: Int get() = ((count ?: 0) - times.size).coerceAtLeast(0)
@@ -31,12 +32,12 @@ data class Day(
 
     /**
      * One per unlock, newest first. The newest one today with no lock yet is open and ends now.
-     * shortcut: an open session longer than [OPEN_LIMIT] is taken as a missed lock and has no length; a real longer session shows wrong.
+     * An open session longer than [openLimit] is taken as a missed lock and has no length.
      */
     val sessions: List<Session>
         get() = times.mapIndexed { i, start ->
             val end = ends.getOrNull(i)
-            val open = end == null && i == 0 && now != null && !now.isBefore(start) && Duration.between(start, now) <= OPEN_LIMIT
+            val open = end == null && i == 0 && now != null && !now.isBefore(start) && Duration.between(start, now) <= openLimit
             if (open) Session(start, now, open = true) else Session(start, end, open = false)
         }
 
@@ -117,6 +118,6 @@ data class Day(
         val BREAK: Duration = Duration.ofMinutes(15)
         val DEFAULT_START: LocalTime = LocalTime.MIDNIGHT
         val DEFAULT_GLANCE: Duration = Duration.ofMinutes(3)
-        val OPEN_LIMIT: Duration = Duration.ofHours(2)
+        val DEFAULT_OPEN_LIMIT: Duration = Duration.ofHours(2)
     }
 }

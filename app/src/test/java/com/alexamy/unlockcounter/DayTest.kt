@@ -87,7 +87,7 @@ class DayTest {
 
     @Test
     fun openSessionLongerThanTheLimitIsAMissedLock() {
-        val day = sessions(0L to null, now = at(Day.OPEN_LIMIT.seconds + 1))
+        val day = sessions(0L to null, now = at(Day.DEFAULT_OPEN_LIMIT.seconds + 1))
         assertEquals(Day.Session(start, null, open = false), day.sessions.single())
         assertEquals(Duration.ZERO, day.screenTime)
     }
