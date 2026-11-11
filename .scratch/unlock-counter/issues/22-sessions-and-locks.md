@@ -20,6 +20,8 @@ Edge cases:
 - A day with no lock times: the current unlock-only view, Statistics card with unlock gaps (First unlock, Last unlock, Longest gap, Median gap, Bursts), no Session length card, and a note "Lock times start on …"
 - An unlock with no lock before the next unlock: the row shows only the start; screen time and the histogram skip it
 
+System tab: the export row ("%d unlock times · save as file") keeps counting unlock lines only, not locks. The exported file holds both types.
+
 **Blocked by:** none
 
 **Status:** ready-for-agent
@@ -28,4 +30,5 @@ Edge cases:
 - [ ] "Glance limit" row in the System tab's Counting group, 1–60 min, default 3 min, subtitle names the current value
 - [ ] Day screen shows the strip, Session length card, Statistics card and session timeline from the mockup
 - [ ] Open session, days without lock times and unlocks without a lock behave as listed above
+- [ ] The System tab export row counts unlocks only
 - [ ] Tests cover session pairing, glance split, screen time, the open session and old untyped lines
