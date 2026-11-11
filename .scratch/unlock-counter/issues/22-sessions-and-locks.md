@@ -24,12 +24,12 @@ System tab: the export row ("%d unlock times · save as file") keeps counting un
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Screen-off writes a `lock` line; unlock lines get the `unlock` type; untyped lines read as unlocks
-- [ ] "Open session limit" row in the Counting group, 1–12 h, default 2 h
-- [ ] "Glance limit" row in the System tab's Counting group, 1–60 min, default 3 min, subtitle names the current value
-- [ ] Day screen shows the strip, Session length card, Statistics card and session timeline from the mockup
-- [ ] Open session, days without lock times and unlocks without a lock behave as listed above
-- [ ] The System tab export row counts unlocks only
-- [ ] Tests cover session pairing, glance split, screen time, the open session and old untyped lines
+- [x] Screen-off writes a `lock` line; unlock lines get the `unlock` type; untyped lines read as unlocks
+- [x] "Open session limit" row in the Counting group, 1–12 h, default 2 h
+- [x] "Glance limit" row in the System tab's Counting group, 1–60 min, default 3 min, subtitle names the current value
+- [x] Day screen shows the strip, Session length card, Statistics card and session timeline from the mockup
+- [x] Open session, days without lock times and unlocks without a lock behave as listed above
+- [x] The System tab export row counts unlocks only
+- [x] Tests cover session pairing, glance split, screen time, the open session and old untyped lines

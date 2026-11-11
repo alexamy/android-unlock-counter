@@ -3,6 +3,12 @@ package com.alexamy.unlockcounter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.DashPathEffect
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
@@ -145,6 +151,26 @@ class DayActivity : Activity() {
         rest.layoutParams = (rest.layoutParams as LinearLayout.LayoutParams).apply { weight = 1 - s }
     }
 
+    /** An accent bar cut into dashes, for a session that is still open. */
+    private fun dashes(): Drawable = object : Drawable() {
+        private val density = resources.displayMetrics.density
+        private val paint = Paint().apply {
+            color = getColor(R.color.accent)
+            pathEffect = DashPathEffect(floatArrayOf(5 * density, 3 * density), 0f)
+        }
+
+        override fun draw(canvas: Canvas) {
+            paint.strokeWidth = bounds.height().toFloat()
+            canvas.drawLine(bounds.left.toFloat(), bounds.exactCenterY(), bounds.right.toFloat(), bounds.exactCenterY(), paint)
+        }
+
+        override fun setAlpha(alpha: Int) {}
+        override fun setColorFilter(colorFilter: ColorFilter?) {}
+
+        @Deprecated("Deprecated in Java")
+        override fun getOpacity() = PixelFormat.TRANSLUCENT
+    }
+
     private inner class TimelineAdapter(val day: Day, val entries: List<Day.Entry>, val longest: Int) : BaseAdapter() {
         private val sessions = day.sessions
         private val longestSession = sessions.mapNotNull { it.length }.maxOrNull()?.takeIf { !it.isZero } ?: Duration.ofMinutes(1)
@@ -210,7 +236,7 @@ class DayActivity : Activity() {
                 (bar.parent as View).visibility = if (length == null) View.GONE else View.VISIBLE
                 if (length != null) {
                     weigh(bar, rest, length.toMillis().toFloat() / longestSession.toMillis())
-                    if (session.open) bar.setBackgroundResource(R.drawable.bg_bar_open)
+                    if (session.open) bar.background = dashes()
                     else bar.setBackgroundColor(getColor(if (glance) R.color.burst else R.color.accent))
                 }
             }
