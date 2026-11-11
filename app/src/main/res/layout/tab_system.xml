@@ -57,6 +57,16 @@
 
             <View style="@style/RowDivider" />
 
+            <LinearLayout android:id="@+id/glance_limit" style="@style/Row">
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_clock" android:tint="@color/accent" />
+                <LinearLayout style="@style/RowText">
+                    <TextView style="@style/RowTitle" android:text="@string/glance_limit" />
+                    <TextView android:id="@+id/glance_subtitle" style="@style/RowSubtitle" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View style="@style/RowDivider" />
+
             <LinearLayout android:id="@+id/day_start" style="@style/Row">
                 <ImageView style="@style/RowIcon" android:src="@drawable/ic_clock" android:tint="@color/accent" />
                 <LinearLayout style="@style/RowText">

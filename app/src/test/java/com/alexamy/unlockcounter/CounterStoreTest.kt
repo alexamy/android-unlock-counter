@@ -82,7 +82,7 @@ class CounterStoreTest {
         time = time.plusMinutes(5)
         store.addUnlock()
         val out = ByteArrayOutputStream().also(store::writeLog)
-        assertEquals("2026-11-09T10:00+01:00\n2026-11-09T10:05+01:00\n", out.toString())
+        assertEquals("2026-11-09T10:00+01:00 unlock\n2026-11-09T10:05+01:00 unlock\n", out.toString())
         assertEquals(2, store.logEntries())
         store.clearLog()
         assertEquals("", ByteArrayOutputStream().also(store::writeLog).toString())
@@ -301,5 +301,66 @@ class CounterStoreTest {
         store.dayStart = LocalTime.of(4, 30)
         assertEquals(LocalTime.of(4, 30), CounterStore(storage) { time }.dayStart)
         assertEquals(LocalTime.of(4, 30), store.day(day).start)
+    }
+
+    @Test
+    fun lockIsLoggedOncePerUnlockAndNotCounted() {
+        store.addLock()
+        store.addUnlock()
+        time = time.plusMinutes(2)
+        store.addLock()
+        time = time.plusMinutes(1)
+        store.addLock()
+        assertEquals("2026-11-09T10:00+01:00 unlock\n2026-11-09T10:02+01:00 lock\n", storage.log.toString())
+        assertEquals(1, store.logEntries())
+        assertEquals(1, store.todayCount())
+    }
+
+    @Test
+    fun dayPairsEachUnlockWithTheLockRightAfterIt() {
+        storage.log.append(
+            "2026-11-09T08:00+01:00\n" +
+                "2026-11-09T09:00+01:00 unlock\n2026-11-09T09:02+01:00 lock\n" +
+                "2026-11-09T23:59+01:00 unlock\n2026-11-10T00:04+01:00 lock\n",
+        )
+        nextDay()
+        val past = store.day(day)
+        assertEquals(listOf("23:59", "09:00", "08:00"), past.times.map { it.toLocalTime().toString() })
+        assertEquals(listOf("00:04", "09:02", null), past.ends.map { it?.toLocalTime()?.toString() })
+    }
+
+    @Test
+    fun locksSinceIsTheDayOfTheFirstLock() {
+        store.addUnlock()
+        store.addLock()
+        nextDay()
+        store.addUnlock()
+        store.addLock()
+        assertEquals(day, store.day(day).locksSince)
+    }
+
+    @Test
+    fun glanceDefaultsToThreeMinutesAndIsSaved() {
+        assertEquals(Duration.ofMinutes(3), store.glance)
+        store.glance = Duration.ofMinutes(7)
+        assertEquals(Duration.ofMinutes(7), store.glance)
+        storage.values["glance_minutes"] = "0"
+        assertEquals(Duration.ofMinutes(3), store.glance)
+    }
+
+    @Test
+    fun clearLogForgetsWhenLocksStarted() {
+        store.addUnlock()
+        store.addLock()
+        store.clearLog()
+        assertEquals(null, store.day(day).locksSince)
+    }
+
+    @Test
+    fun lockBeforeClockSyncDoesNotMarkWhenLocksStarted() {
+        store.addUnlock()
+        time = OffsetDateTime.of(1970, 1, 1, 0, 5, 0, 0, ZoneOffset.UTC)
+        store.addLock()
+        assertEquals(null, storage.values["locks_since"])
     }
 }

@@ -18,7 +18,10 @@ class CounterWallpaperService : WallpaperService() {
     // One receiver per service, not per engine: the picker preview runs a second engine.
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == Intent.ACTION_USER_PRESENT) store.addUnlock()
+            when (intent.action) {
+                Intent.ACTION_USER_PRESENT -> store.addUnlock()
+                Intent.ACTION_SCREEN_OFF -> store.addLock()
+            }
             redrawVisible()
         }
     }
@@ -27,6 +30,7 @@ class CounterWallpaperService : WallpaperService() {
         super.onCreate()
         val filter = IntentFilter(Intent.ACTION_USER_PRESENT).apply {
             // Each minute and on clock changes: a day can begin at any minute (day start setting), or the setting can change.
+            addAction(Intent.ACTION_SCREEN_OFF)
             addAction(Intent.ACTION_TIME_TICK)
             addAction(Intent.ACTION_TIME_CHANGED)
             addAction(Intent.ACTION_TIMEZONE_CHANGED)

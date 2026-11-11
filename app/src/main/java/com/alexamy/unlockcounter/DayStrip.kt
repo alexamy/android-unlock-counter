@@ -13,14 +13,22 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
-/** 24 hours from the day start, left to right, with a tick per unlock; gaps of an hour or more are shaded and the longest gap is outlined. */
+/**
+ * 24 hours from the day start, left to right, with a tick per unlock; gaps of an hour or more are shaded and the longest gap is outlined.
+ * Glance ticks use the burst color; a short mark under the strip shows each hour.
+ */
 class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var start: LocalTime = LocalTime.MIDNIGHT
 
-    /** Shows [times] on a day that begins at [start]. */
-    fun show(times: List<OffsetDateTime>, start: LocalTime) {
+    /**
+     * Shows [times] on a day that begins at [start]; [glances] are indices of times whose session was a glance.
+     * [longest] is the span to outline; without it the longest gap between unlocks is outlined.
+     */
+    fun show(times: List<OffsetDateTime>, start: LocalTime, glances: Set<Int> = emptySet(), longest: Pair<OffsetDateTime, OffsetDateTime>? = null) {
         this.start = start
-        seconds = times.map { Math.floorMod(it.toLocalTime().toSecondOfDay() - start.toSecondOfDay(), DAY) }
+        this.glances = glances
+        this.longest = longest?.let { (a, b) -> second(a) to second(b) }
+        seconds = times.map(::second)
         invalidate()
     }
 
@@ -39,6 +47,10 @@ class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         }
 
     private var seconds: List<Int> = emptyList()
+    private var glances: Set<Int> = emptySet()
+    private var longest: Pair<Int, Int>? = null
+
+    private fun second(time: OffsetDateTime): Int = Math.floorMod(time.toLocalTime().toSecondOfDay() - start.toSecondOfDay(), DAY)
     private var downX = 0f
     private var downY = 0f
     private var pressed = false
@@ -66,10 +78,20 @@ class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val sorted = seconds.sorted()
         val gaps = sorted.zipWithNext()
         gaps.filter { (a, b) -> b - a >= HOUR }.forEach { (a, b) -> canvas.drawRoundRect(x(a), 0f, x(b), band, radius, radius, shade) }
-        gaps.maxByOrNull { (a, b) -> b - a }?.let { (a, b) -> canvas.drawRoundRect(x(a), 0f, x(b), band, radius, radius, outline) }
+        (longest ?: gaps.maxByOrNull { (a, b) -> b - a })?.let { (a, b) -> canvas.drawRoundRect(x(a), 0f, x(b), band, radius, radius, outline) }
         seconds.forEachIndexed { i, s ->
-            tick.color = context.getColor(if (i in lit) R.color.accent else R.color.text)
+            tick.color = context.getColor(
+                when {
+                    i in lit -> R.color.accent
+                    i in glances -> R.color.burst
+                    else -> R.color.text
+                }
+            )
             canvas.drawRect(x(s) - 0.75f * density, 2 * density, x(s) + 0.75f * density, band - 2 * density, tick)
+        }
+        for (hour in 1..23) {
+            val ax = x(hour * HOUR)
+            canvas.drawRect(ax - density / 2, band + 2 * density, ax + density / 2, band + 4 * density, axis)
         }
         for (hour in 0..24 step 6) {
             val ax = x(hour * HOUR)

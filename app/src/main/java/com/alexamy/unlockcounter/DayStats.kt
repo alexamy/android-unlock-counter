@@ -17,19 +17,23 @@ data class DayStats(
         /** A burst unlock comes [burst] or sooner after the previous one. */
         fun of(times: List<OffsetDateTime>, burst: Duration = DEFAULT_BURST): DayStats {
             val sorted = times.sortedBy { it.toInstant() }
-            val gaps = sorted.zipWithNext { a, b -> Duration.between(a, b) }.sorted()
-            val median = when {
-                gaps.isEmpty() -> null
-                gaps.size % 2 == 1 -> gaps[gaps.size / 2]
-                else -> (gaps[gaps.size / 2 - 1] + gaps[gaps.size / 2]).dividedBy(2)
-            }
+            val gaps = sorted.zipWithNext { a, b -> Duration.between(a, b) }
             return DayStats(
                 first = sorted.firstOrNull(),
                 last = sorted.lastOrNull(),
-                longestGap = gaps.lastOrNull(),
-                medianGap = median,
+                longestGap = gaps.maxOrNull(),
+                medianGap = median(gaps),
                 bursts = if (sorted.isEmpty()) null else gaps.count { it <= burst },
             )
+        }
+
+        fun median(durations: List<Duration>): Duration? {
+            val sorted = durations.sorted()
+            return when {
+                sorted.isEmpty() -> null
+                sorted.size % 2 == 1 -> sorted[sorted.size / 2]
+                else -> (sorted[sorted.size / 2 - 1] + sorted[sorted.size / 2]).dividedBy(2)
+            }
         }
 
         /** "3 h 05 min", "6 min", or "<1 min". */

@@ -55,7 +55,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/bg_card"
             android:orientation="vertical"
             android:padding="14dp">
@@ -67,36 +68,102 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lengths_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingBottom="4dp">
+
+            <LinearLayout
+                android:id="@+id/lengths_head"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:accessibilityHeading="true"
+                    android:text="@string/session_length"
+                    android:textColor="@color/text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/lengths_chevron"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="@color/text_muted" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lengths_body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/stats_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:orientation="horizontal">
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingBottom="4dp">
 
-            <LinearLayout style="@style/StatCell">
-                <TextView style="@style/StatLabel" android:text="@string/stat_first" />
-                <TextView android:id="@+id/first" style="@style/StatValue" />
+            <LinearLayout
+                android:id="@+id/stats_head"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:accessibilityHeading="true"
+                    android:text="@string/statistics"
+                    android:textColor="@color/text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/stats_chevron"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="@color/text_muted" />
             </LinearLayout>
 
-            <LinearLayout style="@style/StatCell">
-                <TextView style="@style/StatLabel" android:text="@string/stat_last" />
-                <TextView android:id="@+id/last" style="@style/StatValue" />
-            </LinearLayout>
-
-            <LinearLayout style="@style/StatCell">
-                <TextView style="@style/StatLabel" android:text="@string/stat_longest_gap" />
-                <TextView android:id="@+id/longest_gap" style="@style/StatValue" />
-            </LinearLayout>
-
-            <LinearLayout style="@style/StatCell">
-                <TextView style="@style/StatLabel" android:text="@string/stat_median_gap" />
-                <TextView android:id="@+id/median_gap" style="@style/StatValue" />
-            </LinearLayout>
-
-            <LinearLayout style="@style/StatCell">
-                <TextView style="@style/StatLabel" android:text="@string/stat_bursts" />
-                <TextView android:id="@+id/bursts" style="@style/StatValue" />
-            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/stats_body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="8dp" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/locks_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/text_muted"
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/partial"
