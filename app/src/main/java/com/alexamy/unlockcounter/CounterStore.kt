@@ -121,7 +121,8 @@ class CounterStore(
 
     fun clearLog() {
         storage.clearLog()
-        storage.write(mapOf(LAST_LOCK to null, LOCKS_SINCE to null))
+        // The lock start date stays: days after it were tracked, also when their times are gone.
+        storage.write(mapOf(LAST_LOCK to null))
     }
 
     private fun history(): Map<LocalDate, Int> = storage.all()

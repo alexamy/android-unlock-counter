@@ -84,8 +84,14 @@ class DayTest {
 
     @Test
     fun longestBreakIsTheOldestLongestLockedSpan() = assertEquals(
-        at(60) to at(600),
-        sessions(0L to 60L, 600L to 700L, 1240L to 1300L).longestBreak,
+        at(60) to at(1060),
+        sessions(0L to 60L, 1060L to 1100L, 2100L to 2200L).longestBreak,
+    )
+
+    @Test
+    fun lockedSpansUnderFifteenMinutesHaveNoLongestBreak() = assertEquals(
+        null,
+        sessions(0L to 60L, 600L to 700L).longestBreak,
     )
 
     @Test

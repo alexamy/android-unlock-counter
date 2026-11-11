@@ -65,9 +65,9 @@ data class Day(
 
     val offTimes: List<Duration> get() = offSpans.map { (lock, unlock) -> Duration.between(lock, unlock) }
 
-    /** The longest locked span, the oldest of equal ones. The strip outlines it and the timeline marks it. */
+    /** The longest locked span of [BREAK] or more, the oldest of equal ones. The strip outlines it and the timeline marks it. */
     val longestBreak: Pair<OffsetDateTime, OffsetDateTime>? by lazy {
-        offSpans.maxByOrNull { (from, to) -> Duration.between(from, to) }
+        offSpans.filter { (from, to) -> Duration.between(from, to) >= BREAK }.maxByOrNull { (from, to) -> Duration.between(from, to) }
     }
 
     /** What the statistics card lists. */
@@ -75,7 +75,7 @@ data class Day(
         get() = listOf(
             Stat.Time(Stat.Name.FIRST_UNLOCK, stats.first),
             Stat.Time(Stat.Name.LAST_LOCK, lastLock),
-            Stat.Length(Stat.Name.LONGEST_OFF, longestBreak?.let { (from, to) -> Duration.between(from, to) }),
+            Stat.Length(Stat.Name.LONGEST_OFF, offTimes.maxOrNull()),
             Stat.Length(Stat.Name.MEDIAN_OFF, DayStats.median(offTimes)),
             Stat.Length(Stat.Name.SCREEN_TIME, screenTime),
             Stat.Count(Stat.Name.BURSTS, stats.bursts),

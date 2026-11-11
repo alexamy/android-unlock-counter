@@ -6,9 +6,9 @@
 
 **Blocked by:** 25 (Day decides how a day is shown)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] A legacy day shows only the title and the note
-- [ ] Today shows sessions before its first lock
-- [ ] Unlock-only code, layout and strings are removed
-- [ ] Tests cover the legacy rule
+- [x] A legacy day shows only the title and the note
+- [x] Today shows sessions before its first lock
+- [x] Unlock-only code, layout and strings are removed
+- [x] Tests cover the legacy rule

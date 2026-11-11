@@ -326,11 +326,11 @@ class CounterStoreTest {
     }
 
     @Test
-    fun clearLogForgetsWhenLocksStarted() {
+    fun clearLogKeepsWhenLocksStarted() {
         store.addUnlock()
         store.addLock()
         store.clearLog()
-        assertEquals(null, store.day(day).locksSince)
+        assertEquals(day, store.day(day).locksSince)
     }
 
     @Test
