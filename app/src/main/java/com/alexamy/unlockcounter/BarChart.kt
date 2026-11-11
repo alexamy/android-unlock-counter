@@ -66,19 +66,28 @@ class BarChart(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val w = (width - gap * (slots - 1)) / slots
         val radius = minOf(4 * density, w / 2)
         val max = values.filterNotNull().maxOrNull()?.coerceAtLeast(1) ?: 1
-        val labelGap = 4 * density
-        val top = -label.ascent() + labelGap
-        val room = height - top
+        val pad = 4 * density
+        val textH = -label.ascent()
         values.forEachIndexed { i, value ->
             val left = i * (w + gap)
             if (value == null) {
-                canvas.drawRoundRect(left, top, left + w, height.toFloat(), radius, radius, empty)
+                canvas.drawRoundRect(left, 0f, left + w, height.toFloat(), radius, radius, empty)
             } else {
-                val h = maxOf(2 * density, room * value / max)
-                bar.color = context.getColor(if (i == highlight) R.color.accent else R.color.bar_past)
+                val lit = i == highlight
+                val h = maxOf(2 * density, height * value.toFloat() / max)
+                bar.color = context.getColor(if (lit) R.color.accent else R.color.bar_past)
                 canvas.drawRoundRect(left, height - h, left + w, height.toFloat(), radius, radius, bar)
-                label.color = context.getColor(if (i == highlight) R.color.accent else R.color.text_muted)
-                canvas.drawText(value.toString(), left + w / 2, height - h - labelGap, label)
+                val inside = h >= textH + 2 * pad
+                label.color = context.getColor(
+                    when {
+                        inside && lit -> R.color.on_accent
+                        inside -> R.color.text
+                        lit -> R.color.accent
+                        else -> R.color.text_muted
+                    }
+                )
+                val baseline = if (inside) height - h + pad + textH else height - h - pad
+                canvas.drawText(value.toString(), left + w / 2, baseline, label)
             }
         }
     }
