@@ -11,33 +11,6 @@
         android:paddingHorizontal="20dp"
         android:paddingBottom="20dp">
 
-        <TextView style="@style/SectionHeader" android:text="@string/unlock_log" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical">
-
-            <LinearLayout android:id="@+id/export_log" style="@style/Row">
-                <ImageView style="@style/RowIcon" android:src="@drawable/ic_download" android:tint="@color/accent" />
-                <LinearLayout style="@style/RowText">
-                    <TextView style="@style/RowTitle" android:text="@string/export_log" />
-                    <TextView android:id="@+id/export_subtitle" style="@style/RowSubtitle" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <View style="@style/RowDivider" />
-
-            <LinearLayout android:id="@+id/clear_log" style="@style/Row">
-                <ImageView style="@style/RowIcon" android:src="@drawable/ic_delete" android:tint="@color/danger" />
-                <LinearLayout style="@style/RowText">
-                    <TextView style="@style/RowTitle" android:text="@string/clear_log" android:textColor="@color/danger" />
-                    <TextView style="@style/RowSubtitle" android:text="@string/clear_log_subtitle" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
         <TextView style="@style/SectionHeader" android:text="@string/counting" />
 
         <LinearLayout
@@ -82,6 +55,33 @@
                 <LinearLayout style="@style/RowText">
                     <TextView style="@style/RowTitle" android:text="@string/day_start" />
                     <TextView android:id="@+id/day_start_subtitle" style="@style/RowSubtitle" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView style="@style/SectionHeader" android:text="@string/unlock_log" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical">
+
+            <LinearLayout android:id="@+id/export_log" style="@style/Row">
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_download" android:tint="@color/accent" />
+                <LinearLayout style="@style/RowText">
+                    <TextView style="@style/RowTitle" android:text="@string/export_log" />
+                    <TextView android:id="@+id/export_subtitle" style="@style/RowSubtitle" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View style="@style/RowDivider" />
+
+            <LinearLayout android:id="@+id/clear_log" style="@style/Row">
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_delete" android:tint="@color/danger" />
+                <LinearLayout style="@style/RowText">
+                    <TextView style="@style/RowTitle" android:text="@string/clear_log" android:textColor="@color/danger" />
+                    <TextView style="@style/RowSubtitle" android:text="@string/clear_log_subtitle" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
