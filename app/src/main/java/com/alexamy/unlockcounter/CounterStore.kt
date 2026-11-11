@@ -26,7 +26,7 @@ class CounterStore(
         val time = now()
         val current = rollover(dayOf(time))
         storage.write(dayChanges(current.copy(count = current.count + 1)) + (LAST to time.toString()))
-        storage.appendLog("$time $UNLOCK\n")
+        storage.appendLog(LogEvent(time, isLock = false).line)
     }
 
     /** Logs a lock, once per unlock: a screen turned on and off again without an unlock adds nothing. */
@@ -38,7 +38,7 @@ class CounterStore(
         // Before clock sync the day is 1970: wait for a real day to mark when locks start.
         val since = storage[LOCKS_SINCE] ?: dayOf(time).takeIf { it >= MIN_DAY }?.toString()
         storage.write(mapOf(LAST_LOCK to time.toString(), LOCKS_SINCE to since))
-        storage.appendLog("$time $LOCK\n")
+        storage.appendLog(LogEvent(time, isLock = true).line)
     }
 
     /**
@@ -80,7 +80,6 @@ class CounterStore(
     /**
      * [date] with its count and logged unlock times. "Today" is the store's current day, also before a clock sync.
      * Each log line belongs to the day at the offset it was recorded with, by [dayStart]; unreadable lines are skipped.
-     * A session ends at the lock logged right after its unlock, also when that lock falls on the next day.
      */
     fun day(date: LocalDate): Day {
         val start = dayStart
@@ -89,28 +88,14 @@ class CounterStore(
         // Count before log: an unlock recorded in between then adds a time, never a false "missing".
         val count = if (isToday) today.count else history()[date]
         val prefixes = (0L..2L).map { date.plusDays(it).toString() }
-        val events = storage.readLog { lines ->
-            lines.filter { line -> prefixes.any(line::startsWith) }.mapNotNull(::event).sortedBy { it.first.toInstant() }.toList()
-        }
-        val sessions = events.mapIndexedNotNull { i, (time, isLock) ->
-            if (isLock || dayOf(time, start) != date) null
-            else time to events.getOrNull(i + 1)?.takeIf { it.second }?.first
-        }.reversed()
+        val events = storage.readLog { lines -> lines.filter { line -> prefixes.any(line::startsWith) }.mapNotNull(LogEvent::parse).toList() }
         return Day(
-            date, count, sessions.map { it.first }, isToday, burst, start,
-            ends = sessions.map { it.second },
+            date, count, events, isToday, burst, start,
             glance = glance,
             now = if (isToday) now() else null,
             locksSince = storage[LOCKS_SINCE]?.let(LocalDate::parse),
             openLimit = openLimit,
         )
-    }
-
-    /** A log line as its time and whether it is a lock; a line without a type is an unlock. */
-    private fun event(line: String): Pair<OffsetDateTime, Boolean>? {
-        val parts = line.split(' ')
-        val time = runCatching { OffsetDateTime.parse(parts[0]) }.getOrNull() ?: return null
-        return time to (parts.getOrNull(1) == LOCK)
     }
 
     /** Sessions shorter than this count as a glance. */
@@ -137,12 +122,11 @@ class CounterStore(
             storage.write(mapOf(DAY_START to value.toString(), HELD_DAY to current.day.toString()))
         }
 
-    private fun dayOf(time: OffsetDateTime, start: LocalTime = dayStart): LocalDate =
-        time.toLocalDateTime().minusSeconds(start.toSecondOfDay().toLong()).toLocalDate()
+    private fun dayOf(time: OffsetDateTime, start: LocalTime = dayStart): LocalDate = Day.dayOf(time, start)
 
     fun writeLog(out: OutputStream) = storage.writeLog(out)
 
-    fun logEntries(): Int = storage.readLog { lines -> lines.count { !it.endsWith(" $LOCK") } }
+    fun logEntries(): Int = storage.readLog { lines -> lines.count { LogEvent.parse(it)?.isLock != true } }
 
     fun clearLog() {
         storage.clearLog()
@@ -182,8 +166,6 @@ class CounterStore(
         const val OPEN_LIMIT = "open_limit_hours"
         const val LAST_LOCK = "last_lock"
         const val LOCKS_SINCE = "locks_since"
-        const val UNLOCK = "unlock"
-        const val LOCK = "lock"
         val MIN_DAY: LocalDate = LocalDate.of(2020, 1, 1)
     }
 }

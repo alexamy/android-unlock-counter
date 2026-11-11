@@ -6,9 +6,9 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Day takes events, not parallel `times` and `ends` lists
-- [ ] Log line format is written and parsed in one place
-- [ ] Pairing, open session and missed lock are tested in DayTest without storage
-- [ ] Session values are computed once per Day
+- [x] Day takes events, not parallel `times` and `ends` lists
+- [x] Log line format is written and parsed in one place
+- [x] Pairing, open session and missed lock are tested in DayTest without storage
+- [x] Session values are computed once per Day

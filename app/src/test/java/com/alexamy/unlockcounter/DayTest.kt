@@ -12,7 +12,7 @@ class DayTest {
     private val start = OffsetDateTime.parse("2026-11-09T08:00:00+01:00")
     private fun at(seconds: Long) = start.plusSeconds(seconds)
     private fun timeline(vararg seconds: Long) =
-        Day(LocalDate.of(2026, 11, 9), seconds.size, seconds.sortedDescending().map(::at), false).timeline
+        Day(LocalDate.of(2026, 11, 9), seconds.size, seconds.map { LogEvent(at(it), isLock = false) }, false).timeline
 
     @Test
     fun emptyDayHasNoEntries() = assertEquals(emptyList<Day.Entry>(), timeline())
@@ -36,11 +36,8 @@ class DayTest {
     )
 
     private fun sessions(vararg spans: Pair<Long, Long?>, now: OffsetDateTime? = null): Day {
-        val sorted = spans.sortedByDescending { it.first }
-        return Day(
-            LocalDate.of(2026, 11, 9), spans.size, sorted.map { at(it.first) }, now != null,
-            ends = sorted.map { it.second?.let(::at) }, now = now,
-        )
+        val events = spans.flatMap { (unlock, lock) -> listOfNotNull(LogEvent(at(unlock), isLock = false), lock?.let { LogEvent(at(it), isLock = true) }) }
+        return Day(LocalDate.of(2026, 11, 9), spans.size, events, now != null, now = now)
     }
 
     @Test
@@ -97,4 +94,18 @@ class DayTest {
         at(60) to at(600),
         sessions(0L to 60L, 600L to 700L, 1240L to 1300L).longestOff,
     )
+
+    @Test
+    fun pairsTheLockRightAfterAnUnlockAlsoOnTheNextDay() {
+        val night = OffsetDateTime.parse("2026-11-09T23:59:00+01:00")
+        val events = listOf(
+            LogEvent(night.plusMinutes(5), isLock = true),
+            LogEvent(night.plusMinutes(10), isLock = false),
+            LogEvent(night, isLock = false),
+            LogEvent(start, isLock = false),
+        )
+        val day = Day(LocalDate.of(2026, 11, 9), 2, events, false)
+        assertEquals(listOf(night, start), day.times)
+        assertEquals(listOf(night.plusMinutes(5), null), day.ends)
+    }
 }

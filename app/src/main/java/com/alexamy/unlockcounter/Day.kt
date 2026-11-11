@@ -6,46 +6,62 @@ import java.time.LocalTime
 import java.time.OffsetDateTime
 
 /**
- * One day as the day screen shows it. [times] are the logged unlocks, newest first; [count] is null when there is no data.
- * [ends] holds, for each of [times], the lock that ended its session, or null when none was logged.
+ * One day as the day screen shows it; [count] is null when there is no data.
+ * [events] are logged unlocks and locks around the day, in any order; the day's unlocks are picked by [start].
+ * A session ends at the lock logged right after its unlock, also when that lock falls on the next day.
  * [now] is set on today only; [locksSince] is the first day with a logged lock.
  */
 data class Day(
     val date: LocalDate,
     val count: Int?,
-    val times: List<OffsetDateTime>,
+    val events: List<LogEvent>,
     val isToday: Boolean,
     val burst: Duration = DayStats.DEFAULT_BURST,
     val start: LocalTime = DEFAULT_START,
-    val ends: List<OffsetDateTime?> = emptyList(),
     val glance: Duration = DEFAULT_GLANCE,
     val now: OffsetDateTime? = null,
     val locksSince: LocalDate? = null,
     val openLimit: Duration = DEFAULT_OPEN_LIMIT,
 ) {
+    private val paired: List<Pair<OffsetDateTime, OffsetDateTime?>> by lazy {
+        val sorted = events.sortedBy { it.time.toInstant() }
+        sorted.mapIndexedNotNull { i, event ->
+            if (event.isLock || dayOf(event.time, start) != date) null
+            else event.time to sorted.getOrNull(i + 1)?.takeIf { it.isLock }?.time
+        }.reversed()
+    }
+
+    /** The day's logged unlocks, newest first. */
+    val times: List<OffsetDateTime> by lazy { paired.map { it.first } }
+
+    /** For each of [times], the lock that ended its session, or null when none was logged. */
+    val ends: List<OffsetDateTime?> by lazy { paired.map { it.second } }
+
     /** Unlocks counted but not in the log. */
     val missing: Int get() = ((count ?: 0) - times.size).coerceAtLeast(0)
-    val stats: DayStats get() = DayStats.of(times, burst)
+    val stats: DayStats by lazy { DayStats.of(times, burst) }
 
     /** True when at least one session of the day has a logged lock; the day screen then shows sessions. */
-    val hasLocks: Boolean get() = ends.any { it != null }
+    val hasLocks: Boolean by lazy { ends.any { it != null } }
 
     /**
      * One per unlock, newest first. The newest one today with no lock yet is open and ends now.
      * An open session longer than [openLimit] is taken as a missed lock and has no length.
      */
-    val sessions: List<Session>
-        get() = times.mapIndexed { i, start ->
-            val end = ends.getOrNull(i)
+    val sessions: List<Session> by lazy {
+        times.mapIndexed { i, start ->
+            val end = ends[i]
             val open = end == null && i == 0 && now != null && !now.isBefore(start) && Duration.between(start, now) <= openLimit
             if (open) Session(start, now, open = true) else Session(start, end, open = false)
         }
+    }
 
     /** Each lock and the next unlock, where both are logged, oldest first. */
-    val offSpans: List<Pair<OffsetDateTime, OffsetDateTime>>
-        get() = sessions.zipWithNext { newer, older -> older.end?.takeUnless { older.open }?.let { it to newer.start } }
+    val offSpans: List<Pair<OffsetDateTime, OffsetDateTime>> by lazy {
+        sessions.zipWithNext { newer, older -> older.end?.takeUnless { older.open }?.let { it to newer.start } }
             .filterNotNull()
             .reversed()
+    }
 
     val offTimes: List<Duration> get() = offSpans.map { (lock, unlock) -> Duration.between(lock, unlock) }
 
@@ -77,23 +93,22 @@ data class Day(
      * With locks, each session is its own entry, and a break is the time locked between two sessions,
      * or the time between the unlocks where the lock is missing.
      */
-    val timeline: List<Entry>
-        get() {
-            val entries = mutableListOf<Entry>()
-            var start = 0
-            while (start < times.size) {
-                var end = start
-                while (!hasLocks && end + 1 < times.size && gap(end + 1, end) <= burst) end++
-                entries += Entry.Unlocks(times[end], Duration.between(times[end], times[start]), start..end)
-                if (end + 1 < times.size) {
-                    val lock = if (hasLocks) ends[end + 1] else null
-                    val off = lock?.let { Duration.between(it, times[end]) } ?: gap(end + 1, end)
-                    if (off >= BREAK) entries += Entry.Break(off, locked = lock != null)
-                }
-                start = end + 1
+    val timeline: List<Entry> by lazy {
+        val entries = mutableListOf<Entry>()
+        var start = 0
+        while (start < times.size) {
+            var end = start
+            while (!hasLocks && end + 1 < times.size && gap(end + 1, end) <= burst) end++
+            entries += Entry.Unlocks(times[end], Duration.between(times[end], times[start]), start..end)
+            if (end + 1 < times.size) {
+                val lock = if (hasLocks) ends[end + 1] else null
+                val off = lock?.let { Duration.between(it, times[end]) } ?: gap(end + 1, end)
+                if (off >= BREAK) entries += Entry.Break(off, locked = lock != null)
             }
-            return entries
+            start = end + 1
         }
+        entries
+    }
 
     private fun gap(older: Int, newer: Int): Duration = Duration.between(times[older], times[newer])
 
@@ -119,5 +134,9 @@ data class Day(
         val DEFAULT_START: LocalTime = LocalTime.MIDNIGHT
         val DEFAULT_GLANCE: Duration = Duration.ofMinutes(3)
         val DEFAULT_OPEN_LIMIT: Duration = Duration.ofHours(2)
+
+        /** The day [time] counts on when days begin at [start]. */
+        fun dayOf(time: OffsetDateTime, start: LocalTime): LocalDate =
+            time.toLocalDateTime().minusSeconds(start.toSecondOfDay().toLong()).toLocalDate()
     }
 }
