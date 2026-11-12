@@ -26,7 +26,7 @@ class CounterStore(
         val time = now()
         val current = rollover(dayOf(time))
         storage.write(dayChanges(current.copy(count = current.count + 1)) + (LAST to time.toString()))
-        storage.appendLog("$time\n")
+        storage.appendLog("$time $UNLOCK\n")
     }
 
     /**
@@ -77,7 +77,7 @@ class CounterStore(
         val count = if (isToday) today.count else history()[date]
         val times = storage.readLog { lines ->
             lines.filter { it.startsWith(date.toString()) || it.startsWith(date.plusDays(1).toString()) }
-                .mapNotNull { runCatching { OffsetDateTime.parse(it) }.getOrNull() }
+                .mapNotNull(::unlockTime)
                 .filter { dayOf(it, start) == date }
                 .sortedByDescending { it.toInstant() }
                 .toList()
@@ -104,7 +104,14 @@ class CounterStore(
 
     fun writeLog(out: OutputStream) = storage.writeLog(out)
 
-    fun logEntries(): Int = storage.readLog { it.count() }
+    fun logEntries(): Int = storage.readLog { lines -> lines.count { unlockTime(it) != null } }
+
+    /** A line is a time, then "unlock" or "lock"; a line with only a time is an unlock, as older versions wrote it. Lock and unreadable lines are null. */
+    private fun unlockTime(line: String): OffsetDateTime? {
+        val parts = line.split(' ')
+        if (parts.getOrNull(1) == LOCK) return null
+        return runCatching { OffsetDateTime.parse(parts[0]) }.getOrNull()
+    }
 
     fun clearLog() = storage.clearLog()
 
@@ -133,6 +140,8 @@ class CounterStore(
         const val DAY = "day"
         const val COUNT = "count"
         const val HISTORY = "history:"
+        const val UNLOCK = "unlock"
+        const val LOCK = "lock"
         const val LAST = "last"
         const val BURST = "burst_minutes"
         const val DAY_START = "day_start"
