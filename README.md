@@ -12,7 +12,7 @@ Android has no lock screen widgets since version 5, so the counter is a live wal
 
 - **Wallpaper:** today's unlock count, drawn over a dark gray background or your own photo.
 - **History tab:** today's count, the daily average, a 14-day bar chart, and every past day.
-- **Settings tab:** a live preview, then the photo and its horizontal crop, the number color (hue, saturation, brightness, opacity), size, one of 9 positions, and 10 bundled fonts plus the system font.
+- **Style tab:** a live preview, then the photo and its horizontal crop, the number color (hue, saturation, brightness, opacity), size, one of 9 positions, and 10 bundled fonts plus the system font.
 - **System tab:** export the log of unlock times, clear it, reset the settings.
 
 ## How counting works
@@ -37,7 +37,7 @@ Requirements: JDK 17, Android SDK with platform 35, and a phone with USB debuggi
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Then open the app, go to Settings, tap "Set wallpaper", and pick "Home and lock screens".
+Then open the app, go to Style, tap "Set wallpaper", and pick "Home and lock screens".
 
 `./gradlew testDebugUnitTest` runs the unit tests. `./gradlew assembleRelease` gives an unsigned, minified APK; sign it with your own key.
 

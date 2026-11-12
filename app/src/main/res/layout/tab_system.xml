@@ -11,6 +11,34 @@
         android:paddingHorizontal="20dp"
         android:paddingBottom="20dp">
 
+        <TextView style="@style/SectionHeader" android:text="@string/section_day" />
+
+        <LinearLayout
+            android:id="@+id/counting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical">
+
+            <LinearLayout android:id="@+id/burst_window" style="@style/Row">
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_bolt" android:tint="@color/accent" />
+                <LinearLayout style="@style/RowText">
+                    <TextView style="@style/RowTitle" android:text="@string/burst_window" />
+                    <TextView android:id="@+id/burst_subtitle" style="@style/RowSubtitle" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View style="@style/RowDivider" />
+
+            <LinearLayout android:id="@+id/day_start" style="@style/Row">
+                <ImageView style="@style/RowIcon" android:src="@drawable/ic_sunrise" android:tint="@color/accent" />
+                <LinearLayout style="@style/RowText">
+                    <TextView style="@style/RowTitle" android:text="@string/day_start" />
+                    <TextView android:id="@+id/day_start_subtitle" style="@style/RowSubtitle" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
         <TextView style="@style/SectionHeader" android:text="@string/unlock_log" />
 
         <LinearLayout
@@ -34,34 +62,6 @@
                 <LinearLayout style="@style/RowText">
                     <TextView style="@style/RowTitle" android:text="@string/clear_log" android:textColor="@color/danger" />
                     <TextView style="@style/RowSubtitle" android:text="@string/clear_log_subtitle" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-        <TextView style="@style/SectionHeader" android:text="@string/counting" />
-
-        <LinearLayout
-            android:id="@+id/counting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical">
-
-            <LinearLayout android:id="@+id/burst_window" style="@style/Row">
-                <ImageView style="@style/RowIcon" android:src="@drawable/ic_unlock" android:tint="@color/accent" />
-                <LinearLayout style="@style/RowText">
-                    <TextView style="@style/RowTitle" android:text="@string/burst_window" />
-                    <TextView android:id="@+id/burst_subtitle" style="@style/RowSubtitle" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <View style="@style/RowDivider" />
-
-            <LinearLayout android:id="@+id/day_start" style="@style/Row">
-                <ImageView style="@style/RowIcon" android:src="@drawable/ic_clock" android:tint="@color/accent" />
-                <LinearLayout style="@style/RowText">
-                    <TextView style="@style/RowTitle" android:text="@string/day_start" />
-                    <TextView android:id="@+id/day_start_subtitle" style="@style/RowSubtitle" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
