@@ -13,7 +13,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
-/** 24 hours from the day start, left to right, with a tick per unlock; gaps of an hour or more are shaded and the longest gap is outlined. */
+/** 24 hours from the day start, left to right, with a tick per unlock; gaps of an hour or more are shaded and the longest gap of [Day.BREAK] or more is outlined. */
 class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var start: LocalTime = LocalTime.MIDNIGHT
 
@@ -66,7 +66,7 @@ class DayStrip(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val sorted = seconds.sorted()
         val gaps = sorted.zipWithNext()
         gaps.filter { (a, b) -> b - a >= HOUR }.forEach { (a, b) -> canvas.drawRoundRect(x(a), 0f, x(b), band, radius, radius, shade) }
-        gaps.maxByOrNull { (a, b) -> b - a }?.let { (a, b) -> canvas.drawRoundRect(x(a), 0f, x(b), band, radius, radius, outline) }
+        gaps.filter { (a, b) -> b - a >= Day.BREAK.seconds }.maxByOrNull { (a, b) -> b - a }?.let { (a, b) -> canvas.drawRoundRect(x(a), 0f, x(b), band, radius, radius, outline) }
         seconds.forEachIndexed { i, s ->
             tick.color = context.getColor(if (i in lit) R.color.accent else R.color.text)
             canvas.drawRect(x(s) - 0.75f * density, 2 * density, x(s) + 0.75f * density, band - 2 * density, tick)

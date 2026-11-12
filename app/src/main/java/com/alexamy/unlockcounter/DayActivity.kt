@@ -19,6 +19,11 @@ class DayActivity : Activity() {
         setContentView(R.layout.activity_day)
         findViewById<View>(R.id.root).padForSystemBars()
         findViewById<View>(R.id.back).setOnClickListener { finish() }
+    }
+
+    // Built on each resume, so a day seen again after a lock or an app switch shows the new unlocks.
+    override fun onResume() {
+        super.onResume()
 
         val day = CounterStore(this).day(LocalDate.parse(intent.getStringExtra(EXTRA_DAY)))
         val times = day.times
