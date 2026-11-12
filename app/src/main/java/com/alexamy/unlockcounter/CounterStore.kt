@@ -29,6 +29,9 @@ class CounterStore(
         storage.appendLog("$time $UNLOCK\n")
     }
 
+    /** Logs a screen-off as a lock; nothing else uses it yet. */
+    fun addLock() = storage.appendLog("${now()} $LOCK\n")
+
     /**
      * Counts the first unlock after a boot, which happens before the wallpaper is running,
      * when an earlier unlock is recorded but none since [boot]. Without any record (fresh install) nothing is counted.

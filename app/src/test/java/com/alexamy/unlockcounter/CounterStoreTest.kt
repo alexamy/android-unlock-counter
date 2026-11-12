@@ -196,6 +196,16 @@ class CounterStoreTest {
     }
 
     @Test
+    fun lockIsLoggedButNotCounted() {
+        store.addUnlock()
+        time = time.plusMinutes(1)
+        store.addLock()
+        assertEquals("2026-11-09T10:00+01:00 unlock\n2026-11-09T10:01+01:00 lock\n", ByteArrayOutputStream().also(store::writeLog).toString())
+        assertEquals(1, store.logEntries())
+        assertEquals(1, store.todayCount())
+    }
+
+    @Test
     fun dayTimesReadBothLogFormatsAndSkipLocks() {
         storage.log.append("2026-11-09T08:00+01:00\n2026-11-09T09:00+01:00 unlock\n2026-11-09T09:05+01:00 lock\n")
         assertEquals(
