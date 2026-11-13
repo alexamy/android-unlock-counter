@@ -8,6 +8,18 @@ Android live wallpaper that shows how many times you unlocked the phone today. S
 
 Android has no lock screen widgets since version 5, so the counter is a live wallpaper: the number is drawn on the wallpaper itself.
 
+## Screenshots
+
+<p>
+  <img src="docs/screenshots/home.png" width="180" alt="Home screen with the unlock count on the wallpaper">
+  <img src="docs/screenshots/history.png" width="180" alt="History tab with today's count, the daily average and the week chart">
+  <img src="docs/screenshots/day.png" width="180" alt="Day screen with the 24-hour strip, stats and timeline">
+  <img src="docs/screenshots/style.png" width="180" alt="Style tab with the wallpaper preview">
+  <img src="docs/screenshots/system.png" width="180" alt="System tab with the day settings and the unlock log">
+</p>
+
+Home screen, History tab, a day, Style tab, System tab. Taken on the Android 15 emulator.
+
 ## Features
 
 - **Wallpaper:** today's unlock count, drawn over a dark gray background or your own photo.
